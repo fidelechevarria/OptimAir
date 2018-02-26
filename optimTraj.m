@@ -183,7 +183,7 @@ function optimTraj
             flat{1,i} = lla2flat([lat{1,i} lon{1,i} 20],[lat{1,1} lon{1,1}],0,0,ellipsoidModel);
             north = [north ; flat{1,i}(1)];
             east = [east ; flat{1,i}(2)];
-            up = [up ; flat{1,i}(3)];
+            up = [up ; -flat{1,i}(3)];
         end
         WP = struct('north', north, 'east', -east, 'up', up);
         % Optimize trajectory

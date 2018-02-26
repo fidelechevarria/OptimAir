@@ -23,7 +23,7 @@ for i = 1:(2*numOfWaypoints)-1
 end
 
 %% Spline generation along way-point sequence
-N = 1000; % Number of uniformly distributed points along the curve parameter
+N = 500; % Number of uniformly distributed points along the curve parameter
 smoothTraj = cscvn([new_north;new_east;new_up]);
 space = linspace(smoothTraj.breaks(1),smoothTraj.breaks(end),N);
 smooth = fnval(smoothTraj,space);
