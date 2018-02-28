@@ -1,29 +1,28 @@
 
 function [myf,myc,myceq] = optimTraj_time(params,WP)
-
+tic
 %% Obtain new way-point sequence
 [numOfWaypoints,~] = size(WP.north);
 j = 0;
 k = 0;
-new_north = [];
-new_east = [];
-new_up = [];
-for i = 1:(2*numOfWaypoints)-1
+new_size = (2*numOfWaypoints)-1;
+new_north = zeros(1,new_size);
+new_east = zeros(1,new_size);
+for i = 1:new_size
     if mod(i,2) == 1
         j = j + 1;
-        new_north = [new_north WP.north(j)];
-        new_east = [new_east WP.east(j)];
-        new_up = [new_up WP.up(j)];
+        new_north(i) = WP.north(j);
+        new_east(i) = WP.east(j);
     else
         k = k + 1;
-        new_north = [new_north params(k)];
-        new_east = [new_east params(k+numOfWaypoints-1)];
-        new_up = [new_up params(k+2*(numOfWaypoints-1))];
+        new_north(i) = params(k);
+        new_east(i) = params(k+numOfWaypoints-1);
     end
 end
+new_up = 20*ones(1,new_size);
 
 %% Spline generation along way-point sequence
-N = 500; % Number of uniformly distributed points along the curve parameter
+N = 100; % Number of uniformly distributed points along the curve parameter
 smoothTraj = cscvn([new_north;new_east;new_up]);
 space = linspace(smoothTraj.breaks(1),smoothTraj.breaks(end),N);
 smooth = fnval(smoothTraj,space);
@@ -77,5 +76,5 @@ total_time = sum(time);
 myf = total_time; % Value to minimize
 myc = [ ]; % if >0 params are not a valid solution
 myceq = [ ]; % if =0 params are not a valid solution
-
+toc
 
