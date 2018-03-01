@@ -1,6 +1,6 @@
 
 function [myf,myc,myceq] = optimTraj_time(params,WP)
-tic
+
 %% Obtain new way-point sequence
 [numOfWaypoints,~] = size(WP.north);
 j = 0;
@@ -76,5 +76,4 @@ total_time = sum(time);
 myf = total_time; % Value to minimize
 myc = [ ]; % if >0 params are not a valid solution
 myceq = [ ]; % if =0 params are not a valid solution
-toc
 
