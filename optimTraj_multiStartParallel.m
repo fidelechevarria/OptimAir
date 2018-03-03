@@ -57,7 +57,7 @@ poolObj = parpool;
 [x,fval,exitflag,output,solutions] = run(ms, problem, 64);
 
 %% Close the MATLAB Pool
-delete(poolObj)
+delete(poolObj);
 
 %% Display final results
 disp(char('','Last point: ','',num2str(x'))); % Display solution

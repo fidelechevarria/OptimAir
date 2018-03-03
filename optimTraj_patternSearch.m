@@ -35,10 +35,17 @@ optimTraj_cfun = @optimTraj_constr; % the constraint function, nested below
     end
 
 %% Set options for pattern search
-options = psoptimset('Display','iter','PlotFcn',@psplotbestf);
+options = psoptimset('Display','iter','PlotFcn',@psplotbestf,...
+    'UseParallel', true, 'CompletePoll', 'on');
+
+%% Open up MATLAB Pool
+poolObj = parpool;
 
 %% Run the optimization
 [x,fval] = patternsearch(optimTraj_fun,IP,[],[],[],[],LB,UB,optimTraj_cfun,options);
+
+%% Close the MATLAB Pool
+delete(poolObj);
 
 %% Show optimization results
 automaticFGlaunchIsActivated = 0;
