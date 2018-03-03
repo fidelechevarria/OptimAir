@@ -1,4 +1,4 @@
-function [x,fval,exitflag,output,lambda,grad,hessian] = optimTraj_fmincon(x0,WP,hdngData)
+function [x,fval] = optimTraj_multiStartParallel(WP,hdngData)
 
 xLast = []; % Last place optimTraj was called
 myf = []; % Use for objective at xLast
@@ -34,20 +34,32 @@ optimTraj_cfun = @optimTraj_constr; % the constraint function, nested below
         ceq = myceq;
     end
 
-%% Start Newton-Raphson optimization with the default options
-options = optimoptions('fmincon');
+%% Set options for FMINCON
+TolFun = 0.01; % minimum distance between two separate objective function values
+TolX = 0.1; % minimum distance between two separate points
+options = optimset('Algorithm','interior-point','Disp','iter',...
+    'TolFun',TolFun,'TolX',TolX);
 
-%% Modify optimization options setting
-options = optimoptions(options,'Display', 'off');
-options = optimoptions(options,'PlotFcns', {  @optimplotx @optimplotfval @optimplotfunccount });
-options = optimoptions(options,'Diagnostics', 'off');
+%% Create problem for MultiStart
+problem = createOptimProblem('fmincon','objective',optimTraj_fun,'x0',IP,...
+            'lb',LB,'ub',UB,'nonlcon',optimTraj_cfun,'options',options);
 
-%% Run optimization
-[x,fval,exitflag,output,lambda,grad,hessian] = ...
-fmincon(optimTraj_fun,IP,[],[],[],[],LB,UB,optimTraj_cfun,options);
+%% Make a MultiStart object        
+ms = MultiStart;
+
+%% Tell MultiStart to use Parallel Computing
+ms.UseParallel = 'always';
+
+%% Open up MATLAB Pool
+poolObj = parpool;
+
+%% Run the optimization
+[x,fval,exitflag,output,solutions] = run(ms, problem, 64);
+
+%% Close the MATLAB Pool
+delete(poolObj)
 
 %% Display final results
-disp(char('',output.message)); % Display the reason why the algorithm stopped iterating
 disp(char('','Last point: ','',num2str(x'))); % Display solution
 disp(char('','Last point optimized value: ','',num2str(fval),'')); % Display solution's optimized value
 

@@ -22,7 +22,7 @@ end
 new_up = 20*ones(1,new_size);
 
 %% Spline generation along way-point sequence
-N = 50; % Number of uniformly distributed points along the curve parameter
+N = 250; % Number of uniformly distributed points along the curve parameter
 smoothTraj = cscvn([new_north;new_east;new_up]);
 space = linspace(smoothTraj.breaks(1),smoothTraj.breaks(end),N);
 smooth = fnval(smoothTraj,space);
@@ -72,7 +72,7 @@ Cd0_ydata = convforce([0.06 1.5 0.036 0.028 0.036 1.5 0.06],'lbf','N');
 % Initial conditions
 V_old(1) = 92.95;
 alpha_old(1) = 0.1;
-T = 11000;
+T = 5000;
 
 % Call dynamic_model
 for i = 1:N-1
@@ -91,6 +91,10 @@ for i = 1:N-1
     alpha_old(i+1) = alpha(i);
 end
 
+% Constraints
+max_lat_G = max(lat_G);
+max_lat_G_limit = 10; % Maximum lateral acceleration in G's
+
 % Compute total time
 time = zeros(N,1);
 for i = 1:N-1
@@ -101,6 +105,6 @@ total_time = sum(time);
 
 %% Function outputs
 myf = total_time; % Value to minimize
-myc = [ ]; % if >0 params are not a valid solution
+myc = [max_lat_G-max_lat_G_limit]; % if >0 params are not a valid solution
 myceq = [ ]; % if =0 params are not a valid solution
 toc

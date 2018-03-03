@@ -187,7 +187,7 @@ function optimTraj
         end
         WP = struct('north', north, 'east', -east, 'up', up);
         % Optimize trajectory
-        optimTraj_optimize(WP,hdngData)
+        optimTraj_optimize(WP,hdngData);
     end
     
 end

@@ -76,7 +76,7 @@ Cd0_ydata = convforce([0.06 1.5 0.036 0.028 0.036 1.5 0.06],'lbf','N');
 % Initial conditions
 V_old(1) = 92.95;
 alpha_old(1) = 0.1;
-T = 11000;
+T = 5000;
 
 % Call dynamic_model
 for i = 1:N-1
@@ -124,7 +124,7 @@ zlabel('Up')
 
 % 2D Graphical representation
 f2 = figure('Visible','Off'); % Create and then hide figure as it is being constructed.
-movegui(f2,'northeast') % Move the GUI to the center of the screen.
+movegui(f2,'northeast') % Move the GUI
 hold on
 plot(curvature)
 hold off
@@ -133,9 +133,31 @@ title('Trajectory curvature')
 xlabel('Evaluation point')
 ylabel('Curvature (1/localRadius) [m^-1]')
 
+f3 = figure('Visible','Off'); % Create and then hide figure as it is being constructed.
+movegui(f3,'southeast') % Move the GUI
+hold on
+plot(V_new)
+hold off
+grid
+title('Velocity')
+xlabel('Evaluation point')
+ylabel('Velocity [m/s]')
+
+f4 = figure('Visible','Off'); % Create and then hide figure as it is being constructed.
+movegui(f4,'southwest') % Move the GUI
+hold on
+plot(lat_G)
+hold off
+grid
+title('Lateral G''s')
+xlabel('Evaluation point')
+ylabel('Lateral acceleration [m*s^-2]')
+
 % Make figures visible.
 f1.Visible = 'on';
 f2.Visible = 'on';
+f3.Visible = 'on';
+f4.Visible = 'on';
 
 %% FlightGear interface
 

@@ -1,7 +1,5 @@
 function [x,fval,exitflag,output,population,score] = optimTraj_genetic(WP,hdngData)
 
-close all
-
 xLast = []; % Last place optimTraj was called
 myf = []; % Use for objective at xLast
 myc = []; % Use for nonlinear inequality constraint
@@ -14,7 +12,7 @@ PopulationSize = 40;
 FunctionTolerance = 1e-3;
 IP = [-70 -180 -260 -450 -500 -400 -310 -200.0... % North initial points
             100 230 320 450 350 150 50 -150.0];   % East initial points
-margin = 70*ones(1,16);
+margin = 250*ones(1,16);
 LB = IP - margin;
 UB = IP + margin;
 

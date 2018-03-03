@@ -1,4 +1,4 @@
-function [x,fval,exitflag,output,lambda,grad,hessian] = optimTraj_fmincon(x0,WP,hdngData)
+function [x,fval] = optimTraj_patternSearch(WP,hdngData)
 
 xLast = []; % Last place optimTraj was called
 myf = []; % Use for objective at xLast
@@ -34,21 +34,19 @@ optimTraj_cfun = @optimTraj_constr; % the constraint function, nested below
         ceq = myceq;
     end
 
-%% Start Newton-Raphson optimization with the default options
-options = optimoptions('fmincon');
+%% Set options for pattern search
+options = psoptimset('Display','iter','PlotFcn',@psplotbestf);
 
-%% Modify optimization options setting
-options = optimoptions(options,'Display', 'off');
-options = optimoptions(options,'PlotFcns', {  @optimplotx @optimplotfval @optimplotfunccount });
-options = optimoptions(options,'Diagnostics', 'off');
+%% Run the optimization
+[x,fval] = patternsearch(optimTraj_fun,IP,[],[],[],[],LB,UB,optimTraj_cfun,options);
 
-%% Run optimization
-[x,fval,exitflag,output,lambda,grad,hessian] = ...
-fmincon(optimTraj_fun,IP,[],[],[],[],LB,UB,optimTraj_cfun,options);
+%% Show optimization results
+automaticFGlaunchIsActivated = 0;
+optimTraj_results(x,WP,automaticFGlaunchIsActivated);
 
-%% Display final results
-disp(char('',output.message)); % Display the reason why the algorithm stopped iterating
+%% Display info
 disp(char('','Last point: ','',num2str(x'))); % Display solution
-disp(char('','Last point optimized value: ','',num2str(fval),'')); % Display solution's optimized value
+disp(char('','Last point FP time: ','',num2str(fval),'')); % Display solution's optimized FP time
 
 end
+
