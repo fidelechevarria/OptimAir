@@ -1,20 +1,5 @@
 
-function [V_new,phi,L,D,alpha,lat_G] = optimTraj_model2D(V_old,alpha_old,arclength,T,latcurv)
-
-rho = 1.225;
-S = 9.1;
-K = 0.1779;
-m = 750;
-g = 9.81;
-
-% Look-up tables for Clalpha and Cd0
-Clalpha_xdata = [-3.14 -2.36 -1.57 -0.78 -0.6 -0.28 -0.25 -0.22 -0.2 0 0.2 0.22 0.25 0.28 0.6 0.78 1.57 2.36 3.14];
-Clalpha_ydata =  convforce([0.05 1.0 0.0 1.0 0.7 -1.12 -1.34 -1.4 -1.34 0.0 1.34 1.4 1.34 1.12 0.7 1.0 0.0 -1.0 0.05],'lbf','N');
-Clalpha = fixpt_interp1(Clalpha_xdata,Clalpha_ydata,alpha_old,ufix(8),2^-8,sfix(16),2^-14,'Floor');
-
-Cd0_xdata = [-3.142 -1.57 -0.26 0 0.26 1.57 3.142];
-Cd0_ydata = convforce([0.06 1.5 0.036 0.028 0.036 1.5 0.06],'lbf','N');
-Cd0 = fixpt_interp1(Cd0_xdata,Cd0_ydata,alpha_old,ufix(8),2^-8,sfix(16),2^-14,'Floor');
+function Vmed = optimTraj_model2D(V_old,arclength,T,latcurv,Cd0,rho,S,K,m,g)
 
 %%% MAX G-FORCE 10G;
 %%% MAX SPEED 426 km/h = 118.33 m/s;
@@ -52,7 +37,7 @@ delta0_term = c^2-3*b*d+12*a*e;
 delta1_term = 2*c^3-9*b*c*d+27*b^2*e+27*a*d^2-72*a*c*e;
 
 Q_term = ((delta1_term+sqrt(-27*discriminant))/2)^(1/3);
-S_term = 0.5*sqrt(-2/3*p_term+1/(3*a)*(Q_term+delta0_term/Q_term));
+S_term = 0.5*sqrt(abs(-2/3*p_term+1/(3*a)*(Q_term+delta0_term/Q_term)));
 
 % We are interested in the biggest real solution to the polynomic equation
 
@@ -61,15 +46,4 @@ S_term = 0.5*sqrt(-2/3*p_term+1/(3*a)*(Q_term+delta0_term/Q_term));
 % Vmed_sols(3) = -b/(4*a)+S_term+0.5*sqrt(-4*S_term^2-2*p_term-q_term/S_term);
 % Vmed_sols(4) = -b/(4*a)-S_term+0.5*sqrt(-4*S_term^2-2*p_term-q_term/S_term);
 
-% Vmed = real(-b/(4*a)+S_term+0.5*sqrt(-4*S_term^2-2*p_term-q_term/S_term));
-Vmed = real(-b/(4*a)+S_term+0.5*sqrt(-4*S_term^2-2*p_term-q_term/S_term));
-
-% Solve the rest of variables
-V_new = max(2*(Vmed-V_old)+V_old,1);
-phi = acos(1/sqrt(V_new^2*latcurv/g+1));
-Cl = m*g/(0.5*rho*S*V_new^2*cos(phi));
-Cd = Cd0 + K*Cl^2;
-L = 0.5*rho*V_new^2*S*Cl;
-D = 0.5*rho*V_new^2*S*Cd;
-alpha = Cl/Clalpha; % Cl0 considered zero
-lat_G = (V_new^2*latcurv)/9.8056;
+Vmed = -b/(4*a)+S_term+0.5*sqrt(abs(-4*S_term^2-2*p_term-q_term/S_term));

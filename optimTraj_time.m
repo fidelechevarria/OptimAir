@@ -1,6 +1,6 @@
 
 function [myf,myc,myceq] = optimTraj_time(params,WP)
-
+tic
 %% Obtain new way-point sequence
 [numOfWaypoints,~] = size(WP.north);
 j = 0;
@@ -40,10 +40,12 @@ end
 
 %% Compute curvature
 curvature = optimTraj_ppcurv(smoothTraj,N);
+abs_curvature = abs(curvature);
 
 %% Time computation using dynamic model
 
 V_old = zeros(N,1);
+V_med = zeros(N,1);
 V_new = zeros(N,1);
 phi = zeros(N,1);
 L = zeros(N,1);
@@ -51,6 +53,21 @@ D = zeros(N,1);
 alpha = zeros(N,1);
 alpha_old = zeros(N,1);
 lat_G = zeros(N,1);
+Clalpha = zeros(N,1);
+Cd0 = zeros(N,1);
+
+% Constant parameters
+rho = 1.225;
+S = 9.1;
+K = 0.1779;
+m = 750;
+g = 9.81;
+
+% Look-up tables for Clalpha and Cd0
+Clalpha_xdata = [-3.14 -2.36 -1.57 -0.78 -0.6 -0.28 -0.25 -0.22 -0.2 0 0.2 0.22 0.25 0.28 0.6 0.78 1.57 2.36 3.14];
+Clalpha_ydata = convforce([0.05 1.0 0.0 1.0 0.7 -1.12 -1.34 -1.4 -1.34 0.0 1.34 1.4 1.34 1.12 0.7 1.0 0.0 -1.0 0.05],'lbf','N');
+Cd0_xdata = [-3.142 -1.57 -0.26 0 0.26 1.57 3.142];
+Cd0_ydata = convforce([0.06 1.5 0.036 0.028 0.036 1.5 0.06],'lbf','N');
 
 % Initial conditions
 V_old(1) = 92.95;
@@ -59,7 +76,17 @@ T = 11000;
 
 % Call dynamic_model
 for i = 1:N-1
-    [V_new(i),phi(i),L(i),D(i),alpha(i),lat_G(i)] = optimTraj_model2D(V_old(i),alpha_old(i),arc(i),T,abs(curvature(i)));
+    Clalpha(i) = fixpt_interp1(Clalpha_xdata,Clalpha_ydata,alpha_old(i),ufix(8),2^-8,sfix(16),2^-14,'Floor');
+    Cd0(i) = fixpt_interp1(Cd0_xdata,Cd0_ydata,alpha_old(i),ufix(8),2^-8,sfix(16),2^-14,'Floor');
+    V_med(i) = optimTraj_model2D(V_old(i),arc(i),T,abs_curvature(i),Cd0(i),rho,S,K,m,g);
+    V_new(i) = max(2*(V_med(i)-V_old(i))+V_old(i),1);
+    phi(i) = acos(1/sqrt(V_new(i)^2*curvature(i)/g+1));
+    Cl(i) = m*g/(0.5*rho*S*V_new(i)^2*cos(phi(i)));
+    Cd(i) = Cd0(i) + K*Cl(i)^2;
+    L(i) = 0.5*rho*V_new(i)^2*S*Cl(i);
+    D(i) = 0.5*rho*V_new(i)^2*S*Cd(i);
+    alpha(i) = Cl(i)/Clalpha(i); % Cl0 considered zero
+    lat_G(i) = (V_new(i)^2*curvature(i))/9.8056;
     V_old(i+1) = V_new(i);
     alpha_old(i+1) = alpha(i);
 end
@@ -76,4 +103,4 @@ total_time = sum(time);
 myf = total_time; % Value to minimize
 myc = [ ]; % if >0 params are not a valid solution
 myceq = [ ]; % if =0 params are not a valid solution
-
+toc
