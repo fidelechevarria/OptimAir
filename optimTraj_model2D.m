@@ -36,7 +36,7 @@ q_term = (b^3-4*a*b*c+8*a^2*d)/(8*a^3);
 delta0_term = c^2-3*b*d+12*a*e;
 delta1_term = 2*c^3-9*b*c*d+27*b^2*e+27*a*d^2-72*a*c*e;
 
-Q_term = ((delta1_term+sqrt(-27*discriminant))/2)^(1/3);
+Q_term = ((delta1_term+sqrt(abs(-27*discriminant)))/2)^(1/3);
 S_term = 0.5*sqrt(abs(-2/3*p_term+1/(3*a)*(Q_term+delta0_term/Q_term)));
 
 % We are interested in the biggest real solution to the polynomic equation

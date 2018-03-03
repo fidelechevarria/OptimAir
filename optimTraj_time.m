@@ -22,7 +22,7 @@ end
 new_up = 20*ones(1,new_size);
 
 %% Spline generation along way-point sequence
-N = 100; % Number of uniformly distributed points along the curve parameter
+N = 50; % Number of uniformly distributed points along the curve parameter
 smoothTraj = cscvn([new_north;new_east;new_up]);
 space = linspace(smoothTraj.breaks(1),smoothTraj.breaks(end),N);
 smooth = fnval(smoothTraj,space);

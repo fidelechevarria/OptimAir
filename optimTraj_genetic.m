@@ -12,8 +12,11 @@ myceq = []; % Use for nonlinear equality constraint
 nvars = (numOfWaypoints-1)*3;
 PopulationSize = 40;
 FunctionTolerance = 1e-3;
-LB = [];
-UB = [];
+IP = [-70 -180 -260 -450 -500 -400 -310 -200.0... % North initial points
+            100 230 320 450 350 150 50 -150.0];   % East initial points
+margin = 70*ones(1,16);
+LB = IP - margin;
+UB = IP + margin;
 
 optimTraj_fun = @optimTraj_objfun; % the objective function, nested below
 optimTraj_cfun = @optimTraj_constr; % the constraint function, nested below

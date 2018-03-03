@@ -1,4 +1,4 @@
-function [x,fval,exitflag,output,lambda,grad,hessian] = optimTraj_newton(x0,WP,hdngData)
+function [x,fval,exitflag,output,lambda,grad,hessian] = optimTraj_fmincon(x0,WP,hdngData)
 
 close all
 
@@ -8,24 +8,11 @@ myc = []; % Use for nonlinear inequality constraint
 myceq = []; % Use for nonlinear equality constraint
 
 %% Define parameters
-[numOfWaypoints,~] = size(WP);
-nvars = 2*numOfWaypoints;
-PopulationSize = 40;
-FunctionTolerance = 1e-3;
-aprox_WP_azimuth = hdngData; % [degrees]
-semiAngularThreshold = 10*ones(1,numOfWaypoints);
-LB = [aprox_WP_azimuth-semiAngularThreshold zeros(1,nvars/2)];
-UB = [aprox_WP_azimuth+semiAngularThreshold zeros(1,nvars/2)];
-for i = 1:nvars/2
-    index = nvars/2 + i;
-    if (aprox_WP_azimuth(i) > 180) 
-        LB(index) = - inf;
-        UB(index) = 0;
-    else
-        LB(index) = 0;
-        UB(index) = inf;
-    end
-end
+IP = [-70 -180 -260 -450 -500 -400 -310 -200.0... % North initial points
+            100 230 320 450 350 150 50 -150.0];   % East initial points
+margin = 70*ones(1,16);
+LB = IP - margin;
+UB = IP + margin;
 
 optimTraj_fun = @optimTraj_objfun; % the objective function, nested below
 optimTraj_cfun = @optimTraj_constr; % the constraint function, nested below
@@ -49,20 +36,17 @@ optimTraj_cfun = @optimTraj_constr; % the constraint function, nested below
         ceq = myceq;
     end
 
-%% Enter parameters for Newton-Raphson optimization
-%x0 = [3.611665 59.22286 180.6453 304.6692 338.714 42.64582 65.10284 -18.8209 -47.46095 -27.21514]; % Initial point
-
 %% Start Newton-Raphson optimization with the default options
 options = optimoptions('fmincon');
 
 %% Modify optimization options setting
 options = optimoptions(options,'Display', 'off');
-options = optimoptions(options,'PlotFcns', {  @optimplotx @optimplotfval });
+options = optimoptions(options,'PlotFcns', {  @optimplotx @optimplotfval @optimplotfunccount });
 options = optimoptions(options,'Diagnostics', 'off');
 
 %% Run optimization
 [x,fval,exitflag,output,lambda,grad,hessian] = ...
-fmincon(optimTraj_fun,x0,[],[],[],[],LB,UB,optimTraj_cfun,options);
+fmincon(optimTraj_fun,IP,[],[],[],[],LB,UB,optimTraj_cfun,options);
 
 %% Display final results
 disp(char('',output.message)); % Display the reason why the algorithm stopped iterating

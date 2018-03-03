@@ -1,47 +1,48 @@
 function [x,fval,x_G,fval_G] = optimTraj_optimize(WP,hdngData)
 
-    % BORRAR %%%%%%%%%%%%%%%%%%%%%%%
-    xLast = []; % Last place optimFP was called
-    myf = []; % Use for objective at xLast
-
-    % Define parameters
-    funHandle = @trajApproxObjNested; % the objective function, nested below
-
-    function y = trajApproxObjNested(x)
-        if ~isequal(x,xLast) % Check if computation is necessary
-            [myf] = optimTraj_time(x,WP);
-            xLast = x;
-        end
-        % Now compute objective function
-        y = myf;
-    end
-    
-    % Enter initial parameters for Newton-Raphson optimization
-    x0 = [-70 -180 -260 -450 -500 -400 -310 -200.0... % North initial points
-        100 230 320 450 350 150 50 -150.0]; % East initial points
-
-    % Start Newton-Raphson optimization with the default options
-    options = optimoptions('fminunc');
-
-    % Modify optimization options setting
-    options = optimoptions(options,'Display', 'off');
-    options = optimoptions(options,'PlotFcns', {  @optimplotx @optimplotfval });
-    options = optimoptions(options,'Diagnostics', 'off');
-
-    % Run optimization
-    [x,fval,~,output] = fminunc(funHandle,x0,options);
-
-    % Display final results
-    disp(char('',output.message)); % Display the reason why the algorithm stopped iterating
-    disp(char('','Last point: ','',num2str(x'))); % Display solution
-    disp(char('','Last point optimized value: ','',num2str(fval),'')); % Display solution's optimized value
-    % HASTA AQUI BORRAR %%%%%%%%%%%%%%%%%%%%%%
+%     % BORRAR %%%%%%%%%%%%%%%%%%%%%%%
+%     xLast = []; % Last place optimFP was called
+%     myf = []; % Use for objective at xLast
+% 
+%     % Define parameters
+%     funHandle = @trajApproxObjNested; % the objective function, nested below
+% 
+%     function y = trajApproxObjNested(x)
+%         if ~isequal(x,xLast) % Check if computation is necessary
+%             [myf] = optimTraj_time(x,WP);
+%             xLast = x;
+%         end
+%         % Now compute objective function
+%         y = myf;
+%     end
+%     
+%     % Enter initial parameters for Newton-Raphson optimization
+%     x0 = [-70 -180 -260 -450 -500 -400 -310 -200.0... % North initial points
+%         100 230 320 450 350 150 50 -150.0]; % East initial points
+% 
+%     % Start Newton-Raphson optimization with the default options
+%     options = optimoptions('fminunc');
+% 
+%     % Modify optimization options setting
+%     options = optimoptions(options,'Display', 'off');
+%     options = optimoptions(options,'PlotFcns', {  @optimplotx @optimplotfval });
+%     options = optimoptions(options,'Diagnostics', 'off');
+% 
+%     % Run optimization
+%     [x,fval,~,output] = fminunc(funHandle,x0,options);
+% 
+%     % Display final results
+%     disp(char('',output.message)); % Display the reason why the algorithm stopped iterating
+%     disp(char('','Last point: ','',num2str(x'))); % Display solution
+%     disp(char('','Last point optimized value: ','',num2str(fval),'')); % Display solution's optimized value
+%     % HASTA AQUI BORRAR %%%%%%%%%%%%%%%%%%%%%%
 
 %     % Perform initial optimization using a genetic algorithm
 %     [x_G,fval_G,~,~,~,~] = optimTraj_genetic(WP,hdngData);
 %     
-%     % Perform final optimization using gradient-descent
-%     [x,fval,~,~,~,~,~] = optimTraj_newton(x_G,WP,hdngData);
+    x_G = 0; %borrar
+    % Perform final optimization using gradient-descent
+    [x,fval,~,~,~,~,~] = optimTraj_fmincon(x_G,WP,hdngData);
     
     % Show optimization results
     automaticFGlaunchIsActivated = 0;
