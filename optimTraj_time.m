@@ -72,7 +72,7 @@ Cd0_ydata = convforce([0.06 1.5 0.036 0.028 0.036 1.5 0.06],'lbf','N');
 % Initial conditions
 V_old(1) = 92.95;
 alpha_old(1) = 0.1;
-T = 5000;
+T = 11000;
 
 % Call dynamic_model
 for i = 1:N-1
@@ -103,6 +103,37 @@ end
 
 total_time = sum(time);
 
+% Real time plotting
+persistent init
+if isempty(init)
+    % 3D Graphical representation
+    f1 = figure('Visible','Off'); % Create and then hide figure as it is being constructed.
+    movegui(f1,'northwest') % Move the GUI to the center of the screen.
+    hold on
+    WP_ax = scatter3(WP.north,WP.east,WP.up,9,'b','filled');
+    traj_ax = plot3(smooth_north,smooth_east,smooth_up);
+    hold off
+    grid
+    title('Trajectory approximation')
+    [~,~] = legend('Original points'); % "[~,~]=" prevents the bug in R2015b (https://www.mathworks.com/support/bugreports/1283854)
+    axis equal
+    axis vis3d % Lock aspect ratio of axes
+    view(-45,45); % Azimuth and elevation of initial view (degrees)
+    xlabel('North')
+    ylabel('East')
+    zlabel('Up')
+    f1.Visible = 'on';
+    init = 1;
+end
+WP_ax.XData = WP.north;
+WP_ax.YData = WP.east;
+WP_ax.ZData = WP.up;
+traj_ax.XData = smooth_north;
+traj_ax.YData = smooth_east;
+traj_ax.ZData = smooth_up;
+drawnow
+
+    
 %% Function outputs
 myf = total_time; % Value to minimize
 myc = [max_lat_G-max_lat_G_limit]; % if >0 params are not a valid solution
