@@ -36,7 +36,8 @@ optimTraj_cfun = @optimTraj_constr; % the constraint function, nested below
 
 %% Set options for pattern search
 options = psoptimset('Display','iter','PlotFcn',@psplotbestf,...
-    'UseParallel', true, 'CompletePoll', 'on');
+    'UseParallel', true, 'CompletePoll', 'on','CompleteSearch','on',...
+    'SearchMethod',@searchlhs);
 
 %% Open up MATLAB Pool
 poolObj = parpool;
