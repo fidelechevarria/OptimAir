@@ -39,7 +39,8 @@ options = optimoptions('fmincon');
 
 %% Modify optimization options setting
 options = optimoptions(options,'Display', 'off');
-options = optimoptions(options,'PlotFcns', {  @optimplotx @optimplotfval @optimplotfunccount });
+options = optimoptions(options,'PlotFcns', {  @optimplotx @optimplotfval...
+    @optimplotfunccount @optimTraj_customPlotFcn });
 options = optimoptions(options,'Diagnostics', 'off');
 
 %% Run optimization
