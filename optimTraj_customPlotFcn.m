@@ -49,7 +49,6 @@ switch state
                 new_east(i) = params(k+numOfWaypoints-1);
             end
         end
-        tic
         new_up = 20*ones(1,new_size);
         % Spline generation along way-point sequence
         N = 250; % Number of uniformly distributed points along the curve parameter
@@ -71,7 +70,7 @@ switch state
             set(WP_all_ax,'Tag','WP_all_ax_tag');
             hold off
             grid
-            title('Trajectory approximation')
+            title(['Evaluations: ' num2str(optimValues.funccount)])
             axis equal
             axis vis3d % Lock aspect ratio of axes
             %view(-45,45); % Azimuth and elevation of initial view (degrees)
@@ -82,6 +81,6 @@ switch state
             % Not the zeroth iteration
             set(WP_all_ax,'XData',new_north,'YData',new_east,'ZData',new_up);
             set(traj_ax,'XData',smooth_north,'YData',smooth_east,'ZData',smooth_up);
+            title(['Function Evaluations: ' num2str(optimValues.funccount)])
         end
-        toc
 end
