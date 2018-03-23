@@ -1,4 +1,4 @@
-function stop = optimplotfunccount(~,optimValues,state,varargin)
+function stop = optimTraj_customPlotFcn(params,optimValues,state,~,WP)
 % OPTIMPLOTFUNCCOUNT Plot number of function evaluations at each iteration.
 %
 %   STOP = OPTIMPLOTFUNCCOUNT(X,OPTIMVALUES,STATE) plots the value in
@@ -15,16 +15,52 @@ function stop = optimplotfunccount(~,optimValues,state,varargin)
 %   Copyright 2006-2010 The MathWorks, Inc.
 
 stop = false;
+traj_ax = findobj(get(gca,'Children'),'Tag','traj_ax_tag');
 switch state
+    case 'init'
+        % clean up plot from a previous run, if any
+%         if ~isempty(WP_ax)
+%             delete(WP_ax);
+%         end
+        if ~isempty(traj_ax)
+            delete(traj_ax);
+        end
     case 'iter'
+        % Obtain new way-point sequence
+        [numOfWaypoints,~] = size(WP.north);
+        j = 0;
+        k = 0;
+        new_size = (2*numOfWaypoints)-1;
+        new_north = zeros(1,new_size);
+        new_east = zeros(1,new_size);
+        for i = 1:new_size
+            if mod(i,2) == 1
+                j = j + 1;
+                new_north(i) = WP.north(j);
+                new_east(i) = WP.east(j);
+            else
+                k = k + 1;
+                new_north(i) = params(k);
+                new_east(i) = params(k+numOfWaypoints-1);
+            end
+        end
+        new_up = 20*ones(1,new_size);
+        % Spline generation along way-point sequence
+        N = 250; % Number of uniformly distributed points along the curve parameter
+        smoothTraj = cscvn([new_north;new_east;new_up]);
+        space = linspace(smoothTraj.breaks(1),smoothTraj.breaks(end),N);
+        smooth = fnval(smoothTraj,space);
+        smooth_north = smooth(1,:)';
+        smooth_east = smooth(2,:)';
+        smooth_up = smooth(3,:)';
         if optimValues.iteration == 0
             % The 'iter' case is  called during the zeroth iteration,
             % but it has values that were empty during the 'init' case
-            f1 = figure('Visible','Off'); % Create and then hide figure as it is being constructed.
-            movegui(f1,'northwest') % Move the GUI to the center of the screen.
             hold on
             WP_ax = scatter3(WP.north,WP.east,WP.up,9,'b','filled');
             traj_ax = plot3(smooth_north,smooth_east,smooth_up);
+            set(WP_ax,'Tag','WP_ax_tag');
+            set(traj_ax,'Tag','traj_ax_tag');
             hold off
             grid
             title('Trajectory approximation')
@@ -35,14 +71,8 @@ switch state
             xlabel('North')
             ylabel('East')
             zlabel('Up')
-            f1.Visible = 'on';
         else
             % Not the zeroth iteration
-            WP_ax.XData = WP.north;
-            WP_ax.YData = WP.east;
-            WP_ax.ZData = WP.up;
-            traj_ax.XData = smooth_north;
-            traj_ax.YData = smooth_east;
-            traj_ax.ZData = smooth_up;
+            set(traj_ax,'XData',smooth_north,'YData',smooth_east,'ZData',smooth_up);
         end
 end

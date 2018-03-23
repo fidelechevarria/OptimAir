@@ -34,13 +34,17 @@ optimTraj_cfun = @optimTraj_constr; % the constraint function, nested below
         ceq = myceq;
     end
 
+    function stop = optimTraj_plot(x,optimValues,state,varargin) % custom plot function
+        stop = optimTraj_customPlotFcn(x,optimValues,state,varargin,WP);
+    end
+
 %% Start Newton-Raphson optimization with the default options
 options = optimoptions('fmincon');
 
 %% Modify optimization options setting
 options = optimoptions(options,'Display', 'off');
 options = optimoptions(options,'PlotFcns', {  @optimplotx @optimplotfval...
-    @optimplotfunccount @optimTraj_customPlotFcn });
+    @optimplotfunccount @optimTraj_plot });
 options = optimoptions(options,'Diagnostics', 'off');
 
 %% Run optimization
