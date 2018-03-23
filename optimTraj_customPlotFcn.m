@@ -15,15 +15,20 @@ function stop = optimTraj_customPlotFcn(params,optimValues,state,~,WP)
 %   Copyright 2006-2010 The MathWorks, Inc.
 
 stop = false;
+WP_ax = findobj(get(gca,'Children'),'Tag','WP_ax_tag');
 traj_ax = findobj(get(gca,'Children'),'Tag','traj_ax_tag');
+WP_all_ax = findobj(get(gca,'Children'),'Tag','WP_all_ax_tag');
 switch state
     case 'init'
         % clean up plot from a previous run, if any
-%         if ~isempty(WP_ax)
-%             delete(WP_ax);
-%         end
+        if ~isempty(WP_ax)
+            delete(WP_ax);
+        end
         if ~isempty(traj_ax)
             delete(traj_ax);
+        end
+        if ~isempty(WP_all_ax)
+            delete(WP_all_ax);
         end
     case 'iter'
         % Obtain new way-point sequence
@@ -44,6 +49,7 @@ switch state
                 new_east(i) = params(k+numOfWaypoints-1);
             end
         end
+        tic
         new_up = 20*ones(1,new_size);
         % Spline generation along way-point sequence
         N = 250; % Number of uniformly distributed points along the curve parameter
@@ -57,22 +63,25 @@ switch state
             % The 'iter' case is  called during the zeroth iteration,
             % but it has values that were empty during the 'init' case
             hold on
-            WP_ax = scatter3(WP.north,WP.east,WP.up,9,'b','filled');
+            WP_all_ax = scatter3(new_north,new_east,new_up,9,'r','filled');
+            WP_fixed_ax = scatter3(WP.north,WP.east,WP.up,9,'b','filled');
             traj_ax = plot3(smooth_north,smooth_east,smooth_up);
-            set(WP_ax,'Tag','WP_ax_tag');
+            set(WP_fixed_ax,'Tag','WP_ax_tag');
             set(traj_ax,'Tag','traj_ax_tag');
+            set(WP_all_ax,'Tag','WP_all_ax_tag');
             hold off
             grid
             title('Trajectory approximation')
-            [~,~] = legend('Original points'); % "[~,~]=" prevents the bug in R2015b (https://www.mathworks.com/support/bugreports/1283854)
             axis equal
             axis vis3d % Lock aspect ratio of axes
-            view(-45,45); % Azimuth and elevation of initial view (degrees)
+            %view(-45,45); % Azimuth and elevation of initial view (degrees)
             xlabel('North')
             ylabel('East')
-            zlabel('Up')
+            %zlabel('Up')
         else
             % Not the zeroth iteration
+            set(WP_all_ax,'XData',new_north,'YData',new_east,'ZData',new_up);
             set(traj_ax,'XData',smooth_north,'YData',smooth_east,'ZData',smooth_up);
         end
+        toc
 end
