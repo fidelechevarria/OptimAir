@@ -71,7 +71,7 @@ switch state
             hold off
             grid
             title(['Total time ' num2str(optimValues.fval)...
-                ' s (' num2str(optimValues.funccount) ' function evaluations)'])
+                's (' num2str(optimValues.funccount) ' function evaluations)'])
             axis equal
             axis vis3d % Lock aspect ratio of axes
             view(-45,30); % Azimuth and elevation of initial view (degrees)
@@ -83,6 +83,6 @@ switch state
             set(WP_all_ax,'XData',new_north,'YData',new_east,'ZData',new_up);
             set(traj_ax,'XData',smooth_north,'YData',smooth_east,'ZData',smooth_up);
             title(['Total time ' num2str(optimValues.fval)...
-                ' s (' num2str(optimValues.funccount) ' function evaluations)'])
+                's (' num2str(optimValues.funccount) ' function evaluations)'])
         end
 end
