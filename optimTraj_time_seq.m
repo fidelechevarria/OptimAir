@@ -1,5 +1,5 @@
 
-function [myf,myc,myceq] = optimTraj_time(params,WP)
+function [myf,myc,myceq] = optimTraj_time_seq(IP_seq,IP,WP,index)
 tic
 %% Obtain new way-point sequence
 [numOfWaypoints,~] = size(WP.north);
@@ -9,14 +9,18 @@ new_size = (2*numOfWaypoints)-1;
 new_north = zeros(1,new_size);
 new_east = zeros(1,new_size);
 for i = 1:new_size
-    if mod(i,2) == 1
+    if i == 2*index
+        k = k + 1;
+        new_north(i) = IP_seq(1);
+        new_east(i) = IP_seq(2);
+    elseif mod(i,2) == 1
         j = j + 1;
         new_north(i) = WP.north(j);
         new_east(i) = WP.east(j);
     else
         k = k + 1;
-        new_north(i) = params(k);
-        new_east(i) = params(k+numOfWaypoints-1);
+        new_north(i) = IP(k);
+        new_east(i) = IP(k+numOfWaypoints-1);
     end
 end
 new_up = 20*ones(1,new_size);

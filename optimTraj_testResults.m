@@ -1,8 +1,11 @@
 close all
 clearvars
 
-IP = [-70 -160 -260 -480 -514 -366 -314 -200.0... % North initial points
-            100 240 320 550 344 136 8 -150.0];   % East initial poits
+IP = [-71.86719 -188 -258.127 -450 -588 -390.543 -309.125 -216.9844... % North initial points
+      120 261.9375 320 530 358.0313 180.6445 -6.28125 -149.0313]'; % East initial poits
+
+% IP = [-70 -160 -260 -480 -514 -366 -314 -200.0... % North initial points
+%             100 240 320 550 344 136 8 -150.0];   % East initial poits
 
 WP.north = [0
     -128.918283625363
