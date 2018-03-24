@@ -72,7 +72,7 @@ Cd0_ydata = convforce([0.06 1.5 0.036 0.028 0.036 1.5 0.06],'lbf','N');
 % Initial conditions
 V_old(1) = 92.95;
 alpha_old(1) = 0.1;
-T = 11000;
+T = 10000;
 
 % Call dynamic_model
 for i = 1:N-1
