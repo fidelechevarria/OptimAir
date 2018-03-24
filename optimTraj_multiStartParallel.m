@@ -54,7 +54,7 @@ ms.UseParallel = 'always';
 poolObj = parpool;
 
 %% Run the optimization
-[x,fval,exitflag,output,solutions] = run(ms, problem, 64);
+[x,fval,exitflag,output,solutions] = run(ms, problem, 10);
 
 %% Close the MATLAB Pool
 delete(poolObj);
