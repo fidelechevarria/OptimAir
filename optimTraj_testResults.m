@@ -1,3 +1,6 @@
+close all
+clearvars
+
 IP = [-70 -160 -260 -480 -514 -366 -314 -200.0... % North initial points
             100 240 320 550 344 136 8 -150.0];   % East initial poits
 
