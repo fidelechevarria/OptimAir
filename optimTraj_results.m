@@ -153,11 +153,22 @@ title('Lateral G''s')
 xlabel('Evaluation point')
 ylabel('Lateral acceleration [m*s^-2]')
 
+f5 = figure('Visible','Off'); % Create and then hide figure as it is being constructed.
+movegui(f5,'north') % Move the GUI
+hold on
+plot(rad2deg(phi))
+hold off
+grid
+title('Roll angle')
+xlabel('Evaluation point')
+ylabel('Roll [º]')
+
 % Make figures visible.
 f1.Visible = 'on';
 f2.Visible = 'on';
 f3.Visible = 'on';
 f4.Visible = 'on';
+f5.Visible = 'on';
 
 %% FlightGear interface
 
