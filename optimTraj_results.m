@@ -76,7 +76,7 @@ Cd0_ydata = convforce([0.06 1.5 0.036 0.028 0.036 1.5 0.06],'lbf','N');
 % Initial conditions
 V_old(1) = 92.95;
 alpha_old(1) = 0.1;
-T = 5000;
+T = 10000;
 
 % Call dynamic_model
 for i = 1:N-1
@@ -113,11 +113,11 @@ scatter3(WP.north,WP.east,WP.up,9,'b','filled')
 plot3(smooth_north,smooth_east,smooth_up)
 hold off
 grid
-title('Trajectory approximation')
-[~,~] = legend('Original points'); % "[~,~]=" prevents the bug in R2015b (https://www.mathworks.com/support/bugreports/1283854)
+title(['Total time ' num2str(total_time) 's'])
+% [~,~] = legend('Original points'); % "[~,~]=" prevents the bug in R2015b (https://www.mathworks.com/support/bugreports/1283854)
 axis equal
 axis vis3d % Lock aspect ratio of axes
-view(-45,45); % Azimuth and elevation of initial view (degrees)
+% view(-45,45); % Azimuth and elevation of initial view (degrees)
 xlabel('North')
 ylabel('East')
 zlabel('Up')
