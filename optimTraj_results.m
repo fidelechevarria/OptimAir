@@ -43,15 +43,25 @@ for i = 1:N-1
                   (smooth_up(i+1)-smooth_up(i)).^2);
 end
 
-%% Compute curvature
-curvature = optimTraj_ppcurv(smoothTraj,N);
-abs_curvature = abs(curvature);
+%% Compute heading and pitch Euler angles
+pitch = zeros(1,N-1);
+heading = zeros(1,N-1);
+for i = 1:N-1
+    horiz_dist = sqrt((smooth_north(i+1)-smooth_north(i))^2 +...
+                      (smooth_east(i+1)-smooth_east(i))^2);
+    pitch(i) = atan2(smooth_up(i+1)-smooth_up(i),horiz_dist);
+    heading(i) = atan2(smooth_north(i+1)-smooth_north(i),...
+                              smooth_east(i+1)-smooth_east(i));
+end
+
+%% Eliminate steps in Euler angles
+pitch_new = optimTraj_eliminateSteps(pitch);
+heading_new = optimTraj_eliminateSteps(heading);
 
 %% Time computation using dynamic model
 V_old = zeros(N,1);
-V_med = zeros(N,1);
 V_new = zeros(N,1);
-phi = zeros(N,1);
+roll = zeros(N,1);
 L = zeros(N,1);
 D = zeros(N,1);
 alpha = zeros(N,1);
@@ -59,6 +69,14 @@ alpha_old = zeros(N,1);
 lat_G = zeros(N,1);
 Clalpha = zeros(N,1);
 Cd0 = zeros(N,1);
+timestep = zeros(N,1);
+Qd = zeros(N,1);
+Cl = zeros(N,1);
+Cd = zeros(N,1);
+pitch_dot = zeros(N-1,1);
+heading_dot = zeros(N-1,1);
+vert_curv = zeros(N-1,1);
+horiz_curv = zeros(N-1,1);
 
 % Constant parameters
 rho = 1.225;
@@ -78,26 +96,31 @@ V_old(1) = 92.95;
 alpha_old(1) = 0.1;
 T = 10000;
 
-% Call dynamic_model
-for i = 1:N-1
+% Dynamic_model
+for i = 1:N-2
+    timestep(i) = arc(i)/V_old(i);
+    pitch_dot(i) = (pitch_new(i+1)-pitch_new(i))/timestep(i);
+    heading_dot(i) = (heading_new(i+1)-heading_new(i))/timestep(i);
+    vert_curv(i) = pitch_dot(i)/V_old(i);
+    horiz_curv(i) = heading_dot(i)/V_old(i);
+    Qd(i) = 0.5*rho*V_old(i)^2;
     Clalpha(i) = fixpt_interp1(Clalpha_xdata,Clalpha_ydata,alpha_old(i),ufix(8),2^-8,sfix(16),2^-14,'Floor');
     Cd0(i) = fixpt_interp1(Cd0_xdata,Cd0_ydata,alpha_old(i),ufix(8),2^-8,sfix(16),2^-14,'Floor');
-    V_med(i) = optimTraj_model2D(V_old(i),arc(i),T,abs_curvature(i),Cd0(i),rho,S,K,m,g);
-    V_new(i) = max(2*(V_med(i)-V_old(i))+V_old(i),1);
-    phi(i) = acos(1/sqrt(V_new(i)^2*curvature(i)/g+1));
-    Cl(i) = m*g/(0.5*rho*S*V_new(i)^2*cos(phi(i)));
-    Cd(i) = Cd0(i) + K*Cl(i)^2;
-    L(i) = 0.5*rho*V_new(i)^2*S*Cl(i);
-    D(i) = 0.5*rho*V_new(i)^2*S*Cd(i);
+    roll(i) = atan2(V_old(i)^2*horiz_curv(i),g);
+    L(i) = m*(g*cos(roll(i))+V_old(i)^2*horiz_curv(i)*sin(roll(i)));
+    Cl(i) = L(i)/(Qd(i)*S);
+    D(i) = Qd(i)*S*(Cd0(i)+K*Cl(i)^2);
+    Cd(i) = D(i)/(Qd(i)*S);
+    V_new(i) = V_old(i)+timestep(i)*((T-D(i))/m);
     alpha(i) = Cl(i)/Clalpha(i); % Cl0 considered zero
-    lat_G(i) = (V_new(i)^2*curvature(i))/9.8056;
+    lat_G(i) = (V_new(i)^2*horiz_curv(i))/9.8056;
     V_old(i+1) = V_new(i);
     alpha_old(i+1) = alpha(i);
 end
 
 % Compute total time
 time = zeros(N,1);
-for i = 1:N-1
+for i = 1:N-2
     time(i) = arc(i)/V_new(i);
 end
 
@@ -126,7 +149,7 @@ zlabel('Up')
 f2 = figure('Visible','Off'); % Create and then hide figure as it is being constructed.
 movegui(f2,'northeast') % Move the GUI
 hold on
-plot(curvature)
+plot(horiz_curv)
 hold off
 grid
 title('Trajectory curvature')
@@ -156,12 +179,32 @@ ylabel('Lateral acceleration [m*s^-2]')
 f5 = figure('Visible','Off'); % Create and then hide figure as it is being constructed.
 movegui(f5,'north') % Move the GUI
 hold on
-plot(rad2deg(phi))
+plot(rad2deg(roll))
 hold off
 grid
 title('Roll angle')
 xlabel('Evaluation point')
 ylabel('Roll [º]')
+
+f6 = figure('Visible','Off'); % Create and then hide figure as it is being constructed.
+movegui(f6,'east') % Move the GUI
+hold on
+plot(rad2deg(pitch_new))
+hold off
+grid
+title('Pitch angle')
+xlabel('Evaluation point')
+ylabel('Pitch [º]')
+
+f7 = figure('Visible','Off'); % Create and then hide figure as it is being constructed.
+movegui(f7,'south') % Move the GUI
+hold on
+plot(rad2deg(heading_new))
+hold off
+grid
+title('Yaw angle')
+xlabel('Evaluation point')
+ylabel('Yaw [º]')
 
 % Make figures visible.
 f1.Visible = 'on';
@@ -169,6 +212,8 @@ f2.Visible = 'on';
 f3.Visible = 'on';
 f4.Visible = 'on';
 f5.Visible = 'on';
+f6.Visible = 'on';
+f7.Visible = 'on';
 
 %% FlightGear interface
 
