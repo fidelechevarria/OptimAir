@@ -70,8 +70,8 @@ switch state
             set(WP_all_ax,'Tag','WP_all_ax_tag');
             hold off
             grid
-            title(['Objective value ' num2str(optimValues.fval)...
-                ' (' num2str(optimValues.funccount) ' function evaluations)'])
+            title(['Total time ' num2str(optimValues.fval)...
+                ' s (' num2str(optimValues.funccount) ' function evaluations)'])
             axis equal
             axis vis3d % Lock aspect ratio of axes
             view(-45,30); % Azimuth and elevation of initial view (degrees)
@@ -82,7 +82,7 @@ switch state
             % Not the zeroth iteration
             set(WP_all_ax,'XData',new_north,'YData',new_east,'ZData',new_up);
             set(traj_ax,'XData',smooth_north,'YData',smooth_east,'ZData',smooth_up);
-            title(['Objective value ' num2str(optimValues.fval)...
-                ' (' num2str(optimValues.funccount) ' function evaluations)'])
+            title(['Total time ' num2str(optimValues.fval)...
+                ' s (' num2str(optimValues.funccount) ' function evaluations)'])
         end
 end
