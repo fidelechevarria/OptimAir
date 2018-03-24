@@ -6,8 +6,8 @@ myc = []; % Use for nonlinear inequality constraint
 myceq = []; % Use for nonlinear equality constraint
 
 %% Define parameters
-IP = [-70 -180 -260 -450 -500 -400 -310 -200.0... % North initial points
-            100 230 320 450 350 150 50 -150.0];   % East initial points
+IP = [-70 -160 -260 -480 -514 -366 -314 -200.0... % North initial points
+            100 240 320 550 344 136 8 -150.0];   % East initial poits
 margin = 250*ones(1,16);
 LB = IP - margin;
 UB = IP + margin;
