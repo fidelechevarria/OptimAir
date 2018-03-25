@@ -70,6 +70,11 @@ function optimTraj
                  hObject.Data{r,c} = 'D';
              end
         end
+    uicontrol('Parent',f,...
+         'Units','pixels',...
+         'Position',[420 15 70 25],...
+         'String','Optimize FP',...
+         'Callback',@optimize_Callback);
     uicontrol('Parent',tab1,...
          'Units','pixels',...
          'Position',[15 107 55 25],...
@@ -85,15 +90,16 @@ function optimTraj
          'Position',[135 107 55 25],...
          'String','Clear FP',...
          'Callback',@clearFP_Callback);
-    uicontrol('Parent',f,...
+    
+    ita_panel = uipanel('Parent',tab2,'Title','Initial Trajectory Assistant',...
+              'Position',[.02 .7 .5 .29]);
+    
+    uicontrol('Parent',ita_panel,...
          'Units','pixels',...
-         'Position',[420 15 70 25],...
-         'String','Optimize FP',...
-         'Callback',@optimize_Callback);
-             
-    
-    
-    
+         'Position',[15 20 55 25],...
+         'String',['Launch'],...
+         'Callback',@launchITA);
+ 
              
     %% Initialize GUI
     
@@ -104,6 +110,17 @@ function optimTraj
     f.Visible = 'on';
 
     %% Callbacks
+    
+    function optimize_Callback(~,~)
+        wpData = WP_table.Data;
+        llaData = wpData(1:end,1:6);
+        hdngData = str2double(wpData(1:end,7)');
+        segmentTypeData = double(cell2mat(wpData(1:end,9)));
+        [north, east, up] = optimTraj_lla2flat(llaData);
+        WP = struct('north', north, 'east', -east, 'up', up, 'segment_type', segmentTypeData);
+        % Optimize trajectory
+        optimTraj_optimize(WP,hdngData);
+    end
     
     function NWP_Callback(Object,~)
         NWP = get(Object,'Value');
@@ -160,15 +177,14 @@ function optimTraj
         WP_table.Data = emptyDataCellGroup;
     end
 
-    function optimize_Callback(~,~)
+    function launchITA(~,~)
         wpData = WP_table.Data;
         llaData = wpData(1:end,1:6);
         hdngData = str2double(wpData(1:end,7)');
         segmentTypeData = double(cell2mat(wpData(1:end,9)));
         [north, east, up] = optimTraj_lla2flat(llaData);
         WP = struct('north', north, 'east', -east, 'up', up, 'segment_type', segmentTypeData);
-        % Optimize trajectory
-        optimTraj_optimize(WP,hdngData);
+        optimTraj_ITA(WP);
     end
     
 end
