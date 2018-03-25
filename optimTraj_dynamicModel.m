@@ -83,17 +83,17 @@ function [ propagatedState ] = optimTraj_dynamicModel( smooth_north, smooth_east
         V_old(i+1) = V_new(i);
         alpha_old(i+1) = alpha(i);
     end
-    
-    propagatedState.total_time = sum(timestep);
-    propagatedState.cum_time = cumsum(timestep);
-    propagatedState.timestep = timestep;
-    propagatedState.pitch_dot = pitch_dot;
-    propagatedState.heading_dot = heading_dot;
-    propagatedState.pitch_new = pitch_new;
-    propagatedState.heading_new = heading_new;
+        
+    propagatedState.totalTime = sum(timestep);
+    propagatedState.cumulativeTime = cumsum(timestep);
+    propagatedState.timeSteps = timestep;
+    propagatedState.pitchRate = pitch_dot;
+    propagatedState.headingRate = heading_dot;
+    propagatedState.pitchWithoutSteps = pitch_new;
+    propagatedState.headingWithoutSteps = heading_new;
     propagatedState.pitch = pitch;
     propagatedState.heading = heading;
-    propagatedState.Qd = Qd;
+    propagatedState.dynamicPressure = Qd;
     propagatedState.Clalpha = Clalpha;
     propagatedState.Cd0 = Cd0;
     propagatedState.roll = roll;
@@ -101,12 +101,10 @@ function [ propagatedState ] = optimTraj_dynamicModel( smooth_north, smooth_east
     propagatedState.Cl = Cl;
     propagatedState.D = D;
     propagatedState.Cd = Cd;
-    propagatedState.V_new = V_new;
-    propagatedState.alpha = alpha;
-    propagatedState.lat_G = lat_G;
-    propagatedState.V_old = V_old;
-    propagatedState.alpha_old = alpha_old;
-    propagatedState.arc = arc;
+    propagatedState.velocity = V_new;
+    propagatedState.angleOfAttack = alpha;
+    propagatedState.lateralGForce = lat_G;
+    propagatedState.TrajectoryArcLengths = arc;
 
 end
 
