@@ -4,15 +4,27 @@ function optimTraj_results(params,WP,automaticFGlaunchIsActivated)
 [numOfWaypoints,~] = size(WP.north);
 j = 0;
 k = 0;
-new_size = (2*numOfWaypoints)-1;
+m = 0;
+WP_types = 1;
+for i = 1:numOfWaypoints
+    m = m+1;
+    if i == numOfWaypoints
+        % Do nothing
+    elseif WP.segment_type(m) == 0
+        WP_types = [WP_types 0 1];
+    elseif WP.segment_type(m) == 1
+        WP_types = [WP_types 0 0 0 1];
+    end
+end
+new_size = numel(WP_types);
 new_north = zeros(1,new_size);
 new_east = zeros(1,new_size);
 for i = 1:new_size
-    if mod(i,2) == 1
+    if WP_types(i) == 1
         j = j + 1;
         new_north(i) = WP.north(j);
         new_east(i) = WP.east(j);
-    else
+    elseif WP_types(i) == 0
         k = k + 1;
         new_north(i) = params(k);
         new_east(i) = params(k+numOfWaypoints-1);
@@ -30,12 +42,13 @@ smooth_east = smooth(2,:)';
 smooth_up = smooth(3,:)';
 
 %% Calculate cumulative number of control points for each segment
-parametrizedStep = (smoothTraj.breaks(end)-smoothTraj.breaks(1))/N;
-WP_location = [];
+WP_index = [];
 for i = 1:numel(smoothTraj.breaks)
-    [value index] = min(abs(space-smoothTraj.breaks(i)));
-    WP_location = [WP_location index];
+    [~,index] = min(abs(space-smoothTraj.breaks(i)));
+    WP_index = [WP_index index];
 end
+WP_info.index = WP_index;
+WP_info.types = WP_types;
 
 %% Time computation using dynamic model
 propagatedState = optimTraj_dynamicModel(smooth_north,smooth_east,smooth_up);
@@ -60,7 +73,7 @@ ylabel('East')
 zlabel('Up')
 
 % 2D Graphical representation
-optimTraj_plotStates(propagatedState,WP_location);
+optimTraj_plotStates(propagatedState,WP_info);
 
 % Make figure visible.
 f1.Visible = 'on';

@@ -36,6 +36,16 @@ WP.up = [20
          20
          20
          20];
+     
+WP.segment_type = [0
+                   0
+                   0
+                   0
+                   0
+                   0
+                   0
+                   0
+                   0];
 
 optimTraj_results(IP,WP,0)
 

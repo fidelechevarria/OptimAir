@@ -34,11 +34,11 @@ smooth_up = smooth(3,:)';
 propagatedState = optimTraj_dynamicModel(smooth_north,smooth_east,smooth_up);
 
 % Constraints
-max_lat_G = max(propagatedState.lat_G);
+max_lat_G = max(propagatedState.lateralGForce);
 max_lat_G_limit = 10; % Maximum lateral acceleration in G's
     
 %% Function outputs
-myf = propagatedState.total_time; % Value to minimize
+myf = propagatedState.totalTime; % Value to minimize
 myc = [max_lat_G-max_lat_G_limit]; % if >0 params are not a valid solution
 myceq = [ ]; % if =0 params are not a valid solution
 toc

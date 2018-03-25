@@ -30,10 +30,11 @@ function optimTraj
     %% Construct GUI components.
     
     % Create a tab group
-    tabgp = uitabgroup(gcf,'Position',[.01 .01 .98 .98]);
+    tabgp = uitabgroup(gcf,'Position',[.01 .1 .98 .89]);
     tab1 = uitab(tabgp,'Title','Flight Plan');
-    tab2 = uitab(tabgp,'Title','Dynamic Model');
-    tab3 = uitab(tabgp,'Title','Options');
+    tab2 = uitab(tabgp,'Title','Initial Conditions');
+    tab3 = uitab(tabgp,'Title','Dynamic Model');
+    tab4 = uitab(tabgp,'Title','Options');
     
     % Flight Plan tab
     NWP_popup = uicontrol('Style', 'popup',...
@@ -84,9 +85,9 @@ function optimTraj
          'Position',[135 107 55 25],...
          'String','Clear FP',...
          'Callback',@clearFP_Callback);
-    uicontrol('Parent',tab1,...
+    uicontrol('Parent',f,...
          'Units','pixels',...
-         'Position',[260 107 70 25],...
+         'Position',[420 15 70 25],...
          'String','Optimize FP',...
          'Callback',@optimize_Callback);
              
@@ -163,29 +164,9 @@ function optimTraj
         wpData = WP_table.Data;
         llaData = wpData(1:end,1:6);
         hdngData = str2double(wpData(1:end,7)');
-        % Convert from geodetic latitude, longitude, and altitude to flat Earth position
-        format long g
-        ellipsoidModel = 'WGS84';
-        [NWP,~] = size(llaData);
-        lat_DMS = cell(1,NWP);
-        lon_DMS = cell(1,NWP);
-        lat = cell(1,NWP);
-        lon = cell(1,NWP);
-        flat = cell(1,NWP);
-        north = [];
-        east = [];
-        up = [];
-        for i = 1:NWP
-            lat_DMS{1,i} = [str2double(llaData{i,1}) str2double(llaData{i,2}) str2double(llaData{i,3})];
-            lon_DMS{1,i} = [str2double(llaData{i,4}) str2double(llaData{i,5}) str2double(llaData{i,6})];
-            lat{1,i} =  dms2degrees(lat_DMS{1,i});
-            lon{1,i} =  dms2degrees(lon_DMS{1,i});
-            flat{1,i} = lla2flat([lat{1,i} lon{1,i} 20],[lat{1,1} lon{1,1}],0,0,ellipsoidModel);
-            north = [north ; flat{1,i}(1)];
-            east = [east ; flat{1,i}(2)];
-            up = [up ; -flat{1,i}(3)];
-        end
-        WP = struct('north', north, 'east', -east, 'up', up);
+        segmentTypeData = double(cell2mat(wpData(1:end,9)));
+        [north, east, up] = optimTraj_lla2flat(llaData);
+        WP = struct('north', north, 'east', -east, 'up', up, 'segment_type', segmentTypeData);
         % Optimize trajectory
         optimTraj_optimize(WP,hdngData);
     end
