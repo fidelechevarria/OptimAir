@@ -70,8 +70,6 @@ Cl = zeros(N,1);
 Cd = zeros(N,1);
 pitch_dot = zeros(N-1,1);
 heading_dot = zeros(N-1,1);
-vert_curv = zeros(N-1,1);
-horiz_curv = zeros(N-1,1);
 
 % Constant parameters
 rho = 1.225;
@@ -96,19 +94,17 @@ for i = 1:N-2
     timestep(i) = arc(i)/V_old(i);
     pitch_dot(i) = (pitch_new(i+1)-pitch_new(i))/timestep(i);
     heading_dot(i) = (heading_new(i+1)-heading_new(i))/timestep(i);
-    vert_curv(i) = pitch_dot(i)/V_old(i);
-    horiz_curv(i) = heading_dot(i)/V_old(i);
     Qd(i) = 0.5*rho*V_old(i)^2;
     Clalpha(i) = fixpt_interp1(Clalpha_xdata,Clalpha_ydata,alpha_old(i),ufix(8),2^-8,sfix(16),2^-14,'Floor');
     Cd0(i) = fixpt_interp1(Cd0_xdata,Cd0_ydata,alpha_old(i),ufix(8),2^-8,sfix(16),2^-14,'Floor');
-    roll(i) = atan2(V_old(i)^2*horiz_curv(i),g);
-    L(i) = m*(g*cos(roll(i))+V_old(i)^2*horiz_curv(i)*sin(roll(i)));
+    roll(i) = atan2(V_old(i)*heading_dot(i)*cos(pitch(i)),g*cos(pitch(i))+V_old(i)*pitch_dot(i));
+    L(i) = m*g*cos(pitch(i))*cos(roll(i))+m*V_old(i)*(pitch_dot(i)*cos(roll(i))+heading_dot(i)*cos(pitch(i))*sin(roll(i)));
     Cl(i) = L(i)/(Qd(i)*S);
     D(i) = Qd(i)*S*(Cd0(i)+K*Cl(i)^2);
     Cd(i) = D(i)/(Qd(i)*S);
-    V_new(i) = V_old(i)+timestep(i)*((T-D(i))/m);
+    V_new(i) = V_old(i)+timestep(i)*((T-D(i)-m*g*sin(pitch(i)))/m);
     alpha(i) = Cl(i)/Clalpha(i); % Cl0 considered zero
-    lat_G(i) = (V_new(i)^2*horiz_curv(i))/9.8056;
+    lat_G(i) = (V_new(i)*heading_dot(i))/9.8056;
     V_old(i+1) = V_new(i);
     alpha_old(i+1) = alpha(i);
 end
