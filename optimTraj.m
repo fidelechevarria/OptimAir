@@ -36,12 +36,12 @@ function optimTraj
     tab3 = uitab(tabgp,'Title','Dynamic Model');
     tab4 = uitab(tabgp,'Title','Options');
     
-    % Flight Plan tab
     NWP_popup = uicontrol('Style', 'popup',...
            'Parent',tab1,...
            'String', {'6','7','8','9','10','11','12'},...
            'Position', [80 395 40 50],...
-           'Callback',@NWP_Callback);
+           'Callback',@NWP_Callback,...
+           'Tag','NWP_popup');
     uicontrol('Style','Text',...
            'Parent',tab1,...
            'String',{'Number of' 'Waypoints'},...
@@ -55,7 +55,8 @@ function optimTraj
         'ColumnEditable',true,...
         'Position',[13 140 460 270],...
         'ColumnWidth',{40 40 40 40 40 45 55 60 25},...
-        'CellEditCallback',@popupInTable);
+        'CellEditCallback',@popupInTable,...
+        'Tag','WP_table');
         function popupInTable(hObject,CellEditData)
              r = CellEditData.Indices(1);
              c = CellEditData.Indices(2);
@@ -90,17 +91,16 @@ function optimTraj
          'Position',[135 107 55 25],...
          'String','Clear FP',...
          'Callback',@clearFP_Callback);
-    
-    ita_panel = uipanel('Parent',tab2,'Title','Initial Trajectory Assistant',...
-              'Position',[.02 .7 .5 .29]);
-    
-    uicontrol('Parent',ita_panel,...
+    ita_panel = uipanel('Parent',tab2,...
+         'Title','Initial Trajectory Assistant',...
+         'Position',[.02 .7 .5 .29]);
+    launchITA_ = uicontrol('Parent',ita_panel,...
          'Units','pixels',...
          'Position',[15 20 55 25],...
-         'String',['Launch'],...
-         'Callback',@launchITA);
- 
-             
+         'String','Launch',...
+         'Callback',@launchITA,...
+         'Tag','launchITA');        
+    
     %% Initialize GUI
     
     
@@ -184,7 +184,65 @@ function optimTraj
         segmentTypeData = double(cell2mat(wpData(1:end,9)));
         [north, east, up] = optimTraj_lla2flat(llaData);
         WP = struct('north', north, 'east', -east, 'up', up, 'segment_type', segmentTypeData);
-        optimTraj_ITA(WP);
+        Launch_ITA(WP);
     end
     
+    % PONER EN FUNCIÓN APARTE
+    function Launch_ITA(WP)
+        ita_fig = figure('Visible','off','Resize','off','Position',[760,88,700,500]);  %  Create and then hide the UI as it is being constructed.
+        ita_fig.MenuBar = 'none'; % Deactivate Menu Bar of the figure
+        ita_fig.NumberTitle = 'off'; % Deactivate the label "Figure n" in the title bar
+        ita_fig.Name = 'Initial Trajectory Assistant'; % Assign the name to appear in the GUI title.
+        movegui(ita_fig,'northeast') % Move the GUI.
+        plot3D_ax = axes('Position',[0.1 0.25 0.7 0.7]);
+        hold on
+        plot3D = scatter3(plot3D_ax,WP.north,WP.east,WP.up,9,'b','filled')
+        hold off
+        grid
+    %     title(['Total time ' num2str(propagatedState.totalTime) 's'])
+        axis equal
+        axis vis3d % Lock aspect ratio of axes
+        view(-45,30); % Azimuth and elevation of initial view (degrees)
+        xlabel('North')
+        ylabel('East')
+        zlabel('Up')
+        set(plot3D,'Tag','plot3D_tag');
+        datacursormode(ita_fig)
+        dcm_obj = datacursormode(ita_fig);
+        set(dcm_obj,'UpdateFcn',@customCursorUpdateFcn)
+        % Standard Java JSlider (20px high if no ticks/labels, otherwise use 45px)
+        jSlider1 = javax.swing.JSlider;
+        javacomponent(jSlider1,[400,20,200,50]);
+        set(jSlider1, 'Value',84, 'MajorTickSpacing',20, 'MinorTickSpacing',5,'PaintLabels',true, 'PaintTicks',true);  % with labels, no ticks
+        hjSlider1 = handle(jSlider1, 'CallbackProperties');
+        set(hjSlider1, 'StateChangedCallback', @hjSlider1Callback);  %alternative
+        % Standard Java JSlider (20px high if no ticks/labels, otherwise use 45px)
+        jSlider2 = javax.swing.JSlider;
+        javacomponent(jSlider2,[640,20,50,200]);
+        set(jSlider2, 'Value',84, 'MajorTickSpacing',20,'Orientation',jSlider2.VERTICAL, 'MinorTickSpacing',5, 'PaintLabels',true, 'PaintTicks',true);  % with labels, no ticks
+        hjSlider2 = handle(jSlider2, 'CallbackProperties');
+        set(hjSlider2, 'StateChangedCallback', @hjSlider2Callback);  %alternative
+        ita_fig.Visible = 'on'; % Make GUI visible.
+        function output_txt = customCursorUpdateFcn(~,event_obj)
+            selectedPos = event_obj.Position; % Object containing event data structure
+            for i = 1:numel(WP.north) % Find selected Way-Point ID
+                if (WP.north(i) == selectedPos(1)) && (WP.east(i) == selectedPos(2)) && (WP.up(i) == selectedPos(3))
+                    selectedWP = i;
+                    break
+                end
+            end
+            setappdata(launchITA_,'h',selectedWP);
+            output_txt = 'Hola';   %Data cursor text
+        end
+        function hjSlider1Callback(hjSlider1,~)
+            disp(get(hjSlider1,'Value'));
+            disp(getappdata(launchITA_,'h'));
+        end
+        function hjSlider2Callback(hjSlider2,~)
+            plot3D = findobj(get(gca,'Children'),'Tag','plot3D_tag')
+            disp(get(hjSlider2,'Value'));
+    %         set(ax,'XData',[1 get(hjSlider2,'Value') 3]);
+        end
+    end
+
 end
