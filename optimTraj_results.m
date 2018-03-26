@@ -5,32 +5,33 @@ function optimTraj_results(params,WP,automaticFGlaunchIsActivated)
 j = 0;
 k = 0;
 m = 0;
-WP_types = 1;
+WP_types = 0;
 for i = 1:numOfWaypoints
     m = m+1;
     if i == numOfWaypoints
         % Do nothing
     elseif WP.segment_type(m) == 0
-        WP_types = [WP_types 0 1];
+        WP_types = [WP_types 1 0];
     elseif WP.segment_type(m) == 1
-        WP_types = [WP_types 0 0 0 1];
+        WP_types = [WP_types 1 1 1 0];
     end
 end
 new_size = numel(WP_types);
 new_north = zeros(1,new_size);
 new_east = zeros(1,new_size);
 for i = 1:new_size
-    if WP_types(i) == 1
+    if WP_types(i) == 0
         j = j + 1;
         new_north(i) = WP.north(j);
         new_east(i) = WP.east(j);
-    elseif WP_types(i) == 0
+    elseif WP_types(i) == 1
         k = k + 1;
         new_north(i) = params(k);
         new_east(i) = params(k+numOfWaypoints-1);
     end
 end
 new_up = 20*ones(1,new_size);
+new_up(4) = 20;
 
 %% Spline generation along way-point sequence
 N = 250; % Number of uniformly distributed points along the curve parameter
@@ -60,6 +61,13 @@ movegui(f1,'northwest') % Move the GUI to the center of the screen.
 hold on
 scatter3(new_north,new_east,new_up,9,'r','filled')
 scatter3(WP.north,WP.east,WP.up,9,'b','filled')
+for j = 1:numel(WP_info.types)
+    if WP_info.types(j) == 1
+        text(new_north(j),new_east(j),new_up(j),num2str(j-1),'Color','r','VerticalAlignment','bottom')
+    else
+        text(new_north(j),new_east(j),new_up(j),num2str(j-1),'Color','b','VerticalAlignment','bottom')
+    end
+end
 plot3(smooth_north,smooth_east,smooth_up)
 hold off
 grid

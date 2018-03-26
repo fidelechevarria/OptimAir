@@ -19,7 +19,7 @@ function optimTraj_plotStates( propagatedState, WP_info )
             ymax = max(state(min(WP_info.index(j),numel(state)-2)),0);
             xPoints = [xval,xval];
             yPoints = [ymin,ymax];
-            if mod(j,2) == 0
+            if WP_info.types(j) == 1
                 plot(xPoints,yPoints,'r--')
                 text(xval,ymax,num2str(j-1),'Color','r','VerticalAlignment','bottom')
             else
