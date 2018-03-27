@@ -3,7 +3,9 @@ function optimTraj_plotStates( propagatedState, WP )
     % Calculate corresponding time for each WP
     WP_time = propagatedState.cumulativeTime(WP.WP_index);
 
-    statesToPlot = {'headingRate' 'velocity' 'roll'};
+    statesToPlot = {'pitchRate' 'headingRate' 'velocity' 'roll' 'arcLength' 'cumulativeTime' 'timeSteps'...
+        'pitchWithoutSteps' 'headingWithoutSteps' 'pitch' 'heading' 'dynamicPressure' 'Clalpha'...
+        'Cd0' 'L' 'Cl' 'D' 'Cd' 'angleOfAttack' 'lateralGForce'};
     for i = 1:numel(statesToPlot)
         state = getfield(propagatedState,statesToPlot{i});
         figure

@@ -84,6 +84,7 @@ function [ propagatedState ] = optimTraj_dynamicModel( smooth_north, smooth_east
         alpha_old(i+1) = alpha(i);
     end
         
+    propagatedState.arcLength = arc;
     propagatedState.totalTime = sum(timestep);
     propagatedState.cumulativeTime = cumsum(timestep);
     propagatedState.timeSteps = timestep;
@@ -104,7 +105,6 @@ function [ propagatedState ] = optimTraj_dynamicModel( smooth_north, smooth_east
     propagatedState.velocity = V_new;
     propagatedState.angleOfAttack = alpha;
     propagatedState.lateralGForce = lat_G;
-    propagatedState.TrajectoryArcLengths = arc;
 
 end
 
