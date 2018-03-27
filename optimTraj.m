@@ -117,7 +117,20 @@ function optimTraj
         hdngData = str2double(wpData(1:end,7)');
         segmentTypeData = double(cell2mat(wpData(1:end,9)));
         [north, east, up] = optimTraj_lla2flat(llaData);
-        WP = struct('north', north, 'east', -east, 'up', up, 'segment_type', segmentTypeData);
+        [numOfWaypoints,~] = size(north);
+        m = 0;
+        WP_types = 0;
+        for i = 1:numOfWaypoints
+            m = m+1;
+            if i == numOfWaypoints
+                % Do nothing
+            elseif segmentTypeData(m) == 0
+                WP_types = [WP_types 1 0];
+            elseif segmentTypeData(m) == 1
+                WP_types = [WP_types 1 1 1 0];
+            end
+        end
+        WP = struct('north', north, 'east', -east, 'up', up, 'WP_types', WP_types);
         % Optimize trajectory
         optimTraj_optimize(WP,hdngData);
     end

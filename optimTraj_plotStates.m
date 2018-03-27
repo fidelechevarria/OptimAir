@@ -1,7 +1,7 @@
-function optimTraj_plotStates( propagatedState, WP_info )
+function optimTraj_plotStates( propagatedState, WP )
 
     % Calculate corresponding time for each WP
-    WP_time = propagatedState.cumulativeTime(WP_info.index);
+    WP_time = propagatedState.cumulativeTime(WP.WP_index);
 
     statesToPlot = {'headingRate' 'velocity' 'roll'};
     for i = 1:numel(statesToPlot)
@@ -15,11 +15,11 @@ function optimTraj_plotStates( propagatedState, WP_info )
             else
                 xval = WP_time(j);
             end
-            ymin = min(state(min(WP_info.index(j),numel(state)-2)),0);
-            ymax = max(state(min(WP_info.index(j),numel(state)-2)),0);
+            ymin = min(state(min(WP.WP_index(j),numel(state)-2)),0);
+            ymax = max(state(min(WP.WP_index(j),numel(state)-2)),0);
             xPoints = [xval,xval];
             yPoints = [ymin,ymax];
-            if WP_info.types(j) == 1
+            if WP.WP_types(j) == 1
                 plot(xPoints,yPoints,'r--')
                 text(xval,ymax,num2str(j-1),'Color','r','VerticalAlignment','bottom')
             else

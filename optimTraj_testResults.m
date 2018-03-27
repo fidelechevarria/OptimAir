@@ -37,14 +37,22 @@ WP.up = [20
          20
          20];
      
-WP.segment_type = [0
+WP.WP_types     = [0
+                   1
                    0
+                   1
                    0
+                   1
                    0
+                   1
                    0
+                   1
                    0
+                   1
                    0
+                   1
                    0
+                   1
                    0];
 
 optimTraj_results(IP,WP,0)

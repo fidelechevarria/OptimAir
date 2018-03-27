@@ -4,27 +4,15 @@ function optimTraj_results(params,WP,automaticFGlaunchIsActivated)
 [numOfWaypoints,~] = size(WP.north);
 j = 0;
 k = 0;
-m = 0;
-WP_types = 0;
-for i = 1:numOfWaypoints
-    m = m+1;
-    if i == numOfWaypoints
-        % Do nothing
-    elseif WP.segment_type(m) == 0
-        WP_types = [WP_types 1 0];
-    elseif WP.segment_type(m) == 1
-        WP_types = [WP_types 1 1 1 0];
-    end
-end
-new_size = numel(WP_types);
+new_size = numel(WP.WP_types);
 new_north = zeros(1,new_size);
 new_east = zeros(1,new_size);
 for i = 1:new_size
-    if WP_types(i) == 0
+    if WP.WP_types(i) == 0
         j = j + 1;
         new_north(i) = WP.north(j);
         new_east(i) = WP.east(j);
-    elseif WP_types(i) == 1
+    elseif WP.WP_types(i) == 1
         k = k + 1;
         new_north(i) = params(k);
         new_east(i) = params(k+numOfWaypoints-1);
@@ -48,8 +36,7 @@ for i = 1:numel(smoothTraj.breaks)
     [~,index] = min(abs(space-smoothTraj.breaks(i)));
     WP_index = [WP_index index];
 end
-WP_info.index = WP_index;
-WP_info.types = WP_types;
+WP.WP_index = WP_index;
 
 %% Time computation using dynamic model
 propagatedState = optimTraj_dynamicModel(smooth_north,smooth_east,smooth_up);
@@ -61,8 +48,8 @@ movegui(f1,'northwest') % Move the GUI to the center of the screen.
 hold on
 scatter3(new_north,new_east,new_up,9,'r','filled')
 scatter3(WP.north,WP.east,WP.up,9,'b','filled')
-for j = 1:numel(WP_info.types)
-    if WP_info.types(j) == 1
+for j = 1:numel(WP.WP_types)
+    if WP.WP_types(j) == 1
         text(new_north(j),new_east(j),new_up(j),num2str(j-1),'Color','r','VerticalAlignment','bottom')
     else
         text(new_north(j),new_east(j),new_up(j),num2str(j-1),'Color','b','VerticalAlignment','bottom')
@@ -81,7 +68,7 @@ ylabel('East')
 zlabel('Up')
 
 % 2D Graphical representation
-optimTraj_plotStates(propagatedState,WP_info);
+optimTraj_plotStates(propagatedState,WP);
 
 % Make figure visible.
 f1.Visible = 'on';
