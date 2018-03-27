@@ -18,8 +18,24 @@ for i = 1:new_size
         new_east(i) = params(k+numOfWaypoints-1);
     end
 end
-new_up = 20*ones(1,new_size);
-new_up(4) = 20;
+% new_up = 20*ones(1,new_size);
+new_up(1) = 30;
+new_up(2) = 40;
+new_up(3) = 50;
+new_up(4) = 60;
+new_up(5) = 70;
+new_up(6) = 80;
+new_up(7) = 90;
+new_up(8) = 100;
+new_up(9) = 110;
+new_up(10) = 100;
+new_up(11) = 90;
+new_up(12) = 80;
+new_up(13) = 70;
+new_up(14) = 60;
+new_up(15) = 50;
+new_up(16) = 40;
+new_up(17) = 30;
 
 %% Spline generation along way-point sequence
 N = 250; % Number of uniformly distributed points along the curve parameter

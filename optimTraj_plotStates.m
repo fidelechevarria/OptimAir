@@ -5,7 +5,7 @@ function optimTraj_plotStates( propagatedState, WP )
 
     statesToPlot = {'pitchRate' 'headingRate' 'velocity' 'roll' 'arcLength' 'cumulativeTime' 'timeSteps'...
         'pitchWithoutSteps' 'headingWithoutSteps' 'pitch' 'heading' 'dynamicPressure' 'Clalpha'...
-        'Cd0' 'L' 'Cl' 'D' 'Cd' 'angleOfAttack' 'lateralGForce'};
+        'Cd0' 'L' 'Cl' 'D' 'Cd' 'angleOfAttack' 'lateralGForce' 'north' 'east' 'altitude'};
     for i = 1:numel(statesToPlot)
         state = getfield(propagatedState,statesToPlot{i});
         figure

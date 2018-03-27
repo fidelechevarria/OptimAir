@@ -60,7 +60,7 @@ function [ propagatedState ] = optimTraj_dynamicModel( smooth_north, smooth_east
     % Initial conditions
     V_old(1) = 92.95;
     alpha_old(1) = 0.1;
-    T = 10000;
+    T = 8000;
 
     % Dynamic_model
     % Assumptions: 1. No lateral force
@@ -70,8 +70,10 @@ function [ propagatedState ] = optimTraj_dynamicModel( smooth_north, smooth_east
         pitch_dot(i) = (pitch_new(i+1)-pitch_new(i))/timestep(i);
         heading_dot(i) = (heading_new(i+1)-heading_new(i))/timestep(i);
         Qd(i) = 0.5*rho*V_old(i)^2;
-        Clalpha(i) = fixpt_interp1(Clalpha_xdata,Clalpha_ydata,alpha_old(i),ufix(8),2^-8,sfix(16),2^-14,'Floor');
-        Cd0(i) = fixpt_interp1(Cd0_xdata,Cd0_ydata,alpha_old(i),ufix(8),2^-8,sfix(16),2^-14,'Floor');
+%         Clalpha(i) = fixpt_interp1(Clalpha_xdata,Clalpha_ydata,alpha_old(i),ufix(8),2^-8,sfix(16),2^-14,'Floor');
+        Clalpha(i) = 1.3;
+%         Cd0(i) = fixpt_interp1(Cd0_xdata,Cd0_ydata,alpha_old(i),ufix(8),2^-8,sfix(16),2^-14,'Floor');
+        Cd0(i) = 0.036;        
         roll(i) = atan2(V_old(i)*heading_dot(i)*cos(pitch(i)),g*cos(pitch(i))+V_old(i)*pitch_dot(i));
         L(i) = m*g*cos(pitch(i))*cos(roll(i))+m*V_old(i)*(pitch_dot(i)*cos(roll(i))+heading_dot(i)*cos(pitch(i))*sin(roll(i)));
         Cl(i) = L(i)/(Qd(i)*S);
@@ -105,6 +107,9 @@ function [ propagatedState ] = optimTraj_dynamicModel( smooth_north, smooth_east
     propagatedState.velocity = V_new;
     propagatedState.angleOfAttack = alpha;
     propagatedState.lateralGForce = lat_G;
+    propagatedState.north = smooth_north;
+    propagatedState.east = smooth_east;
+    propagatedState.altitude = smooth_up;
 
 end
 

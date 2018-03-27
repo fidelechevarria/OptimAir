@@ -1,6 +1,6 @@
 function optimTraj
 
-% optimTraj: Red Bull Air Race Team 26 Flight Trajectory Optimization Software
+    % optimTraj: Red Bull Air Race Team 26 Flight Trajectory Optimization Software
     % Author: Fidel Echevarria Corrales
 
     %% IMPORTANT NOTE: Solve graphical issues for R2015b MATLAB Compiler
