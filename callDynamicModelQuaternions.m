@@ -1,22 +1,39 @@
 
-function [new_state] = callDynamicModelQuaternions()
+function optimizeControl()
+ 
+    tic
+
+    % Set options for pattern search
+    options = psoptimset('Display','off','PlotFcn',{[]},...
+        'UseParallel', false, 'CompletePoll', 'on','CompleteSearch','on',...
+        'SearchMethod',@searchlhs);
+
+    % Run the optimization
+    [x,fval] = patternsearch(@objFcn,[0 0 0],[],[],[],[],...
+        [-1000 -1000 -1000],[1000 1000 1000],[],options);
+
+    toc
+
+end
+
+function [distance] = objFcn(vars)
     
     [Q_init] = eul2quat([0 0 0],'ZYX');
 
-    control_vars.alpha_dot = 0;
-    control_vars.delta_dot = 0;
-    control_vars.p = 0;
+    control_vars.alpha_dot = vars(1);
+    control_vars.delta_dot = vars(2);
+    control_vars.p = vars(3);
 
-    state.T = 5000;
-    state.V = 90;
-    state.alpha = 0.1;
-    state.q0 = Q_init(1);
-    state.q1 = Q_init(2);
-    state.q2 = Q_init(3);
-    state.q3 = Q_init(4);
-    state.x = 0;
-    state.y = 0;
-    state.h = 0;
+    old_state.T = 5000;
+    old_state.V = 90;
+    old_state.alpha = 0.1;
+    old_state.q0 = Q_init(1);
+    old_state.q1 = Q_init(2);
+    old_state.q2 = Q_init(3);
+    old_state.q3 = Q_init(4);
+    old_state.x = 0;
+    old_state.y = 0;
+    old_state.h = 0;
     
     params.Tmax = 9000;
     params.Tmin = 0;
@@ -32,14 +49,15 @@ function [new_state] = callDynamicModelQuaternions()
     
     dt = 0.1;
     
-    for i = 1:1000
-        [state] = dynamicModelQuaternions(control_vars, state, params, dt);
-        [euler] = quat2eul([state.q0 state.q1 state.q2 state.q3],'ZYX');
-    end
+    [new_state] = dynamicModelQuaternions(control_vars, old_state, params, dt);
+    [euler] = quat2eul([old_state.q0 old_state.q1 old_state.q2 old_state.q3],'ZYX');
     
-    state
-    euler
- 
+    obj_state.x = 9;
+    obj_state.y = 0;
+    obj_state.h = 0;
+    
+    distance = sqrt((new_state.x-obj_state.x)^2+(new_state.y-obj_state.y)^2+(new_state.h-obj_state.h)^2);
+     
 end
 
 
