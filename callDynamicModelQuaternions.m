@@ -48,7 +48,7 @@ end
 function [new_state] = dynamicModelQuaternions(control_vars, old_state, params, dt)
     
     alpha_dot = control_vars.alpha_dot;
-    delta_dot = control_vars.delta_dot;
+    T_dot = control_vars.delta_dot;
     p = control_vars.p;
     
     T = old_state.T;
@@ -74,7 +74,7 @@ function [new_state] = dynamicModelQuaternions(control_vars, old_state, params, 
     alpha_min = params.alpha_min;
     alpha_max = params.alpha_max;
     
-    T = max(min(T + delta_dot*dt, Tmax), Tmin);
+    T = max(min(T + T_dot*dt, Tmax), Tmin);
     alpha = max(min(alpha + alpha_dot*dt, alpha_max), alpha_min);
     Cl = Clalpha*alpha;
     L = 0.5*rho*V^2*S*Cl;
