@@ -1,4 +1,4 @@
-function [x,fval,exitflag,output,lambda,grad,hessian] = fminconstr(x0,WP)
+function [x,fval,exitflag,output,lambda,grad,hessian] = fminconstr(WP)
 
     xLast = []; % Last place optimTraj was called
     myf = []; % Use for objective at xLast
@@ -17,7 +17,7 @@ function [x,fval,exitflag,output,lambda,grad,hessian] = fminconstr(x0,WP)
 
         function y = objfun(x)
             if ~isequal(x,xLast) % Check if computation is necessary
-                [myf,myc,myceq] = time(x,WP);
+                [myf,myc,myceq] = totalTime(x,WP);
                 xLast = x;
             end
             % Now compute objective function
@@ -26,7 +26,7 @@ function [x,fval,exitflag,output,lambda,grad,hessian] = fminconstr(x0,WP)
 
         function [c,ceq] = constr(x)
             if ~isequal(x,xLast) % Check if computation is necessary
-                [myf,myc,myceq] = time(x,WP);
+                [myf,myc,myceq] = totalTime(x,WP);
                 xLast = x;
             end
             % Now compute constraint functions
@@ -43,7 +43,7 @@ function [x,fval,exitflag,output,lambda,grad,hessian] = fminconstr(x0,WP)
 
     % Modify optimization options setting
     options = optimoptions(options,'Display', 'off');
-    options = optimoptions(options,'PlotFcns', { @customPlotFcn }); %optimplotfval optimplotfunccount
+    options = optimoptions(options,'PlotFcns', { @plot }); %optimplotfval optimplotfunccount
     options = optimoptions(options,'Diagnostics', 'off');
 
     % Run optimization

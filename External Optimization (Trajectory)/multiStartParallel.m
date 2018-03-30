@@ -21,7 +21,7 @@ function [x,fval] = multiStartParallel(WP)
         y = time;
     end
 
-    % Set options for FMINBND
+    % Set options for FMINCON
     TolFun = 0.01; % minimum distance between two separate objective function values
     TolX = 0.1; % minimum distance between two separate points
     options = optimset('Algorithm','interior-point','Disp','iter',...
@@ -29,7 +29,7 @@ function [x,fval] = multiStartParallel(WP)
         'PlotFcns', { @customPlotFcn },'Diagnostics', 'off');
 
     % Create problem for MultiStart
-    problem = createOptimProblem('fminbnd','objective',fun,'x0',IP,...
+    problem = createOptimProblem('fmincon','objective',fun,'x0',IP,...
                 'lb',LB,'ub',UB,'options',options);
 
     % Make a MultiStart object        

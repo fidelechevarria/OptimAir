@@ -1,14 +1,13 @@
 function [x,fval,x_G,fval_G] = optimize(WP)
 
-    % Perform global optimization using multiStart fminbnd in a parallel pool
-    [x,fval] = multiStartParallel(WP);
+%     % Perform global optimization using multiStart fminbnd in a parallel pool
+%     [x,fval] = multiStartParallel(WP);
 
 %     % Perform initial optimization using a genetic algorithm
 %     [x_G,fval_G,~,~,~,~] = genetic(WP);
     
-%     % Perform final optimization using gradient-descent
-%     x_G = 0;
-%     [x,fval,~,~,~,~,~] = fminconstr(x_G,WP);
+    % Perform final optimization using gradient-descent
+    [x,fval,~,~,~,~,~] = fminconstr(WP);
 
 %     % Perform global optimization using pattern search
 %     [x,fval] = patternSearch(WP);
