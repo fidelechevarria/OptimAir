@@ -1,4 +1,4 @@
-function [ north, east, up ] = optimTraj_lla2flat( llaData )
+function [ north, east, up ] = custom_lla2flat( llaData )
     % Convert from geodetic latitude, longitude, and altitude to flat Earth position
     format long g
     ellipsoidModel = 'WGS84';

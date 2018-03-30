@@ -1,4 +1,4 @@
-function stop = optimTraj_customPlotFcn(params,optimValues,state,~,WP)
+function stop = customPlotFcn(params,optimValues,state,~,WP)
 % OPTIMPLOTFUNCCOUNT Plot number of function evaluations at each iteration.
 %
 %   STOP = OPTIMPLOTFUNCCOUNT(X,OPTIMVALUES,STATE) plots the value in

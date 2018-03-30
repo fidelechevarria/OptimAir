@@ -1,4 +1,4 @@
-function optimTraj_results(params,WP,automaticFGlaunchIsActivated)
+function results(params,WP,automaticFGlaunchIsActivated)
 
 %% Obtain resultant way-point sequence
 [numOfWaypoints,~] = size(WP.north);
@@ -55,7 +55,7 @@ end
 WP.WP_index = WP_index;
 
 %% Time computation using dynamic model
-propagatedState = optimTraj_dynamicModel(smooth_north,smooth_east,smooth_up);
+propagatedState = dynamicModel(smooth_north,smooth_east,smooth_up);
 
 %% Graphics generation
 % 3D Graphical representation
@@ -84,7 +84,7 @@ ylabel('East')
 zlabel('Up')
 
 % 2D Graphical representation
-optimTraj_plotStates(propagatedState,WP);
+plotStates(propagatedState,WP);
 
 % Make figure visible.
 f1.Visible = 'on';

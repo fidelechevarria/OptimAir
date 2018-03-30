@@ -1,5 +1,5 @@
 
-function [myf,myc,myceq] = optimTraj_time_seq(IP_seq,IP,WP,index)
+function [myf,myc,myceq] = time_seq(IP_seq,IP,WP,index)
 tic
 %% Obtain new way-point sequence
 [numOfWaypoints,~] = size(WP.north);
@@ -43,7 +43,7 @@ for i = 1:N-1
 end
 
 %% Compute curvature
-curvature = optimTraj_ppcurv(smoothTraj,N);
+curvature = ppcurv(smoothTraj,N);
 abs_curvature = abs(curvature);
 
 %% Time computation using dynamic model
@@ -82,7 +82,7 @@ T = 10000;
 for i = 1:N-1
     Clalpha(i) = fixpt_interp1(Clalpha_xdata,Clalpha_ydata,alpha_old(i),ufix(8),2^-8,sfix(16),2^-14,'Floor');
     Cd0(i) = fixpt_interp1(Cd0_xdata,Cd0_ydata,alpha_old(i),ufix(8),2^-8,sfix(16),2^-14,'Floor');
-    V_med(i) = optimTraj_model2D(V_old(i),arc(i),T,abs_curvature(i),Cd0(i),rho,S,K,m,g);
+    V_med(i) = model2D(V_old(i),arc(i),T,abs_curvature(i),Cd0(i),rho,S,K,m,g);
     V_new(i) = max(2*(V_med(i)-V_old(i))+V_old(i),1);
     phi(i) = acos(1/sqrt(V_new(i)^2*curvature(i)/g+1));
     Cl(i) = m*g/(0.5*rho*S*V_new(i)^2*cos(phi(i)));

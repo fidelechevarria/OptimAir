@@ -1,5 +1,5 @@
 
-function [myf,myc,myceq] = optimTraj_time(params,WP)
+function [myf,myc,myceq] = time(params,WP)
 tic
 %% Obtain new way-point sequence
 [numOfWaypoints,~] = size(WP.north);
@@ -23,15 +23,15 @@ new_up = 20*ones(1,new_size);
 
 %% Spline generation along way-point sequence
 N = 250; % Number of uniformly distributed points along the curve parameter
-smoothTraj = cscvn([new_north;new_east;new_up]);
-space = linspace(smoothTraj.breaks(1),smoothTraj.breaks(end),N);
-smooth = fnval(smoothTraj,space);
+trajectory = cscvn([new_north;new_east;new_up]);
+space = linspace(trajectory.breaks(1),trajectory.breaks(end),N);
+smooth = fnval(trajectory,space);
 smooth_north = smooth(1,:)';
 smooth_east = smooth(2,:)';
 smooth_up = smooth(3,:)';
 
 %% Time computation using dynamic model
-propagatedState = optimTraj_dynamicModel(smooth_north,smooth_east,smooth_up);
+propagatedState = dynamicModel(smooth_north,smooth_east,smooth_up);
 
 % Constraints
 max_lat_G = max(propagatedState.lateralGForce);

@@ -1,4 +1,4 @@
-function [x,fval] = optimTraj_multiStartParallel(WP,hdngData)
+function [x,fval] = multiStartParallel(WP,hdngData)
 
 xLast = []; % Last place optimTraj was called
 myf = []; % Use for objective at xLast
@@ -12,21 +12,21 @@ margin = 250*ones(1,16);
 LB = IP - margin;
 UB = IP + margin;
 
-optimTraj_fun = @optimTraj_objfun; % the objective function, nested below
-optimTraj_cfun = @optimTraj_constr; % the constraint function, nested below
+fun = @objfun; % the objective function, nested below
+cfun = @constr; % the constraint function, nested below
 
-    function y = optimTraj_objfun(x)
+    function y = objfun(x)
         if ~isequal(x,xLast) % Check if computation is necessary
-            [myf,myc,myceq] = optimTraj_time(x,WP);
+            [myf,myc,myceq] = time(x,WP);
             xLast = x;
         end
         % Now compute objective function
         y = myf;
     end
 
-    function [c,ceq] = optimTraj_constr(x)
+    function [c,ceq] = constr(x)
         if ~isequal(x,xLast) % Check if computation is necessary
-            [myf,myc,myceq] = optimTraj_time(x,WP);
+            [myf,myc,myceq] = time(x,WP);
             xLast = x;
         end
         % Now compute constraint functions
@@ -41,8 +41,8 @@ options = optimset('Algorithm','interior-point','Disp','iter',...
     'TolFun',TolFun,'TolX',TolX);
 
 %% Create problem for MultiStart
-problem = createOptimProblem('fmincon','objective',optimTraj_fun,'x0',IP,...
-            'lb',LB,'ub',UB,'nonlcon',optimTraj_cfun,'options',options);
+problem = createOptimProblem('fmincon','objective',fun,'x0',IP,...
+            'lb',LB,'ub',UB,'nonlcon',cfun,'options',options);
 
 %% Make a MultiStart object        
 ms = MultiStart;

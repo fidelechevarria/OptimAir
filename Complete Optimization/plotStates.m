@@ -1,4 +1,4 @@
-function optimTraj_plotStates( propagatedState, WP )
+function plotStates( propagatedState, WP )
 
     % Calculate corresponding time for each WP
     WP_time = propagatedState.cumulativeTime(WP.WP_index);

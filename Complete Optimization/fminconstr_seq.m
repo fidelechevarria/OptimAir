@@ -1,4 +1,4 @@
-function [x,fval,exitflag,output,lambda,grad,hessian] = optimTraj_fmincon_seq(IP,WP,index,hdngData)
+function [x,fval,exitflag,output,lambda,grad,hessian] = fminconstr_seq(IP,WP,index,hdngData)
 
 xLast = []; % Last place optimTraj was called
 myf = []; % Use for objective at xLast
@@ -9,21 +9,21 @@ myceq = []; % Use for nonlinear equality constraint
 
 IP_seq = [IP(index) IP(index+numel(IP)/2)];
 
-optimTraj_fun = @optimTraj_objfun; % the objective function, nested below
-optimTraj_cfun = @optimTraj_constr; % the constraint function, nested below
+fun = @objfun; % the objective function, nested below
+cfun = @constr; % the constraint function, nested below
 
-    function y = optimTraj_objfun(x)
+    function y = objfun(x)
         if ~isequal(x,xLast) % Check if computation is necessary
-            [myf,myc,myceq] = optimTraj_time_seq(x,IP,WP,index);
+            [myf,myc,myceq] = time_seq(x,IP,WP,index);
             xLast = x;
         end
         % Now compute objective function
         y = myf;
     end
 
-    function [c,ceq] = optimTraj_constr(x)
+    function [c,ceq] = constr(x)
         if ~isequal(x,xLast) % Check if computation is necessary
-            [myf,myc,myceq] = optimTraj_time_seq(x,IP,WP,index);
+            [myf,myc,myceq] = time_seq(x,IP,WP,index);
             xLast = x;
         end
         % Now compute constraint functions
@@ -31,8 +31,8 @@ optimTraj_cfun = @optimTraj_constr; % the constraint function, nested below
         ceq = myceq;
     end
 
-    function stop = optimTraj_plot(x,optimValues,state,varargin) % custom plot function
-        stop = optimTraj_customPlotFcn_seq(x,optimValues,state,varargin,IP,WP,index);
+    function stop = plot(x,optimValues,state,varargin) % custom plot function
+        stop = customPlotFcn_seq(x,optimValues,state,varargin,IP,WP,index);
     end
 
 %% Start Newton-Raphson optimization with the default options
@@ -40,11 +40,11 @@ options = optimoptions('fmincon');
 
 %% Modify optimization options setting
 options = optimoptions(options,'Display', 'off');
-options = optimoptions(options,'PlotFcns', { @optimTraj_plot }); %optimplotfval optimplotfunccount
+options = optimoptions(options,'PlotFcns', { @plot }); %optimplotfval optimplotfunccount
 options = optimoptions(options,'Diagnostics', 'off');
 
 %% Run optimization
 [x,fval,exitflag,output,lambda,grad,hessian] = ...
-fmincon(optimTraj_fun,IP_seq,[],[],[],[],[],[],optimTraj_cfun,options);
+fmincon(fun,IP_seq,[],[],[],[],[],[],cfun,options);
 
 end

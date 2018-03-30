@@ -1,4 +1,4 @@
-function [x,fval,exitflag,output,population,score] = optimTraj_genetic(WP,hdngData)
+function [x,fval,exitflag,output,population,score] = genetic(WP,hdngData)
 
 xLast = []; % Last place optimTraj was called
 myf = []; % Use for objective at xLast
@@ -16,21 +16,21 @@ margin = 250*ones(1,16);
 LB = IP - margin;
 UB = IP + margin;
 
-optimTraj_fun = @optimTraj_objfun; % the objective function, nested below
-optimTraj_cfun = @optimTraj_constr; % the constraint function, nested below
+fun = @objfun; % the objective function, nested below
+cfun = @constr; % the constraint function, nested below
 
-    function y = optimTraj_objfun(x)
+    function y = objfun(x)
         if ~isequal(x,xLast) % Check if computation is necessary
-            [myf,myc,myceq] = optimTraj_time(x,WP);
+            [myf,myc,myceq] = time(x,WP);
             xLast = x;
         end
         % Now compute objective function
         y = myf;
     end
 
-    function [c,ceq] = optimTraj_constr(x)
+    function [c,ceq] = constr(x)
         if ~isequal(x,xLast) % Check if computation is necessary
-            [myf,myc,myceq] = optimTraj_time(x,WP);
+            [myf,myc,myceq] = time(x,WP);
             xLast = x;
         end
         % Now compute constraint functions
@@ -49,11 +49,11 @@ options = gaoptimset(options,'TolFun' , FunctionTolerance);
 
 %% Run optimizitation using Genetic Algorithm
 [x,fval,exitflag,output,population,score] = ...
-ga(optimTraj_fun,nvars,[],[],[],[],LB,UB,optimTraj_cfun,[],options);
+ga(fun,nvars,[],[],[],[],LB,UB,cfun,[],options);
 
 %% Show optimization results
 automaticFGlaunchIsActivated = 0;
-optimTraj_results(x,WP,automaticFGlaunchIsActivated);
+results(x,WP,automaticFGlaunchIsActivated);
 
 %% Display info
 disp(char('',output.message)); % Display the reason why GA stopped iterating

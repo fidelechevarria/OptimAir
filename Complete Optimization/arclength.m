@@ -1,4 +1,4 @@
-function [arc] = optimFP_arclength(precision,numOfWaypoints,bx,cx,dx,by,cy,dy)
+function [arc] = arclength(precision,numOfWaypoints,bx,cx,dx,by,cy,dy)
 
 % ANALYTIC APPROACH (USING INTEGRAL EXPLICIT SOLUTION)
 arc = zeros(precision*numOfWaypoints,1); % Initialize arc

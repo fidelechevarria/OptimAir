@@ -1,4 +1,4 @@
-function [ propagatedState ] = optimTraj_dynamicModel( smooth_north, smooth_east, smooth_up )
+function [ propagatedState ] = dynamicModel( smooth_north, smooth_east, smooth_up )
 
     % Number of points
     N = numel(smooth_north);
@@ -23,8 +23,8 @@ function [ propagatedState ] = optimTraj_dynamicModel( smooth_north, smooth_east
     end
 
     % Eliminate steps in Euler angles
-    pitch_new = optimTraj_eliminateSteps(pitch);
-    heading_new = optimTraj_eliminateSteps(heading);
+    pitch_new = eliminateSteps(pitch);
+    heading_new = eliminateSteps(heading);
 
     % Preallocate variables
     V_old = zeros(N,1);

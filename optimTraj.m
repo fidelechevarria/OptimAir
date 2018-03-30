@@ -14,6 +14,14 @@ function optimTraj
         cd(mydocdir)
     end
     
+    %% Add folders to path
+    addpath('Complete Optimization');
+    addpath('Flight Plans');
+    addpath('FlightGear');
+    addpath('Segment Optimization');
+    addpath('Simulink Models');
+    addpath('Test Functions');
+    
     %% Create GUI 
 
     %  Create and then hide the UI as it is being constructed.
@@ -116,7 +124,7 @@ function optimTraj
         llaData = wpData(1:end,1:6);
         hdngData = str2double(wpData(1:end,7)');
         segmentTypeData = double(cell2mat(wpData(1:end,9)));
-        [north, east, up] = optimTraj_lla2flat(llaData);
+        [north, east, up] = custom_lla2flat(llaData);
         [numOfWaypoints,~] = size(north);
         m = 0;
         WP_types = 0;
@@ -132,7 +140,7 @@ function optimTraj
         end
         WP = struct('north', north, 'east', -east, 'up', up, 'WP_types', WP_types);
         % Optimize trajectory
-        optimTraj_optimize(WP,hdngData);
+        optimize(WP,hdngData);
     end
     
     function NWP_Callback(Object,~)
@@ -195,7 +203,7 @@ function optimTraj
         llaData = wpData(1:end,1:6);
         hdngData = str2double(wpData(1:end,7)');
         segmentTypeData = double(cell2mat(wpData(1:end,9)));
-        [north, east, up] = optimTraj_lla2flat(llaData);
+        [north, east, up] = custom_lla2flat(llaData);
         WP = struct('north', north, 'east', -east, 'up', up, 'segment_type', segmentTypeData);
         Launch_ITA(WP);
     end

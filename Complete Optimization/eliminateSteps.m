@@ -1,4 +1,4 @@
-function [ output ] = optimTraj_eliminateSteps( input )
+function [ output ] = eliminateSteps( input )
     output = zeros(size(input));
     jump_raw_reference = 0;
     slope_raw_reference = 0;
