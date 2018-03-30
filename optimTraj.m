@@ -125,8 +125,13 @@ function optimTraj
                 expectedManoeuvreData{i} = '2D';
             end
         end
-        WP = struct('north', north, 'east', -east, 'up', up,...
-            'heading', hdngData, 'gateType', gateTypeData, 'expectedManoeuvre', expectedManoeuvreData);
+        WP.north = north;
+        WP.east = -east;
+        WP.up = up;
+        WP.heading = hdngData;
+        WP.gateType = gateTypeData;
+        WP.expectedManoeuvre = expectedManoeuvreData;
+        WP.numOfWP = numel(north);
         optimize(WP); % Optimize trajectory
     end
     
