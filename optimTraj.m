@@ -20,8 +20,10 @@ function optimTraj
     addpath('Flight Plans');
     addpath('FlightGear');
     addpath('Internal Optimization (Segments)');
+    addpath('Optimized Trajectory Results');
     addpath('Simulink Models');
     addpath('Test Functions');
+    addpath('Visualization Tools');
     
     % Create GUI 
 

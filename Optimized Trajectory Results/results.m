@@ -9,7 +9,10 @@ function results(params,WP,automaticFGlaunchIsActivated)
     movegui(f1,'northwest') % Move the GUI to the center of the screen.
     hold on
     plot3(totalTrajectory.states(8,:),totalTrajectory.states(9,:),totalTrajectory.states(10,:));
-    scatter3(WP.north,WP.east,WP.up,9,'b','filled');
+    scatter3(WP.north,WP.east,WP.up,9,'r','filled');
+    for i = 1:WP.numOfWP
+        text(WP.north(i),WP.east(i),WP.up(i),num2str(i-1),'Color','r','VerticalAlignment','bottom');
+    end
     hold off
     grid
     title(['Total time ' num2str(totalTrajectory.totalTime) 's'])
