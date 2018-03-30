@@ -3,18 +3,18 @@ function optimTraj
     % optimTraj: Red Bull Air Race Team 26 Flight Trajectory Optimization Software
     % Author: Fidel Echevarria Corrales
 
-    %% IMPORTANT NOTE: Solve graphical issues for R2015b MATLAB Compiler
+    % IMPORTANT NOTE: Solve graphical issues for R2015b MATLAB Compiler
     % To solve this bug go to: https://www.mathworks.com/support/bugreports/1293244
     % and apply official workaround 1.
     
-    %% If executing in deployed mode make "My documents" the current directory
+    % If executing in deployed mode make "My documents" the current directory
     if isdeployed
         myuser = getenv('USERPROFILE');
         mydocdir = [myuser '\Documents'];
         cd(mydocdir)
     end
     
-    %% Add folders to path
+    % Add folders to path
     addpath('Dynamic Model');
     addpath('External Optimization (Trajectory)');
     addpath('Flight Plans');
@@ -23,7 +23,7 @@ function optimTraj
     addpath('Simulink Models');
     addpath('Test Functions');
     
-    %% Create GUI 
+    % Create GUI 
 
     %  Create and then hide the UI as it is being constructed.
     f = figure('Visible','off','Resize','off','Position',[760,88,500,500]);
@@ -36,7 +36,7 @@ function optimTraj
     % Move the GUI to the center of the screen.
     movegui(f,'center')
     
-    %% Construct GUI components.
+    % Construct GUI components.
     
     % Create a tab group
     tabgp = uitabgroup(gcf,'Position',[.01 .1 .98 .89]);
@@ -110,36 +110,32 @@ function optimTraj
          'Callback',@launchITA,...
          'Tag','launchITA');        
     
-    %% Initialize GUI
+    % Initialize GUI
     
     
 
-    %% Make GUI visible.
+    % Make GUI visible.
     
     f.Visible = 'on';
 
-    %% Callbacks
+    % Callbacks
     
     function optimize_Callback(~,~)
         wpData = WP_table.Data;
         llaData = wpData(1:end,1:6);
-        hdngData = str2double(wpData(1:end,7)');
-        segmentTypeData = double(cell2mat(wpData(1:end,9)));
         [north, east, up] = custom_lla2flat(llaData);
-        [numOfWaypoints,~] = size(north);
-        m = 0;
-        WP_types = 0;
-        for i = 1:numOfWaypoints
-            m = m+1;
-            if i == numOfWaypoints
-                % Do nothing
-            elseif segmentTypeData(m) == 0
-                WP_types = [WP_types 1 0];
-            elseif segmentTypeData(m) == 1
-                WP_types = [WP_types 1 1 1 0];
+        hdngData = str2double(wpData(1:end,7));
+        gateTypeData = wpData(1:end,8);
+        expectedManoeuvreData = wpData(1:end,9);
+        for i = 1:numel(expectedManoeuvreData)
+            if expectedManoeuvreData{i} == true
+                expectedManoeuvreData{i} = '3D';
+            elseif expectedManoeuvreData{i} == false
+                expectedManoeuvreData{i} = '2D';
             end
         end
-        WP = struct('north', north, 'east', -east, 'up', up, 'WP_types', WP_types);
+        WP = struct('north', north, 'east', -east, 'up', up,...
+            'heading', hdngData, 'gateType', gateTypeData, 'expectedManoeuvre', expectedManoeuvreData);
         % Optimize trajectory
         optimize(WP,hdngData);
     end
