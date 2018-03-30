@@ -1,5 +1,5 @@
 
-function [optimStates] = optimizeSegment(bounds,guess)
+function [trajectory] = optimizeSegment(segment)
 
     % Physical parameters
     p.Tmax = 9000;
@@ -20,30 +20,10 @@ function [optimStates] = optimizeSegment(bounds,guess)
     problem.func.pathCst = @(t,x,u)(  pathConstraint(x,u)  );
 
     % Problem bounds
-    problem.bounds = bounds;
-    
-    problem.bounds.initialTime.low = 0;
-    problem.bounds.initialTime.upp = 0;
-    problem.bounds.finalTime.low = 0.5;
-    problem.bounds.finalTime.upp = 100;
-
-    problem.bounds.state.low = [0; 40; -0.5; -1e6; -1e6; -1e6; -1e6; -1e6; -1e6; -1e6];
-    problem.bounds.state.upp = [9000; 1e6; 0.5; 1e6; 1e6; 1e6; 1e6; 1e6; 1e6; 1e6];
-    problem.bounds.initialState.low = [4000; 80; 0.1; 1; 0; 0; 0; 0; 0; 0];
-    problem.bounds.initialState.upp = [4000; 80; 0.1; 1; 0; 0; 0; 0; 0; 0];
-    problem.bounds.finalState.low = [0; 40; -0.5; 0; 0; 0; 1; 0; 0; 50];
-    problem.bounds.finalState.upp = [9000; 1e6; 0.5; 0; 0; 0; 1; 0; 0; 50];
-
-    problem.bounds.control.low = [-10; -9000; -7.3];
-    problem.bounds.control.upp = [10; 9000; 7.3];
+    problem.bounds = segment.bounds;
 
     % Guess at the initial trajectory
-    problem.guess = guess;
-    
-    problem.guess.time = [0 20];
-    problem.guess.state = [[4000; 80; 0.1; 1; 0; 0; 0; 0; 0; 0]...
-                           [5000; 100; 0.1; 0; 0; 0; 1; 0; 0; 50]];
-    problem.guess.control = zeros(3,2);
+    problem.guess = segment.guess;
 
     % Select a solver:
 %     problem.options(1).method = 'rungeKutta'; % Buen comportamiento en al

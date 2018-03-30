@@ -1,9 +1,7 @@
 function [x,fval] = multiStartParallel(WP)
 
     xLast = []; % Last place optimTraj was called
-    myf = []; % Use for objective at xLast
-    myc = []; % Use for nonlinear inequality constraint
-    myceq = []; % Use for nonlinear equality constraint
+    time = []; % Use for objective at xLast
 
     % Define parameters
     IP = [-70 -180 -260 -450 -500 -400 -310 -200.0... % North initial points
@@ -13,36 +11,26 @@ function [x,fval] = multiStartParallel(WP)
     UB = IP + margin;
 
     fun = @objfun; % the objective function, nested below
-    cfun = @constr; % the constraint function, nested below
 
-        function y = objfun(x)
-            if ~isequal(x,xLast) % Check if computation is necessary
-                [myf,myc,myceq] = time(x,WP);
-                xLast = x;
-            end
-            % Now compute objective function
-            y = myf;
+    function y = objfun(x)
+        if ~isequal(x,xLast) % Check if computation is necessary
+            [time] = totalTime(x,WP);
+            xLast = x;
         end
+        % Now compute objective function
+        y = time;
+    end
 
-        function [c,ceq] = constr(x)
-            if ~isequal(x,xLast) % Check if computation is necessary
-                [myf,myc,myceq] = time(x,WP);
-                xLast = x;
-            end
-            % Now compute constraint functions
-            c = myc; % In this case, the computation is trivial
-            ceq = myceq;
-        end
-
-    % Set options for FMINCON
+    % Set options for FMINBND
     TolFun = 0.01; % minimum distance between two separate objective function values
     TolX = 0.1; % minimum distance between two separate points
     options = optimset('Algorithm','interior-point','Disp','iter',...
-        'TolFun',TolFun,'TolX',TolX);
+        'TolFun',TolFun,'TolX',TolX,'Display', 'off',...
+        'PlotFcns', { @customPlotFcn },'Diagnostics', 'off');
 
     % Create problem for MultiStart
-    problem = createOptimProblem('fmincon','objective',fun,'x0',IP,...
-                'lb',LB,'ub',UB,'nonlcon',cfun,'options',options);
+    problem = createOptimProblem('fminbnd','objective',fun,'x0',IP,...
+                'lb',LB,'ub',UB,'options',options);
 
     % Make a MultiStart object        
     ms = MultiStart;

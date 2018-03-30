@@ -43,7 +43,7 @@ function [x,fval,exitflag,output,lambda,grad,hessian] = fminconstr(x0,WP)
 
     % Modify optimization options setting
     options = optimoptions(options,'Display', 'off');
-    options = optimoptions(options,'PlotFcns', { @plot }); %optimplotfval optimplotfunccount
+    options = optimoptions(options,'PlotFcns', { @customPlotFcn }); %optimplotfval optimplotfunccount
     options = optimoptions(options,'Diagnostics', 'off');
 
     % Run optimization

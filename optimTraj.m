@@ -127,8 +127,7 @@ function optimTraj
         end
         WP = struct('north', north, 'east', -east, 'up', up,...
             'heading', hdngData, 'gateType', gateTypeData, 'expectedManoeuvre', expectedManoeuvreData);
-        % Optimize trajectory
-        optimize(WP);
+        optimize(WP); % Optimize trajectory
     end
     
     function NWP_Callback(Object,~)

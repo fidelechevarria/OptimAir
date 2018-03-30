@@ -1,21 +1,19 @@
 function [x,fval,x_G,fval_G] = optimize(WP)
 
+    % Perform global optimization using multiStart fminbnd in a parallel pool
+    [x,fval] = multiStartParallel(WP);
+
 %     % Perform initial optimization using a genetic algorithm
 %     [x_G,fval_G,~,~,~,~] = genetic(WP);
     
-    % Perform final optimization using gradient-descent
-    x_G = 0;
-    [x,fval,~,~,~,~,~] = fminconstr(x_G,WP);
-
-%     % Perform global optimization using multiStart fminconstr in a parallel pool
-%     [x,fval] = multiStartParallel(WP);
+%     % Perform final optimization using gradient-descent
+%     x_G = 0;
+%     [x,fval,~,~,~,~,~] = fminconstr(x_G,WP);
 
 %     % Perform global optimization using pattern search
 %     [x,fval] = patternSearch(WP);
     
-    % Show optimization results
-    automaticFGlaunchIsActivated = 0;
-    results(x,WP,automaticFGlaunchIsActivated);
+    
 
 %     %%%%%%%%%%%%%%%%%%%% Sequential optimization
 %     [numOfWaypoints,~] = size(WP.north);
@@ -34,5 +32,9 @@ function [x,fval,x_G,fval_G] = optimize(WP)
 %     disp(char('','Last point: ','',num2str(x'))); % Display solution
 %     disp(char('','Last point optimized value: ','',num2str(fval),'')); % Display solution's optimized value
 %     %%%%%%%%%%%%%%%%%%%%
+
+    % Show optimization results
+    automaticFGlaunchIsActivated = 0;
+    results(x,WP,automaticFGlaunchIsActivated);
 
 end
