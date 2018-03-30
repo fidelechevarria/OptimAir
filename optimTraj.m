@@ -126,7 +126,7 @@ function optimTraj
             end
         end
         WP.north = north;
-        WP.east = -east;
+        WP.east = east;
         WP.up = up;
         WP.heading = hdngData;
         WP.gateType = gateTypeData;
