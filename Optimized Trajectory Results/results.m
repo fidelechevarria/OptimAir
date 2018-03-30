@@ -7,6 +7,7 @@ function results(params,WP,automaticFGlaunchIsActivated)
     % 3D Graphical representation
     f1 = figure('Visible','Off'); % Create and then hide figure as it is being constructed.
     movegui(f1,'northwest') % Move the GUI to the center of the screen.
+    ax = axes;
     hold on
     plot3(totalTrajectory.states(8,:),totalTrajectory.states(9,:),totalTrajectory.states(10,:));
     scatter3(WP.north,WP.east,WP.up,9,'r','filled');
@@ -20,6 +21,7 @@ function results(params,WP,automaticFGlaunchIsActivated)
     axis equal
     axis vis3d % Lock aspect ratio of axes
     % view(-45,45); % Azimuth and elevation of initial view (degrees)
+    set(ax, 'Ydir', 'reverse')
     xlabel('North')
     ylabel('East')
     zlabel('Up')

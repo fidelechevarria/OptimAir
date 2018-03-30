@@ -1,16 +1,22 @@
 
-function insertPlaneObject(figure,position)
+function insertPlaneObject(position,attitude)
 
     % Import PATCH-compatible face-vertex structure
     load('ZivkoEdgeMesh.mat')
 
     [N_Objects,~] = size(position);
-
+    [N_vertices,~] = size(referenceGeometry.vertices);
+    
     geometry = cell(N_Objects,1);
+    
     for i = 1:N_Objects
-       geometry{i}.vertices(:,1) = referenceGeometry.vertices(:,1) + position(i,1);
-       geometry{i}.vertices(:,2) = referenceGeometry.vertices(:,2) + position(i,2);
-       geometry{i}.vertices(:,3) = referenceGeometry.vertices(:,3) + position(i,3);
+       DCM = angle2dcm(deg2rad(attitude(i,1)),deg2rad(attitude(i,2)),deg2rad(attitude(i,3)),'ZYX');
+       for j = 1:N_vertices  
+           geometry{i}.vertices(j,:) = DCM * referenceGeometry.vertices(j,:)';
+       end
+       geometry{i}.vertices(:,1) = geometry{i}.vertices(:,1) + position(i,1);
+       geometry{i}.vertices(:,2) = geometry{i}.vertices(:,2) + position(i,2);
+       geometry{i}.vertices(:,3) = geometry{i}.vertices(:,3) + position(i,3);
        geometry{i}.faces = referenceGeometry.faces;
     end
 
