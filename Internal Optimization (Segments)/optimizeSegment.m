@@ -31,8 +31,8 @@ function [trajectory] = optimizeSegment(segment)
 %     problem.options(1).defaultAccuracy = 'medium';
 
     problem.options(1).method = 'trapezoid';
-    problem.options(1).trapezoid.nGrid = 15;
-    problem.options(1).nlpOpt.MaxIter = 200;
+    problem.options(1).trapezoid.nGrid = 10;
+    problem.options(1).nlpOpt.MaxIter = 50;
 
     % problem.options(2).method = 'hermiteSimpson';
     % problem.options(2).hermiteSimpson.nSegment = 15;
@@ -42,14 +42,14 @@ function [trajectory] = optimizeSegment(segment)
     soln = optimTrajDirCol(problem);
 
     % Unpack the simulation
-    time = linspace(soln(end).grid.time(1), soln(end).grid.time(end), 150);
-    states = soln(end).interp.state(time);
-    controls = soln(end).interp.control(time);
+    trajectory.time = linspace(soln(end).grid.time(1), soln(end).grid.time(end), 150);
+    trajectory.states = soln(end).interp.state(trajectory.time);
+    trajectory.controls = soln(end).interp.control(trajectory.time);
 
     % Plots:
 
     % Show the error in the collocation constraint between grid points:
-    if strcmp(soln(end).problem.options.method,'trapezoid') || strcmp(soln(end).problem.options.method,'hermiteSimpson')
+    if 0;%strcmp(soln(end).problem.options.method,'trapezoid') || strcmp(soln(end).problem.options.method,'hermiteSimpson')
         % Then we can plot an estimate of the error along the trajectory
         figure(5); clf;
 
@@ -79,16 +79,6 @@ function [trajectory] = optimizeSegment(segment)
         xlabel('segment index')
         ylabel('pole angle');
     end
-
-    %%%% Plot the state and control against time
-    figure
-    hold on
-    plot3(states(8,:),states(9,:),states(10,:));
-    hold off
-    grid
-    view(45,45)
-    axis equal
-    axis vis3d
 
 end
 

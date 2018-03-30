@@ -17,7 +17,7 @@ function [x,fval,exitflag,output,lambda,grad,hessian] = fminconstr(WP)
 
         function y = objfun(x)
             if ~isequal(x,xLast) % Check if computation is necessary
-                [myf,myc,myceq] = totalTime(x,WP);
+                [myf,myc,myceq,~] = totalTime(x,WP);
                 xLast = x;
             end
             % Now compute objective function
@@ -26,7 +26,7 @@ function [x,fval,exitflag,output,lambda,grad,hessian] = fminconstr(WP)
 
         function [c,ceq] = constr(x)
             if ~isequal(x,xLast) % Check if computation is necessary
-                [myf,myc,myceq] = totalTime(x,WP);
+                [myf,myc,myceq,~] = totalTime(x,WP);
                 xLast = x;
             end
             % Now compute constraint functions
