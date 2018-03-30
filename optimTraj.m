@@ -15,10 +15,11 @@ function optimTraj
     end
     
     %% Add folders to path
-    addpath('Complete Optimization');
+    addpath('Dynamic Model');
+    addpath('External Optimization (Trajectory)');
     addpath('Flight Plans');
     addpath('FlightGear');
-    addpath('Segment Optimization');
+    addpath('Internal Optimization (Segments)');
     addpath('Simulink Models');
     addpath('Test Functions');
     

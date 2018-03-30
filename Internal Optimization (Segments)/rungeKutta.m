@@ -6,7 +6,7 @@ function soln = rungeKutta(problem)
 %
 % See Bett's book for details on the method
 %
-% For details on the input and output, see the help file for optimTraj.m
+% For details on the input and output, see the help file for optimTrajDirCol.m
 %
 % Method specific parameters:
 %
@@ -811,7 +811,7 @@ end
 function [c, ceq, dc, dceq] = collectConstraintsGrad(t,x,u,defects, pathCst, bndCst, pack, gradInfo, dxdalpha)
 % [c, ceq, dc, dceq] = collectConstraints(t,x,u,defects, pathCst, bndCst, pack, gradInfo, dxdalpha)
 %
-% OptimTraj utility function.
+% optimTrajDirCol utility function.
 %
 % Collects the defects, calls user-defined constraints, and then packs
 % everything up into a form that is good for fmincon.
