@@ -1,4 +1,4 @@
-function [x,fval,exitflag,output,population,score] = genetic(WP,hdngData)
+function [x,fval,exitflag,output,population,score] = genetic(WP)
 
     xLast = []; % Last place optimTraj was called
     myf = []; % Use for objective at xLast

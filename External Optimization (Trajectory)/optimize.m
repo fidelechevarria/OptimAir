@@ -1,17 +1,17 @@
-function [x,fval,x_G,fval_G] = optimize(WP,hdngData)
+function [x,fval,x_G,fval_G] = optimize(WP)
 
 %     % Perform initial optimization using a genetic algorithm
-%     [x_G,fval_G,~,~,~,~] = genetic(WP,hdngData);
+%     [x_G,fval_G,~,~,~,~] = genetic(WP);
     
     % Perform final optimization using gradient-descent
     x_G = 0;
-    [x,fval,~,~,~,~,~] = fminconstr(x_G,WP,hdngData);
+    [x,fval,~,~,~,~,~] = fminconstr(x_G,WP);
 
 %     % Perform global optimization using multiStart fminconstr in a parallel pool
-%     [x,fval] = multiStartParallel(WP,hdngData);
+%     [x,fval] = multiStartParallel(WP);
 
 %     % Perform global optimization using pattern search
-%     [x,fval] = patternSearch(WP,hdngData);
+%     [x,fval] = patternSearch(WP);
     
     % Show optimization results
     automaticFGlaunchIsActivated = 0;

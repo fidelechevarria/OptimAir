@@ -1,4 +1,4 @@
-function [x,fval] = multiStartParallel(WP,hdngData)
+function [x,fval] = multiStartParallel(WP)
 
     xLast = []; % Last place optimTraj was called
     myf = []; % Use for objective at xLast

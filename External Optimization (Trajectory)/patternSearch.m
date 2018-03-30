@@ -1,4 +1,4 @@
-function [x,fval] = patternSearch(WP,hdngData)
+function [x,fval] = patternSearch(WP)
 
     xLast = []; % Last place optimTraj was called
     myf = []; % Use for objective at xLast

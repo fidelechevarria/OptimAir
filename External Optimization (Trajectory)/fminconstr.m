@@ -1,4 +1,4 @@
-function [x,fval,exitflag,output,lambda,grad,hessian] = fminconstr(x0,WP,hdngData)
+function [x,fval,exitflag,output,lambda,grad,hessian] = fminconstr(x0,WP)
 
     xLast = []; % Last place optimTraj was called
     myf = []; % Use for objective at xLast
