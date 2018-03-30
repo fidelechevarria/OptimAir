@@ -1,4 +1,5 @@
 function [ north, east, up ] = custom_lla2flat( llaData )
+
     % Convert from geodetic latitude, longitude, and altitude to flat Earth position
     format long g
     ellipsoidModel = 'WGS84';
@@ -21,5 +22,6 @@ function [ north, east, up ] = custom_lla2flat( llaData )
         east = [east ; flat{1,i}(2)];
         up = [up ; -flat{1,i}(3)];
     end
+    
 end
 

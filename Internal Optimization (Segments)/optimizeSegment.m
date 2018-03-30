@@ -1,5 +1,5 @@
 
-function optimizeSegment()
+function [optimStates] = optimizeSegment(bounds,guess)
 
     % Physical parameters
     p.Tmax = 9000;
@@ -20,6 +20,8 @@ function optimizeSegment()
     problem.func.pathCst = @(t,x,u)(  pathConstraint(x,u)  );
 
     % Problem bounds
+    problem.bounds = bounds;
+    
     problem.bounds.initialTime.low = 0;
     problem.bounds.initialTime.upp = 0;
     problem.bounds.finalTime.low = 0.5;
@@ -36,6 +38,8 @@ function optimizeSegment()
     problem.bounds.control.upp = [10; 9000; 7.3];
 
     % Guess at the initial trajectory
+    problem.guess = guess;
+    
     problem.guess.time = [0 20];
     problem.guess.state = [[4000; 80; 0.1; 1; 0; 0; 0; 0; 0; 0]...
                            [5000; 100; 0.1; 0; 0; 0; 1; 0; 0; 50]];

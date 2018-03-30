@@ -161,11 +161,11 @@ function optimTraj
     end
 
     function saveFP_Callback(~,~)
-        if ~exist('optimTraj Flight Plans','dir')
-            mkdir('optimTraj Flight Plans')
-            cd([pwd '\optimTraj Flight Plans'])
+        if ~exist('Flight Plans','dir')
+            mkdir('Flight Plans')
+            cd([pwd '\Flight Plans'])
         else
-            cd([pwd '\optimTraj Flight Plans'])
+            cd([pwd '\Flight Plans'])
         end
         WPdata = WP_table.Data;
         uisave('WPdata','myFlightPlan');
@@ -173,8 +173,8 @@ function optimTraj
     end
 
     function loadFP_Callback(~,~)
-        if (exist('optimTraj Flight Plans','dir') && (isempty(strfind(pwd,'optimTraj Flight Plans'))))
-            cd([pwd '\optimTraj Flight Plans'])
+        if (exist('Flight Plans','dir') && (isempty(strfind(pwd,'Flight Plans'))))
+            cd([pwd '\Flight Plans'])
         end
         [file,path] = uigetfile('*.mat','Select a MAT file');
         if (file ~= 0)
@@ -184,7 +184,7 @@ function optimTraj
             [NWP,~] = size(dataStruct.WPdata);
             NWP_popup.Value = NWP - 5; % Change NWP popup menu value
         end
-        if exist('optimTraj Flight Plans','dir')
+        if exist('Flight Plans','dir')
             cd ..
         end
     end
