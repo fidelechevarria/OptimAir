@@ -29,9 +29,8 @@ function insertPlaneObject(position,attitude)
                   
     end
 
-    % Add a camera light, and tone down the specular highlighting
-    camlight('headlight');
-    material('dull');
+    camlight(0,180);
+    material('shiny');
 
 end
 
