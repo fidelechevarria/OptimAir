@@ -4,7 +4,7 @@ function [c, ceq] = pathConstraint(x,u)
 %
 % Computes the path constraint
   
-c = [-x(10)];
+c = [];
 ceq = [];  
 
 end

@@ -2,8 +2,6 @@
 function [trajectory] = optimizeSegment(segment)
 
     % Physical parameters
-    p.Tmax = 9000;
-    p.Tmin = 0;
     p.m = 750;
     p.g = 9.81;
     p.rho = 1.225;
@@ -11,8 +9,6 @@ function [trajectory] = optimizeSegment(segment)
     p.Clalpha = 1.3;
     p.K = 0.1779;
     p.Cd0 = 0.036;
-    p.alpha_min = -0.5;
-    p.alpha_max = 0.5;
 
     % User-defined dynamics and objective functions
     problem.func.dynamics = @(t,x,u)( dynamics(x,u,p) );
@@ -31,8 +27,8 @@ function [trajectory] = optimizeSegment(segment)
 %     problem.options(1).defaultAccuracy = 'medium';
 
     problem.options(1).method = 'trapezoid';
-    problem.options(1).trapezoid.nGrid = 10;
-    problem.options(1).nlpOpt.MaxIter = 50;
+    problem.options(1).trapezoid.nGrid = 20;
+    problem.options(1).nlpOpt.MaxIter = 400;
 
     % problem.options(2).method = 'hermiteSimpson';
     % problem.options(2).hermiteSimpson.nSegment = 15;
