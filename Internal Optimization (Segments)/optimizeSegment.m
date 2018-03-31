@@ -42,7 +42,8 @@ function [trajectory] = optimizeSegment(segment)
     soln = optimTrajDirCol(problem);
 
     % Unpack the simulation
-    trajectory.time = linspace(soln(end).grid.time(1), soln(end).grid.time(end), 150);
+    trajectory.segmentSize = 150;
+    trajectory.time = linspace(soln(end).grid.time(1), soln(end).grid.time(end), trajectory.segmentSize);
     trajectory.states = soln(end).interp.state(trajectory.time);
     trajectory.controls = soln(end).interp.control(trajectory.time);
 

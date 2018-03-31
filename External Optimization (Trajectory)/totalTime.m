@@ -40,10 +40,20 @@ function [f,c,ceq,totalTrajectory] = totalTime(params,WP)
     totalTrajectory.controls = [];
     for i = 1:WP.numOfWP-1
         totalTrajectory.totalTime = totalTrajectory.totalTime + trajectory{i}.time(end);
-        totalTrajectory.time = [totalTrajectory.time trajectory{i}.time];
+        if i == 1
+            totalTrajectory.time = [totalTrajectory.time trajectory{i}.time];
+        else
+            totalTrajectory.time = [totalTrajectory.time trajectory{i}.time+totalTrajectory.time(end)];
+        end
         totalTrajectory.states = [totalTrajectory.states trajectory{i}.states];
         totalTrajectory.controls = [totalTrajectory.controls trajectory{i}.controls];
     end
+    totalTrajectory.segmentSize = trajectory{1}.segmentSize;
+    totalTrajectory.numOfSegments = WP.numOfWP - 1;
+    totalTrajectory.numOfPoints = numel(totalTrajectory.time);
+    [totalTrajectory.numOfStates,~] = size(totalTrajectory.states);
+    [totalTrajectory.numOfControls,~] = size(totalTrajectory.controls);
+    totalTrajectory.euler = quat2eul(totalTrajectory.states(4:7,:)','ZYX')';
     
     f = totalTrajectory.totalTime;
     c = [];
