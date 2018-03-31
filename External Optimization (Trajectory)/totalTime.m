@@ -24,8 +24,8 @@ function [f,c,ceq,totalTrajectory] = totalTime(params,WP)
                 finalAttitudeLow = eul2quat(deg2rad([WP.heading(i+1)+params(i+1) 0 0]))';
                 finalAttitudeUpp = finalAttitudeLow;
             else
-                finalAttitudeLow = eul2quat(deg2rad([WP.heading(i+1)+params(i+1) 0 0]))';
-                finalAttitudeUpp = eul2quat(deg2rad([WP.heading(i+1)+params(i+1) 0 0]))';
+                finalAttitudeLow = [-1 -1 -1 -1]';
+                finalAttitudeUpp = [1 1 1 1]';
             end
             initPosLow = [WP.north(i) WP.east(i) WP.up(i)]';
             initPosUpp = initPosLow;
@@ -50,13 +50,13 @@ function [f,c,ceq,totalTrajectory] = totalTime(params,WP)
 
         segment.guess.time = [0 5];
         segment.guess.state = [[5000; 100; 0.1; initAttitudeLow; initPosLow]...
-                               [5000; 100; 0.1; finalAttitudeLow; finalPosLow]];
+                               [5000; 100; 0.1; initAttitudeLow; finalPosLow]];
         segment.guess.control = zeros(3,2);
 
         trajectory{i} = optimizeSegment(segment);
         
+        % Properties for the rest of the segments
         if i ~= WP.numOfWP-1 % Not necessary in the last iteration
-            % Properties for the rest of the segments
             initThrustLow = trajectory{i}.states(1,end);
             initThrustUpp = initThrustLow;
             finalThrustLow = 0;
@@ -76,8 +76,8 @@ function [f,c,ceq,totalTrajectory] = totalTime(params,WP)
                 finalAttitudeLow = eul2quat(deg2rad([WP.heading(i+2)+params(i+2) 0 0]))';
                 finalAttitudeUpp = finalAttitudeLow;
             else
-                finalAttitudeLow = eul2quat(deg2rad([WP.heading(i+1)+params(i+1) 0 0]))';
-                finalAttitudeUpp = eul2quat(deg2rad([WP.heading(i+1)+params(i+1) 0 0]))';
+                finalAttitudeLow = [-1 -1 -1 -1]';
+                finalAttitudeUpp = [1 1 1 1]';
             end
             initPosLow = [WP.north(i+1) WP.east(i+1) WP.up(i+1)]';
             initPosUpp = initPosLow;

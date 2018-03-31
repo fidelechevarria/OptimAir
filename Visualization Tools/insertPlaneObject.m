@@ -1,5 +1,5 @@
 
-function insertPlaneObject(position,attitude)
+function insertPlaneObject(position,attitude,scale)
 
     % Import PATCH-compatible face-vertex structure
     load('ZivkoEdgeMesh.mat')
@@ -9,10 +9,14 @@ function insertPlaneObject(position,attitude)
     
     geometry = cell(N_Objects,1);
     
+    % First scale, then rotate, then apply offset
     for i = 1:N_Objects
-       DCM = angle2dcm(deg2rad(attitude(i,1)),deg2rad(attitude(i,2)),deg2rad(attitude(i,3)),'ZYX');
+       geometry{i}.vertices(:,1) = referenceGeometry.vertices(:,1).*scale;
+       geometry{i}.vertices(:,2) = referenceGeometry.vertices(:,2).*scale;
+       geometry{i}.vertices(:,3) = referenceGeometry.vertices(:,3).*scale;
+       DCM = angle2dcm(attitude(i,1),-attitude(i,2),-attitude(i,3),'ZYX');
        for j = 1:N_vertices  
-           geometry{i}.vertices(j,:) = DCM * referenceGeometry.vertices(j,:)';
+           geometry{i}.vertices(j,:) = inv(DCM) * geometry{i}.vertices(j,:)';
        end
        geometry{i}.vertices(:,1) = geometry{i}.vertices(:,1) + position(i,1);
        geometry{i}.vertices(:,2) = geometry{i}.vertices(:,2) + position(i,2);
@@ -26,7 +30,7 @@ function insertPlaneObject(position,attitude)
                           'EdgeColor', 'none',...
                           'FaceLighting', 'gouraud',...
                           'AmbientStrength', 0.15);
-                  
+
     end
 
     camlight(0,180);

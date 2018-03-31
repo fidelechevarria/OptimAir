@@ -26,7 +26,7 @@ function states_dot = dynamics(states,controls,params)
     Clalpha = params.Clalpha;
     K = params.K;
     Cd0 = params.Cd0;
-
+    
     % Dynamic model
     Cl = Clalpha.*alpha;
     L = 0.5.*rho.*V.^2.*S.*Cl;

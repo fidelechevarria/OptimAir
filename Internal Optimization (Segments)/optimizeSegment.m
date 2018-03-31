@@ -6,9 +6,9 @@ function [trajectory] = optimizeSegment(segment)
     p.g = 9.81;
     p.rho = 1.225;
     p.S = 9.1;
-    p.Clalpha = 1.3;
+    p.Clalpha = 4;
     p.K = 0.1779;
-    p.Cd0 = 0.036;
+    p.Cd0 = 0.15;
 
     % User-defined dynamics and objective functions
     problem.func.dynamics = @(t,x,u)( dynamics(x,u,p) );
@@ -27,8 +27,8 @@ function [trajectory] = optimizeSegment(segment)
 %     problem.options(1).defaultAccuracy = 'medium';
 
     problem.options(1).method = 'trapezoid';
-    problem.options(1).trapezoid.nGrid = 20;
-    problem.options(1).nlpOpt.MaxIter = 400;
+    problem.options(1).trapezoid.nGrid = 60;
+    problem.options(1).nlpOpt.MaxIter = 800;
 
     % problem.options(2).method = 'hermiteSimpson';
     % problem.options(2).hermiteSimpson.nSegment = 15;
@@ -38,7 +38,7 @@ function [trajectory] = optimizeSegment(segment)
     soln = optimTrajDirCol(problem);
 
     % Unpack the simulation
-    trajectory.segmentSize = 150;
+    trajectory.segmentSize = 250;
     trajectory.time = linspace(soln(end).grid.time(1), soln(end).grid.time(end), trajectory.segmentSize);
     trajectory.states = soln(end).interp.state(trajectory.time);
     trajectory.controls = soln(end).interp.control(trajectory.time);
