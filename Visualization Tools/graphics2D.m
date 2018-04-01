@@ -29,7 +29,7 @@ function graphics2D(WP,totalTrajectory)
                     xPoints = [xval,xval];
                     yPoints = [ymin,ymax];
                     plot(xPoints,yPoints,'r--')
-                    text(xval,ymax,num2str(j-1),'Color','r','VerticalAlignment','bottom')
+                    text(xval,ymax,num2str(j),'Color','r','VerticalAlignment','bottom')
                 end
                 hold off
                 grid
@@ -51,7 +51,7 @@ function graphics2D(WP,totalTrajectory)
                     xPoints = [xval,xval];
                     yPoints = [ymin,ymax];
                     plot(xPoints,yPoints,'r--')
-                    text(xval,ymax,num2str(j-1),'Color','r','VerticalAlignment','bottom')
+                    text(xval,ymax,num2str(j),'Color','r','VerticalAlignment','bottom')
                 end
                 hold off
                 grid
@@ -80,7 +80,7 @@ function graphics2D(WP,totalTrajectory)
                     xPoints = [xval,xval];
                     yPoints = [ymin,ymax];
                     plot(xPoints,yPoints,'r--')
-                    text(xval,ymax,num2str(j-1),'Color','r','VerticalAlignment','bottom')
+                    text(xval,ymax,num2str(j),'Color','r','VerticalAlignment','bottom')
                 end
                 hold off
                 grid
@@ -100,7 +100,7 @@ function graphics2D(WP,totalTrajectory)
                     xPoints = [xval,xval];
                     yPoints = [ymin,ymax];
                     plot(xPoints,yPoints,'r--')
-                    text(xval,ymax,num2str(j-1),'Color','r','VerticalAlignment','bottom')
+                    text(xval,ymax,num2str(j),'Color','r','VerticalAlignment','bottom')
                 end
                 hold off
                 grid
@@ -127,7 +127,7 @@ function graphics2D(WP,totalTrajectory)
                 xPoints = [xval,xval];
                 yPoints = [ymin,ymax];
                 plot(xPoints,yPoints,'r--')
-                text(xval,ymax,num2str(j-1),'Color','r','VerticalAlignment','bottom')
+                text(xval,ymax,num2str(j),'Color','r','VerticalAlignment','bottom')
             end
             hold off
             grid

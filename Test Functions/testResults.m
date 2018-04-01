@@ -1,9 +1,12 @@
-clearvars
-close all
+function testResults()
 
-load('WP_for_test.mat');
+    clearvars
+    close all
 
-params = zeros(WP.numOfWP,1);
+    load('WP_for_test.mat');
 
-plotResults(params,WP,0);
+    params = zeros(WP.numOfWP,1);
 
+    plotResults(params,WP,0);
+
+end

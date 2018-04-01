@@ -19,6 +19,7 @@ function optimTraj
     addpath('External Optimization (Trajectory)');
     addpath('Flight Plans');
     addpath('FlightGear');
+    addpath('Initial Trajectory Assistant');
     addpath('Internal Optimization (Segments)');
     addpath('Simulink Models');
     addpath('Test Functions');
@@ -133,7 +134,8 @@ function optimTraj
         WP.gateType = gateTypeData;
         WP.expectedManoeuvre = expectedManoeuvreData;
         WP.numOfWP = numel(north);
-        optimize(WP); % Optimize trajectory
+        ITA_main(WP); % Launch Initial Trajectory Assistant
+%         optimize(WP); % Optimize trajectory
     end
     
     function NWP_Callback(Object,~)

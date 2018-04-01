@@ -51,7 +51,7 @@ function graphics3D(WP,totalTrajectory)
     plot3(totalTrajectory.states(8,:),totalTrajectory.states(9,:),zeros(1,totalTrajectory.numOfPoints),'Color',[0 0.5 1]);
     scatter3(WP.north,WP.east,WP.up,9,'r','filled');
     for i = 1:WP.numOfWP
-        text(WP.north(i),WP.east(i),WP.up(i),num2str(i-1),'Color','r','VerticalAlignment','bottom','FontSize',18);
+        text(WP.north(i),WP.east(i),WP.up(i),num2str(i),'Color','r','VerticalAlignment','bottom','FontSize',18);
     end
     insertPlaneObject(planePos,planeAtt,planeScale); % Insert 3D plane objects
     for i = 1:numOfVerticalLines
@@ -65,7 +65,7 @@ function graphics3D(WP,totalTrajectory)
     % [~,~] = legend('Original points'); % "[~,~]=" prevents the bug in R2015b (https://www.mathworks.com/support/bugreports/1283854)
     axis equal
     axis vis3d % Lock aspect ratio of axes
-    % view(-45,45); % Azimuth and elevation of initial view (degrees)
+    view(-45,30); % Azimuth and elevation of initial view (degrees)
     set(ax, 'Ydir', 'reverse')
     xlabel('North')
     ylabel('East')
