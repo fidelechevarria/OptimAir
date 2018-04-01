@@ -34,9 +34,18 @@ function ITA_main(WP)
         end
     end
     WP.numOfWP_ITA = numel(WP.ITA_north);
+    WP.ITA_north_orig = WP.ITA_north;
+    WP.ITA_east_orig = WP.ITA_east;
+    WP.ITA_up_orig = WP.ITA_up;
     
     % Generate natural cubic spline through all WP
-    estimatedTrajectory = cscvn([WP.ITA_north;WP.ITA_east;WP.ITA_up]);
+    N = 250;
+    estimatedTraj = cscvn([WP.ITA_north;WP.ITA_east;WP.ITA_up]);
+    space = linspace(estimatedTraj.breaks(1),estimatedTraj.breaks(end),N);
+    smooth = fnval(estimatedTraj,space);
+    smooth_north = smooth(1,:)';
+    smooth_east = smooth(2,:)';
+    smooth_up = smooth(3,:)';
 
     % Create ITA figure
     ita_fig = figure('Visible','off','Resize','off','Position',[760,88,700,500]);  %  Create and then hide the UI as it is being constructed.
@@ -45,10 +54,11 @@ function ITA_main(WP)
     movegui(ita_fig,'northeast') % Move the GUI.
     plot3D_ax = axes('Position',[0.1 0.25 0.7 0.7]);
     hold on
-    fnplt(estimatedTrajectory,'b',1);
+    trajPlot = plot3(smooth_north,smooth_east,smooth_up,'Color','b','LineWidth',1);
     j = 1;
     for i = 1:WP.numOfWP_ITA
         if WP.ITA_WP_type(i) == 0 % Real WP
+            ITA_WP_original{i} = [WP.ITA_north(i) WP.ITA_east(i) WP.ITA_up(i)];
             ITA_WP{i} = scatter3(WP.ITA_north(i),WP.ITA_east(i),WP.ITA_up(i),'r','filled');
             ITA_txt{i} = text(WP.ITA_north(i),WP.ITA_east(i),WP.ITA_up(i),num2str(j),'Color','r','VerticalAlignment','bottom','FontSize',18);
             j = j + 1;
@@ -56,7 +66,7 @@ function ITA_main(WP)
             ITA_WP{i} = scatter3(WP.ITA_north(i),WP.ITA_east(i),WP.ITA_up(i),'b','filled');
         end
     end
-    hold off
+%     hold off
     grid
 %     title(['Estimated time ' num2str(propagatedState.totalTime) 's'])
     axis equal
@@ -93,15 +103,92 @@ function ITA_main(WP)
     ita_fig.Visible = 'on';
     
     function sliderNorthCallback(sliderNorthHandle,~)
-        disp(get(sliderNorthHandle,'Value'));
+        
+        % Get slider value
+        increment = get(sliderNorthHandle,'Value');
+        
+        % Update value in WP structure
+        WP.ITA_north(1) = WP.ITA_north_orig(1) + increment;
+        
+        % Generate natural cubic spline through all new WP
+        N = 250;
+        estimatedTraj = cscvn([WP.ITA_north;WP.ITA_east;WP.ITA_up]);
+        space = linspace(estimatedTraj.breaks(1),estimatedTraj.breaks(end),N);
+        smooth = fnval(estimatedTraj,space);
+        smooth_north = smooth(1,:)';
+        smooth_east = smooth(2,:)';
+        smooth_up = smooth(3,:)';
+        
+        % Delete old trajectory plot
+        delete(trajPlot)
+        
+        % Generate new trajectory plot
+        trajPlot = plot3(smooth_north,smooth_east,smooth_up,'Color','b','LineWidth',1);
+        
+        % Update ITA_WP position
+        set(ITA_WP{1},'XData',WP.ITA_north_orig(1) + increment);
+        
     end
 
     function sliderEastCallback(sliderEastHandle,~)
-        disp(get(sliderEastHandle,'Value'));
+        
+        % Get slider value
+        increment = get(sliderEastHandle,'Value');
+        
+        % Update value in WP structure
+        WP.ITA_east(1) = WP.ITA_east_orig(1) + increment;
+        
+        % Generate natural cubic spline through all new WP
+        N = 250;
+        estimatedTraj = cscvn([WP.ITA_north;WP.ITA_east;WP.ITA_up]);
+        space = linspace(estimatedTraj.breaks(1),estimatedTraj.breaks(end),N);
+        smooth = fnval(estimatedTraj,space);
+        smooth_north = smooth(1,:)';
+        smooth_east = smooth(2,:)';
+        smooth_up = smooth(3,:)';
+        
+        % Delete old trajectory plot
+        delete(trajPlot)
+        
+        % Generate new trajectory plot
+        trajPlot = plot3(smooth_north,smooth_east,smooth_up,'Color','b','LineWidth',1);
+        
+        % Update ITA_WP position
+        set(ITA_WP{1},'YData',WP.ITA_east_orig(1) + increment);
+        
     end
 
     function sliderUpCallback(sliderUpHandle,~)
-        disp(get(sliderUpHandle,'Value'));
+                
+        % Deactivate limit auto adjustment
+        
+        
+        % Get slider value
+        increment = get(sliderUpHandle,'Value');
+        
+        % Update value in WP structure
+        WP.ITA_up(1) = WP.ITA_up_orig(1) + increment;
+        
+        % Generate natural cubic spline through all new WP
+        N = 250;
+        estimatedTraj = cscvn([WP.ITA_north;WP.ITA_east;WP.ITA_up]);
+        space = linspace(estimatedTraj.breaks(1),estimatedTraj.breaks(end),N);
+        smooth = fnval(estimatedTraj,space);
+        smooth_north = smooth(1,:)';
+        smooth_east = smooth(2,:)';
+        smooth_up = smooth(3,:)';
+        
+        % Delete old trajectory plot
+        delete(trajPlot)
+        
+        % Generate new trajectory plot
+        trajPlot = plot3(smooth_north,smooth_east,smooth_up,'Color','b','LineWidth',1);
+        
+        % Update ITA_WP position
+        set(ITA_WP{1},'ZData',WP.ITA_up_orig(1) + increment);
+                    
+        axis tight;
+        
     end
+    
 end
-
