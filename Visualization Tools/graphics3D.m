@@ -48,7 +48,7 @@ function graphics3D(WP,totalTrajectory)
     ax = axes;
     hold on
     plot3(totalTrajectory.states(8,:),totalTrajectory.states(9,:),totalTrajectory.states(10,:));
-    plot3(totalTrajectory.states(8,:),totalTrajectory.states(9,:),zeros(1,totalTrajectory.numOfPoints),'Color','m');
+    plot3(totalTrajectory.states(8,:),totalTrajectory.states(9,:),zeros(1,totalTrajectory.numOfPoints),'Color',[0 0.5 1]);
     scatter3(WP.north,WP.east,WP.up,9,'r','filled');
     for i = 1:WP.numOfWP
         text(WP.north(i),WP.east(i),WP.up(i),num2str(i-1),'Color','r','VerticalAlignment','bottom','FontSize',18);
@@ -57,7 +57,7 @@ function graphics3D(WP,totalTrajectory)
     for i = 1:numOfVerticalLines
         zmin = min(totalTrajectory.states(10,verticalLinesPointIndex(i)),0);
         zmax = max(totalTrajectory.states(10,verticalLinesPointIndex(i)),0);
-        plot3(verticalLinesPosHoriz(i,1)*ones(1,2),verticalLinesPosHoriz(i,2)*ones(1,2),[zmin zmax],'Color','m')
+        plot3(verticalLinesPosHoriz(i,1)*ones(1,2),verticalLinesPosHoriz(i,2)*ones(1,2),[zmin zmax],'Color',[0 0.5 1])
     end
     hold off
     grid

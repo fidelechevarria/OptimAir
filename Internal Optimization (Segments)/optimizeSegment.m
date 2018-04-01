@@ -27,8 +27,8 @@ function [trajectory] = optimizeSegment(segment)
 %     problem.options(1).defaultAccuracy = 'medium';
 
     problem.options(1).method = 'trapezoid';
-    problem.options(1).trapezoid.nGrid = 60;
-    problem.options(1).nlpOpt.MaxIter = 800;
+    problem.options(1).trapezoid.nGrid = 10;
+    problem.options(1).nlpOpt.MaxIter = 20;
 
     % problem.options(2).method = 'hermiteSimpson';
     % problem.options(2).hermiteSimpson.nSegment = 15;
