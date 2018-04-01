@@ -37,6 +37,9 @@ function ITA_main(WP)
     WP.ITA_north_orig = WP.ITA_north;
     WP.ITA_east_orig = WP.ITA_east;
     WP.ITA_up_orig = WP.ITA_up;
+    WP.ITA_virtualWPindices = find(WP.ITA_WP_type);
+    
+    WP.ITA_activeWP = WP.ITA_virtualWPindices(3);
     
     % Generate natural cubic spline through all WP
     N = 250;
@@ -58,9 +61,8 @@ function ITA_main(WP)
     j = 1;
     for i = 1:WP.numOfWP_ITA
         if WP.ITA_WP_type(i) == 0 % Real WP
-            ITA_WP_original{i} = [WP.ITA_north(i) WP.ITA_east(i) WP.ITA_up(i)];
             ITA_WP{i} = scatter3(WP.ITA_north(i),WP.ITA_east(i),WP.ITA_up(i),'r','filled');
-            ITA_txt{i} = text(WP.ITA_north(i),WP.ITA_east(i),WP.ITA_up(i),num2str(j),'Color','r','VerticalAlignment','bottom','FontSize',18);
+            text(WP.ITA_north(i),WP.ITA_east(i),WP.ITA_up(i),num2str(j),'Color','r','VerticalAlignment','bottom','FontSize',18);
             j = j + 1;
         else % Virtual WP
             ITA_WP{i} = scatter3(WP.ITA_north(i),WP.ITA_east(i),WP.ITA_up(i),'b','filled');
@@ -99,6 +101,44 @@ function ITA_main(WP)
     sliderUpHandle = handle(sliderUp, 'CallbackProperties');
     set(sliderUpHandle, 'StateChangedCallback', @sliderUpCallback);  %alternative
     
+    % Create text for sliders
+    uicontrol('Style','Text',...
+              'Parent',ita_fig,...
+              'String','N',...
+              'ForegroundColor','b',...
+              'FontSize',15,...
+              'Position',[162 7 18 20]);
+    uicontrol('Style','Text',...
+              'Parent',ita_fig,...
+              'String','E',...
+              'ForegroundColor','b',...
+              'FontSize',15,...
+              'Position',[472 7 18 20]);
+    uicontrol('Style','Text',...
+              'Parent',ita_fig,...
+              'String','U',...
+              'ForegroundColor','b',...
+              'FontSize',15,...
+              'Position',[660 7 18 20]);
+          
+    % Create interactive buttons
+    uicontrol('Parent',ita_fig,...
+              'Units','pixels',...
+              'Position',[640 470 55 25],...
+              'String','Next WP',...
+              'Callback',@ITA_nextWP_Callback);
+    uicontrol('Parent',ita_fig,...
+              'Units','pixels',...
+              'Position',[565 470 70 25],...
+              'String','Previous WP',...
+              'Callback',@ITA_previousWP_Callback);
+    uicontrol('Parent',ita_fig,...
+              'Units','pixels',...
+              'Position',[640 440 55 25],...
+              'BackgroundColor',[0 1 0.5],...
+              'String','Finish',...
+              'Callback',@ITA_finishTraj_Callback);
+    
     % Make GUI visible.
     ita_fig.Visible = 'on';
     
@@ -108,7 +148,7 @@ function ITA_main(WP)
         increment = get(sliderNorthHandle,'Value');
         
         % Update value in WP structure
-        WP.ITA_north(1) = WP.ITA_north_orig(1) + increment;
+        WP.ITA_north(WP.ITA_activeWP) = WP.ITA_north_orig(WP.ITA_activeWP) + increment;
         
         % Generate natural cubic spline through all new WP
         N = 250;
@@ -126,7 +166,7 @@ function ITA_main(WP)
         trajPlot = plot3(smooth_north,smooth_east,smooth_up,'Color','b','LineWidth',1);
         
         % Update ITA_WP position
-        set(ITA_WP{1},'XData',WP.ITA_north_orig(1) + increment);
+        set(ITA_WP{WP.ITA_activeWP},'XData',WP.ITA_north_orig(WP.ITA_activeWP) + increment);
         
     end
 
@@ -136,7 +176,7 @@ function ITA_main(WP)
         increment = get(sliderEastHandle,'Value');
         
         % Update value in WP structure
-        WP.ITA_east(1) = WP.ITA_east_orig(1) + increment;
+        WP.ITA_east(WP.ITA_activeWP) = WP.ITA_east_orig(WP.ITA_activeWP) + increment;
         
         % Generate natural cubic spline through all new WP
         N = 250;
@@ -154,7 +194,7 @@ function ITA_main(WP)
         trajPlot = plot3(smooth_north,smooth_east,smooth_up,'Color','b','LineWidth',1);
         
         % Update ITA_WP position
-        set(ITA_WP{1},'YData',WP.ITA_east_orig(1) + increment);
+        set(ITA_WP{WP.ITA_activeWP},'YData',WP.ITA_east_orig(WP.ITA_activeWP) + increment);
         
     end
 
@@ -167,7 +207,7 @@ function ITA_main(WP)
         increment = get(sliderUpHandle,'Value');
         
         % Update value in WP structure
-        WP.ITA_up(1) = WP.ITA_up_orig(1) + increment;
+        WP.ITA_up(WP.ITA_activeWP) = WP.ITA_up_orig(WP.ITA_activeWP) + increment;
         
         % Generate natural cubic spline through all new WP
         N = 250;
@@ -185,7 +225,7 @@ function ITA_main(WP)
         trajPlot = plot3(smooth_north,smooth_east,smooth_up,'Color','b','LineWidth',1);
         
         % Update ITA_WP position
-        set(ITA_WP{1},'ZData',WP.ITA_up_orig(1) + increment);
+        set(ITA_WP{WP.ITA_activeWP},'ZData',WP.ITA_up_orig(WP.ITA_activeWP) + increment);
                     
         axis tight;
         
