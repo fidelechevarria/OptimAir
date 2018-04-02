@@ -41,7 +41,7 @@ function ITA_main(WP)
     WP.numOfVirtualWP_ITA = numel(WP.ITA_virtualWPindices);
     
     % Generate natural cubic spline through all WP
-    N = 500;
+    N = 200;
     estimatedTraj = cscvn([WP.ITA_north;WP.ITA_east;WP.ITA_up]);
     space = linspace(estimatedTraj.breaks(1),estimatedTraj.breaks(end),N);
     smooth = fnval(estimatedTraj,space);
@@ -50,7 +50,7 @@ function ITA_main(WP)
     smooth_up = smooth(3,:)';
 
     % Compute arclength of the trajectory projection in the horizontal plane
-    verticalLinesSeparation = 10;
+    verticalLinesSeparation = 30;
     arclengthHoriz = zeros(N-1,1);
     for i = 1:N-1
         arclengthHoriz(i) = sqrt((smooth_north(i+1)-smooth_north(i))^2+...
@@ -86,13 +86,12 @@ function ITA_main(WP)
         end
     end
     % Plot vertical lines and trajectory projection in the horizontal plane
-    plot3(smooth_north,smooth_east,zeros(1,N),'Color',[0 0.5 1]);
+    trajHorizPlot = plot3(smooth_north,smooth_east,zeros(1,N),'Color',[0 0.5 1]);
     for i = 1:numOfVerticalLines
         zmin = min(smooth_up(verticalLinesPointIndex(i)),0);
         zmax = max(smooth_up(verticalLinesPointIndex(i)),0);
-        plot3(verticalLinesPosHoriz(i,1)*ones(1,2),verticalLinesPosHoriz(i,2)*ones(1,2),[zmin zmax],'Color',[0 0.5 1])
+        verticalLinesPlot{i} = plot3(verticalLinesPosHoriz(i,1)*ones(1,2),verticalLinesPosHoriz(i,2)*ones(1,2),[zmin zmax],'Color',[0 0.5 1]);
     end
-%     hold off
     grid
 %     title(['Estimated time ' num2str(propagatedState.totalTime) 's'])
     axis equal
@@ -102,7 +101,7 @@ function ITA_main(WP)
     xlabel('North')
     ylabel('East')
     zlabel('Up')
-%     set(ITA_WP,'Tag','plot3D_tag');
+    rotate3d on
     
     % Store information for active WP
     WP.ITA_activeWP_virtual = 1;
@@ -180,19 +179,15 @@ function ITA_main(WP)
         WP.ITA_north(WP.ITA_activeWP) = WP.ITA_north_orig(WP.ITA_activeWP) + increment;
         
         % Generate natural cubic spline through all new WP
-        N = 250;
         estimatedTraj = cscvn([WP.ITA_north;WP.ITA_east;WP.ITA_up]);
         space = linspace(estimatedTraj.breaks(1),estimatedTraj.breaks(end),N);
         smooth = fnval(estimatedTraj,space);
         smooth_north = smooth(1,:)';
         smooth_east = smooth(2,:)';
         smooth_up = smooth(3,:)';
-        
-        % Delete old trajectory plot
-        delete(trajPlot)
-        
-        % Generate new trajectory plot
-        trajPlot = plot3(smooth_north,smooth_east,smooth_up,'Color','b','LineWidth',1);
+              
+        % Update all lines and plots
+        updateLinesAndPlots()
         
         % Update ITA_WP position
         set(ITA_WP{WP.ITA_activeWP},'XData',WP.ITA_north_orig(WP.ITA_activeWP) + increment);
@@ -216,11 +211,8 @@ function ITA_main(WP)
         smooth_east = smooth(2,:)';
         smooth_up = smooth(3,:)';
         
-        % Delete old trajectory plot
-        delete(trajPlot)
-        
-        % Generate new trajectory plot
-        trajPlot = plot3(smooth_north,smooth_east,smooth_up,'Color','b','LineWidth',1);
+        % Update all lines and plots
+        updateLinesAndPlots()
         
         % Update ITA_WP position
         set(ITA_WP{WP.ITA_activeWP},'YData',WP.ITA_east_orig(WP.ITA_activeWP) + increment);
@@ -247,16 +239,55 @@ function ITA_main(WP)
         smooth_east = smooth(2,:)';
         smooth_up = smooth(3,:)';
         
+        % Update all lines and plots
+        updateLinesAndPlots()
+        
+        % Update ITA_WP position
+        set(ITA_WP{WP.ITA_activeWP},'ZData',WP.ITA_up_orig(WP.ITA_activeWP) + increment);
+                    
+        axis tight;
+        
+    end
+
+    function updateLinesAndPlots()
+        
         % Delete old trajectory plot
         delete(trajPlot)
         
         % Generate new trajectory plot
         trajPlot = plot3(smooth_north,smooth_east,smooth_up,'Color','b','LineWidth',1);
         
-        % Update ITA_WP position
-        set(ITA_WP{WP.ITA_activeWP},'ZData',WP.ITA_up_orig(WP.ITA_activeWP) + increment);
-                    
-        axis tight;
+        % Generate new arclength of the trajectory projection in the horizontal plane
+        for k = 1:N-1
+            arclengthHoriz(k) = sqrt((smooth_north(k+1)-smooth_north(k))^2+...
+                                     (smooth_east(k+1)-smooth_east(k))^2);
+        end
+        cumulativeArcLengthHoriz = cumsum(arclengthHoriz);
+        totalArcLengthHoriz = cumulativeArcLengthHoriz(end);
+        numOfVerticalLines = floor(totalArcLengthHoriz/verticalLinesSeparation);
+        verticalLinesPointIndex = [1];
+        for k = 1:numOfVerticalLines
+            [~,index] = min(abs(cumulativeArcLengthHoriz-verticalLinesSeparation*k));
+            verticalLinesPointIndex = [verticalLinesPointIndex index];
+        end
+        verticalLinesPosHoriz = [smooth_north(verticalLinesPointIndex)...
+                                 smooth_east(verticalLinesPointIndex)];
+        
+        % Delete old trajectory projection plot
+        delete(trajHorizPlot)
+        
+        % Generate new trajectory projection plot
+        trajHorizPlot = plot3(smooth_north,smooth_east,zeros(1,N),'Color',[0 0.5 1]);
+        
+        % Delete and generate new vertical lines
+        for k = 1:numel(verticalLinesPlot)
+            delete(verticalLinesPlot{k})
+        end
+        for k = 1:numOfVerticalLines
+            zmin = min(smooth_up(verticalLinesPointIndex(k)),0);
+            zmax = max(smooth_up(verticalLinesPointIndex(k)),0);
+            verticalLinesPlot{k} = plot3(verticalLinesPosHoriz(k,1)*ones(1,2),verticalLinesPosHoriz(k,2)*ones(1,2),[zmin zmax],'Color',[0 0.5 1]);
+        end
         
     end
 

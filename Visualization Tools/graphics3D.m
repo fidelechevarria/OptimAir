@@ -25,7 +25,7 @@ function graphics3D(WP,totalTrajectory)
                 totalTrajectory.euler(3,planePointIndex)'];
             
     % Compute arclength of the trajectory projection in the horizontal plane
-    verticalLinesSeparation = 10;
+    verticalLinesSeparation = 30;
     arclengthHoriz = zeros(totalTrajectory.numOfPoints-1,1);
     for i = 1:totalTrajectory.numOfPoints-1
         arclengthHoriz(i) = sqrt((totalTrajectory.states(8,i+1)-totalTrajectory.states(8,i))^2+...
