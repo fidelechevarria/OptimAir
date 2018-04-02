@@ -38,8 +38,7 @@ function ITA_main(WP)
     WP.ITA_east_orig = WP.ITA_east;
     WP.ITA_up_orig = WP.ITA_up;
     WP.ITA_virtualWPindices = find(WP.ITA_WP_type);
-    
-    WP.ITA_activeWP = WP.ITA_virtualWPindices(3);
+    WP.numOfVirtualWP_ITA = numel(WP.ITA_virtualWPindices);
     
     % Generate natural cubic spline through all WP
     N = 250;
@@ -80,6 +79,11 @@ function ITA_main(WP)
     zlabel('Up')
 %     set(ITA_WP,'Tag','plot3D_tag');
     
+    % Store information for active WP
+    WP.ITA_activeWP_virtual = 1;
+    WP.ITA_activeWP = WP.ITA_virtualWPindices(WP.ITA_activeWP_virtual);
+    set(ITA_WP{1},'MarkerFaceColor','g')
+
     % Standard Java JSlider (20px high if no ticks/labels, otherwise use 45px)
     sliderNorth = javax.swing.JSlider(-1000,1000);
     javacomponent(sliderNorth,[20,20,300,50]);
@@ -229,6 +233,32 @@ function ITA_main(WP)
                     
         axis tight;
         
+    end
+
+    function ITA_previousWP_Callback(~,~)
+        % Change active WP to previous
+        set(ITA_WP{1},'MarkerFaceColor','b')
+        set(ITA_WP{WP.ITA_activeWP},'MarkerFaceColor','b')
+        if WP.ITA_activeWP_virtual == 1 % Go back to last
+            WP.ITA_activeWP_virtual = WP.numOfVirtualWP_ITA;
+        else
+            WP.ITA_activeWP_virtual = WP.ITA_activeWP_virtual - 1;
+        end
+        WP.ITA_activeWP = WP.ITA_virtualWPindices(WP.ITA_activeWP_virtual);
+        set(ITA_WP{WP.ITA_activeWP},'MarkerFaceColor','g')
+    end
+
+    function ITA_nextWP_Callback(~,~)
+        % Change active WP to next
+        set(ITA_WP{1},'MarkerFaceColor','b')
+        set(ITA_WP{WP.ITA_activeWP},'MarkerFaceColor','b')
+        if WP.ITA_activeWP_virtual == WP.numOfVirtualWP_ITA % Go back to first
+            WP.ITA_activeWP_virtual = 1;
+        else
+            WP.ITA_activeWP_virtual = WP.ITA_activeWP_virtual + 1;
+        end
+        WP.ITA_activeWP = WP.ITA_virtualWPindices(WP.ITA_activeWP_virtual);
+        set(ITA_WP{WP.ITA_activeWP},'MarkerFaceColor','g')
     end
     
 end
