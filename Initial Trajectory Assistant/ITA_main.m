@@ -237,7 +237,7 @@ function ITA_main(WP)
 
     function ITA_previousWP_Callback(~,~)
         % Change active WP to previous
-        set(ITA_WP{1},'MarkerFaceColor','b')
+        set(ITA_WP{WP.ITA_virtualWPindices(1)},'MarkerFaceColor','b')
         set(ITA_WP{WP.ITA_activeWP},'MarkerFaceColor','b')
         if WP.ITA_activeWP_virtual == 1 % Go back to last
             WP.ITA_activeWP_virtual = WP.numOfVirtualWP_ITA;
@@ -250,7 +250,7 @@ function ITA_main(WP)
 
     function ITA_nextWP_Callback(~,~)
         % Change active WP to next
-        set(ITA_WP{1},'MarkerFaceColor','b')
+        set(ITA_WP{WP.ITA_virtualWPindices(1)},'MarkerFaceColor','b')
         set(ITA_WP{WP.ITA_activeWP},'MarkerFaceColor','b')
         if WP.ITA_activeWP_virtual == WP.numOfVirtualWP_ITA % Go back to first
             WP.ITA_activeWP_virtual = 1;
