@@ -41,7 +41,7 @@ function ITA_main(WP)
     WP.numOfVirtualWP_ITA = numel(WP.ITA_virtualWPindices);
     
     % Generate natural cubic spline through all WP
-    N = 250;
+    N = 500;
     estimatedTraj = cscvn([WP.ITA_north;WP.ITA_east;WP.ITA_up]);
     space = linspace(estimatedTraj.breaks(1),estimatedTraj.breaks(end),N);
     smooth = fnval(estimatedTraj,space);
@@ -49,6 +49,24 @@ function ITA_main(WP)
     smooth_east = smooth(2,:)';
     smooth_up = smooth(3,:)';
 
+    % Compute arclength of the trajectory projection in the horizontal plane
+    verticalLinesSeparation = 10;
+    arclengthHoriz = zeros(N-1,1);
+    for i = 1:N-1
+        arclengthHoriz(i) = sqrt((smooth_north(i+1)-smooth_north(i))^2+...
+                                 (smooth_east(i+1)-smooth_east(i))^2);
+    end
+    cumulativeArcLengthHoriz = cumsum(arclengthHoriz);
+    totalArcLengthHoriz = cumulativeArcLengthHoriz(end);
+    numOfVerticalLines = floor(totalArcLengthHoriz/verticalLinesSeparation);
+    verticalLinesPointIndex = [1];
+    for i = 1:numOfVerticalLines
+        [~,index] = min(abs(cumulativeArcLengthHoriz-verticalLinesSeparation*i));
+        verticalLinesPointIndex = [verticalLinesPointIndex index];
+    end
+    verticalLinesPosHoriz = [smooth_north(verticalLinesPointIndex)...
+                             smooth_east(verticalLinesPointIndex)];
+    
     % Create ITA figure
     ita_fig = figure('Visible','off','Resize','off','Position',[760,88,700,500]);  %  Create and then hide the UI as it is being constructed.
     ita_fig.NumberTitle = 'off'; % Deactivate the label "Figure n" in the title bar
@@ -67,6 +85,13 @@ function ITA_main(WP)
             ITA_WP{i} = scatter3(WP.ITA_north(i),WP.ITA_east(i),WP.ITA_up(i),'b','filled');
         end
     end
+    % Plot vertical lines and trajectory projection in the horizontal plane
+    plot3(smooth_north,smooth_east,zeros(1,N),'Color',[0 0.5 1]);
+    for i = 1:numOfVerticalLines
+        zmin = min(smooth_up(verticalLinesPointIndex(i)),0);
+        zmax = max(smooth_up(verticalLinesPointIndex(i)),0);
+        plot3(verticalLinesPosHoriz(i,1)*ones(1,2),verticalLinesPosHoriz(i,2)*ones(1,2),[zmin zmax],'Color',[0 0.5 1])
+    end
 %     hold off
     grid
 %     title(['Estimated time ' num2str(propagatedState.totalTime) 's'])
@@ -83,7 +108,7 @@ function ITA_main(WP)
     WP.ITA_activeWP_virtual = 1;
     WP.ITA_activeWP = WP.ITA_virtualWPindices(WP.ITA_activeWP_virtual);
     set(ITA_WP{WP.ITA_activeWP},'MarkerFaceColor','g')
-
+    
     % Standard Java JSlider (20px high if no ticks/labels, otherwise use 45px)
     sliderNorth = javax.swing.JSlider(-1000,1000);
     javacomponent(sliderNorth,[20,20,300,50]);
