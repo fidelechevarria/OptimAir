@@ -82,7 +82,7 @@ function ITA_main(WP)
     % Store information for active WP
     WP.ITA_activeWP_virtual = 1;
     WP.ITA_activeWP = WP.ITA_virtualWPindices(WP.ITA_activeWP_virtual);
-    set(ITA_WP{1},'MarkerFaceColor','g')
+    set(ITA_WP{WP.ITA_activeWP},'MarkerFaceColor','g')
 
     % Standard Java JSlider (20px high if no ticks/labels, otherwise use 45px)
     sliderNorth = javax.swing.JSlider(-1000,1000);
