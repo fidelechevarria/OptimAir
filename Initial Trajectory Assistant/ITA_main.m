@@ -94,8 +94,9 @@ function ITA_main(WP)
     end
     grid
 %     title(['Estimated time ' num2str(propagatedState.totalTime) 's'])
-    axis equal
-    axis vis3d % Lock aspect ratio of axes
+    axis equal;
+    axis vis3d; % Lock aspect ratio of axes
+    axis tight;
     view(-45,30); % Azimuth and elevation of initial view (degrees)
     set(plot3D_ax, 'Ydir', 'reverse')
     xlabel('North')
@@ -220,10 +221,7 @@ function ITA_main(WP)
     end
 
     function sliderUpCallback(sliderUpHandle,~)
-                
-        % Deactivate limit auto adjustment
-        
-        
+                    
         % Get slider value
         increment = get(sliderUpHandle,'Value');
         
@@ -244,8 +242,6 @@ function ITA_main(WP)
         
         % Update ITA_WP position
         set(ITA_WP{WP.ITA_activeWP},'ZData',WP.ITA_up_orig(WP.ITA_activeWP) + increment);
-                    
-        axis tight;
         
     end
 
