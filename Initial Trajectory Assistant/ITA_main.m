@@ -170,8 +170,10 @@ function ITA_main(WP)
     
     % Make GUI visible.
     ita_fig.Visible = 'on';
-    
+   
     function sliderNorthCallback(sliderNorthHandle,~)
+        % Utilizar las funciones robotics.Rate y waitfor con Matlab R2017b
+        % para agilizar los cálculos de estas funciones.
         
         % Get slider value
         increment = get(sliderNorthHandle,'Value');
