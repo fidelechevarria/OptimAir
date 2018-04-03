@@ -164,9 +164,19 @@ function ITA_main(WP)
     uicontrol('Parent',ita_fig,...
               'Units','pixels',...
               'Position',[640 440 55 25],...
+              'String','Save',...
+              'Callback',@ITA_save_Callback);
+    uicontrol('Parent',ita_fig,...
+              'Units','pixels',...
+              'Position',[640 410 55 25],...
+              'String','Load',...
+              'Callback',@ITA_load_Callback);
+    uicontrol('Parent',ita_fig,...
+              'Units','pixels',...
+              'Position',[640 380 55 25],...
               'BackgroundColor',[0 1 0.5],...
               'String','Finish',...
-              'Callback',@ITA_finishTraj_Callback);
+              'Callback',@ITA_finish_Callback);
     
     % Define Row names for state table 
     j = 0;
@@ -191,6 +201,7 @@ function ITA_main(WP)
               'Position',[710 10 280 480],...
               'ColumnWidth',{50 50 50 50},...
               'RowName',rowNameCell,...
+              'ColumnFormat',repmat({'numeric'},1,4),...
               'Tag','statesTable');
               %'CellEditCallback',@popupInTable,...
               
@@ -206,14 +217,6 @@ function ITA_main(WP)
         
         % Update value in WP structure
         WP.ITA_north(WP.ITA_activeWP) = WP.ITA_north_orig(WP.ITA_activeWP) + increment;
-        
-        % Generate natural cubic spline through all new WP
-        estimatedTraj = cscvn([WP.ITA_north;WP.ITA_east;WP.ITA_up]);
-        space = linspace(estimatedTraj.breaks(1),estimatedTraj.breaks(end),N);
-        smooth = fnval(estimatedTraj,space);
-        smooth_north = smooth(1,:)';
-        smooth_east = smooth(2,:)';
-        smooth_up = smooth(3,:)';
               
         % Update all lines and plots
         updateLinesAndPlots()
@@ -231,15 +234,6 @@ function ITA_main(WP)
         % Update value in WP structure
         WP.ITA_east(WP.ITA_activeWP) = WP.ITA_east_orig(WP.ITA_activeWP) + increment;
         
-        % Generate natural cubic spline through all new WP
-        N = 250;
-        estimatedTraj = cscvn([WP.ITA_north;WP.ITA_east;WP.ITA_up]);
-        space = linspace(estimatedTraj.breaks(1),estimatedTraj.breaks(end),N);
-        smooth = fnval(estimatedTraj,space);
-        smooth_north = smooth(1,:)';
-        smooth_east = smooth(2,:)';
-        smooth_up = smooth(3,:)';
-        
         % Update all lines and plots
         updateLinesAndPlots()
         
@@ -256,15 +250,6 @@ function ITA_main(WP)
         % Update value in WP structure
         WP.ITA_up(WP.ITA_activeWP) = WP.ITA_up_orig(WP.ITA_activeWP) + increment;
         
-        % Generate natural cubic spline through all new WP
-        N = 250;
-        estimatedTraj = cscvn([WP.ITA_north;WP.ITA_east;WP.ITA_up]);
-        space = linspace(estimatedTraj.breaks(1),estimatedTraj.breaks(end),N);
-        smooth = fnval(estimatedTraj,space);
-        smooth_north = smooth(1,:)';
-        smooth_east = smooth(2,:)';
-        smooth_up = smooth(3,:)';
-        
         % Update all lines and plots
         updateLinesAndPlots()
         
@@ -274,6 +259,14 @@ function ITA_main(WP)
     end
 
     function updateLinesAndPlots()
+        
+        % Generate natural cubic spline through all new WP
+        estimatedTraj = cscvn([WP.ITA_north;WP.ITA_east;WP.ITA_up]);
+        space = linspace(estimatedTraj.breaks(1),estimatedTraj.breaks(end),N);
+        smooth = fnval(estimatedTraj,space);
+        smooth_north = smooth(1,:)';
+        smooth_east = smooth(2,:)';
+        smooth_up = smooth(3,:)';
         
         % Delete old trajectory plot
         delete(trajPlot)
@@ -315,6 +308,26 @@ function ITA_main(WP)
         
     end
 
+    function updateAllWP()
+        for h = 1:WP.numOfVirtualWP_ITA
+            aux_activeWP_virtual = h;
+            aux_ITA_activeWP = WP.ITA_virtualWPindices(aux_activeWP_virtual);
+            set(ITA_WP{aux_ITA_activeWP},'XData',WP.ITA_north(aux_ITA_activeWP));
+            set(ITA_WP{aux_ITA_activeWP},'YData',WP.ITA_east(aux_ITA_activeWP));
+            set(ITA_WP{aux_ITA_activeWP},'ZData',WP.ITA_up(aux_ITA_activeWP));
+        end
+        set(ITA_WP{WP.ITA_activeWP},'MarkerFaceColor','g');
+    end
+
+    function setSliderValues()
+        sliderNorthValue = WP.ITA_north(WP.ITA_activeWP) - WP.ITA_north_orig(WP.ITA_activeWP);
+        sliderEastValue = WP.ITA_east(WP.ITA_activeWP) - WP.ITA_east_orig(WP.ITA_activeWP);
+        sliderUpValue = WP.ITA_up(WP.ITA_activeWP) - WP.ITA_up_orig(WP.ITA_activeWP);
+        set(sliderNorthHandle,'Value',sliderNorthValue);
+        set(sliderEastHandle,'Value',sliderEastValue);
+        set(sliderUpHandle,'Value',sliderUpValue);
+    end
+
     function ITA_previousWP_Callback(~,~)
         % Change active WP to previous
         set(ITA_WP{WP.ITA_virtualWPindices(1)},'MarkerFaceColor','b')
@@ -326,6 +339,7 @@ function ITA_main(WP)
         end
         WP.ITA_activeWP = WP.ITA_virtualWPindices(WP.ITA_activeWP_virtual);
         set(ITA_WP{WP.ITA_activeWP},'MarkerFaceColor','g')
+        setSliderValues();
     end
 
     function ITA_nextWP_Callback(~,~)
@@ -339,6 +353,55 @@ function ITA_main(WP)
         end
         WP.ITA_activeWP = WP.ITA_virtualWPindices(WP.ITA_activeWP_virtual);
         set(ITA_WP{WP.ITA_activeWP},'MarkerFaceColor','g')
+        setSliderValues();
     end
     
+    function ITA_save_Callback(~,~)
+        if ~exist('Initial Trajectories','dir')
+            mkdir('Initial Trajectories')
+            cd([pwd '\Initial Trajectories'])
+        else
+            cd([pwd '\Initial Trajectories'])
+        end
+        trajData = WP;
+        stateData = stateTable.Data;
+        ITAdata = {trajData stateData};
+        uisave('ITAdata','myInitialTrajectory');
+        cd ..
+    end
+
+    function ITA_load_Callback(~,~)
+        if (exist('Initial Trajectories','dir') && (isempty(strfind(pwd,'Initial Trajectories'))))
+            cd([pwd '\Initial Trajectories'])
+        end
+        [file,path] = uigetfile('*.mat','Select a MAT file');
+        if (file ~= 0)
+            filename = fullfile(path,file);
+            dataStruct = load(filename,'-mat');
+            trajData = dataStruct.ITAdata{1};
+            stateData = dataStruct.ITAdata{2};
+            if isequal(trajData.north,WP.north)
+                set(ITA_WP{WP.ITA_activeWP},'MarkerFaceColor','b');
+                stateTable.Data = stateData;
+                WP = trajData;
+                updateLinesAndPlots();
+                updateAllWP();
+                setSliderValues()
+            else
+                warningstring = 'Trajectory does not fit with selected Flight Plan.';
+                dlgname = 'Warning';
+                warndlg(warningstring,dlgname)
+                cd ..
+                return
+            end
+        end
+        if exist('Initial Trajectories','dir')
+            cd ..
+        end
+    end
+
+    function ITA_finish_Callback(~,~)
+        
+    end
+
 end

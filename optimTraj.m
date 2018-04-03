@@ -19,6 +19,7 @@ function optimTraj
     addpath('External Optimization (Trajectory)');
     addpath('Flight Plans');
     addpath('FlightGear');
+    addpath('Initial Trajectories');
     addpath('Initial Trajectory Assistant');
     addpath('Internal Optimization (Segments)');
     addpath('Simulink Models');
