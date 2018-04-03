@@ -68,11 +68,11 @@ function ITA_main(WP)
                              smooth_east(verticalLinesPointIndex)];
     
     % Create ITA figure
-    ita_fig = figure('Visible','off','Resize','off','Position',[760,88,700,500]);  %  Create and then hide the UI as it is being constructed.
+    ita_fig = figure('Visible','off','Resize','off','Position',[760,88,1000,500]);  %  Create and then hide the UI as it is being constructed.
     ita_fig.NumberTitle = 'off'; % Deactivate the label "Figure n" in the title bar
     ita_fig.Name = 'Initial Trajectory Assistant'; % Assign the name to appear in the GUI title.
     movegui(ita_fig,'northeast') % Move the GUI.
-    plot3D_ax = axes('Position',[0.1 0.25 0.7 0.7]);
+    plot3D_ax = axes('Units','pixels','Position',[71 126 490 350]);
     hold on
     trajPlot = plot3(smooth_north,smooth_east,smooth_up,'Color','b','LineWidth',1);
     j = 1;
@@ -168,6 +168,32 @@ function ITA_main(WP)
               'String','Finish',...
               'Callback',@ITA_finishTraj_Callback);
     
+    % Define Row names for state table 
+    j = 0;
+    m = 0;
+    rowNameCell = cell(WP.numOfWP_ITA,1);
+    for i = 1:WP.numOfWP_ITA
+        if WP.ITA_WP_type(i) == 0
+            j = j + 1;
+            rowNameCell{i} = num2str(j);
+            m = 0;
+        else
+            m = m + 1;
+            rowNameCell{i} = strcat(num2str(j),'.',num2str(m));
+        end
+    end
+    
+    % Create table for state table
+    stateTable = uitable('Parent',ita_fig,...
+              'Data',cell(WP.numOfWP_ITA,4),...
+              'ColumnName',{'T (N)','V (m/s)','AoA (º)','Roll (º)'},...
+              'ColumnEditable',true,...
+              'Position',[710 10 280 480],...
+              'ColumnWidth',{50 50 50 50},...
+              'RowName',rowNameCell,...
+              'Tag','statesTable');
+              %'CellEditCallback',@popupInTable,...
+              
     % Make GUI visible.
     ita_fig.Visible = 'on';
    

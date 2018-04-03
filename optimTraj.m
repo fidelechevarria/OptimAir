@@ -73,20 +73,6 @@ function optimTraj
         'ColumnWidth',{40 40 40 40 40 45 55 60 25},...
         'CellEditCallback',@popupInTable,...
         'Tag','WP_table');
-        function popupInTable(hObject,CellEditData)
-             r = CellEditData.Indices(1);
-             c = CellEditData.Indices(2);
-             if (c == 8)&&((CellEditData.NewData ~= 'S') && (CellEditData.NewData ~= 'D') && (CellEditData.NewData ~= 's') && (CellEditData.NewData ~= 'd'))
-                warningstring = 'Incorrect value. Enter ''S'' for Single gates or ''D'' for Double gates.';
-                dlgname = 'Warning';
-                warndlg(warningstring,dlgname)
-             end
-             if (CellEditData.NewData == 's')
-                 hObject.Data{r,c} = 'S';
-             elseif (CellEditData.NewData == 'd')
-                 hObject.Data{r,c} = 'D';
-             end
-        end
     uicontrol('Parent',tab1,...
          'Units','pixels',...
          'Position',[15 57 55 25],...
@@ -112,6 +98,21 @@ function optimTraj
     f.Visible = 'on';
 
     % Callbacks
+    
+    function popupInTable(hObject,CellEditData)
+         r = CellEditData.Indices(1);
+         c = CellEditData.Indices(2);
+         if (c == 8)&&((CellEditData.NewData ~= 'S') && (CellEditData.NewData ~= 'D') && (CellEditData.NewData ~= 's') && (CellEditData.NewData ~= 'd'))
+            warningstring = 'Incorrect value. Enter ''S'' for Single gates or ''D'' for Double gates.';
+            dlgname = 'Warning';
+            warndlg(warningstring,dlgname)
+         end
+         if (CellEditData.NewData == 's')
+             hObject.Data{r,c} = 'S';
+         elseif (CellEditData.NewData == 'd')
+             hObject.Data{r,c} = 'D';
+         end
+    end
     
     function optimize_Callback(~,~)
         wpData = WP_table.Data;
