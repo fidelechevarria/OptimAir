@@ -92,6 +92,15 @@ function ITA_main(WP)
         zmax = max(smooth_up(verticalLinesPointIndex(i)),0);
         verticalLinesPlot{i} = plot3(verticalLinesPosHoriz(i,1)*ones(1,2),verticalLinesPosHoriz(i,2)*ones(1,2),[zmin zmax],'Color',[0 0.5 1]);
     end
+    % Plot arrows marking gates heading
+    for i = 1:WP.numOfWP
+        arrowLength = 40;
+        arrowLengthNorth = arrowLength*cos(WP.heading(i));
+        arrowLengthEast = arrowLength*sin(WP.heading(i));
+        posStartArrow = [WP.north(i) WP.east(i) WP.up(i)];
+        posFinishArrow = [WP.north(i)+arrowLengthNorth WP.east(i)+arrowLengthEast WP.up(i)];
+        mArrow3(posStartArrow,posFinishArrow,'color','red','stemWidth',1,'facealpha',0.5)
+    end
     grid
 %     title(['Estimated time ' num2str(propagatedState.totalTime) 's'])
     axis equal;

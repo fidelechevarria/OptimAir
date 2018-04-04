@@ -55,9 +55,11 @@ function optimTraj
     
     NWP_popup = uicontrol('Style', 'popup',...
            'Parent',tab1,...
-           'String', {'6','7','8','9','10','11','12'},...
+           'String', {'2','3','4','5','6','7','8','9','10','11','12',...
+           '13','14','15','16','17','18'},...
            'Position', [80 345 40 50],...
            'Callback',@NWP_Callback,...
+           'Value',5,...
            'Tag','NWP_popup');
     uicontrol('Style','Text',...
            'Parent',tab1,...
@@ -119,7 +121,7 @@ function optimTraj
         wpData = WP_table.Data;
         llaData = wpData(1:end,1:6);
         [north, east, up] = custom_lla2flat(llaData);
-        hdngData = str2double(wpData(1:end,7));
+        hdngData = deg2rad(str2double(wpData(1:end,7)));
         gateTypeData = wpData(1:end,8);
         expectedManoeuvreData = wpData(1:end,9);
         for i = 1:numel(expectedManoeuvreData)
@@ -144,12 +146,12 @@ function optimTraj
         NWP = get(Object,'Value');
         dataCell = WP_table.Data;
         [activeRows,~] = size(dataCell);
-        if (activeRows >= NWP+5)
-            WP_table.Data = dataCell(1:NWP+5,:);
+        if (activeRows >= NWP+1)
+            WP_table.Data = dataCell(1:NWP+1,:);
         else
             emptyDataCell = {[] [] [] [] [] [] [] [] false};
             emptyDataCellGroup = emptyDataCell;
-            for i = 1: (NWP+5 - activeRows - 1)
+            for i = 1: (NWP - activeRows)
                 emptyDataCellGroup = [emptyDataCellGroup;emptyDataCell];
             end
             WP_table.Data = [dataCell;emptyDataCellGroup];
@@ -178,7 +180,7 @@ function optimTraj
             dataStruct = load(filename,'-mat');
             WP_table.Data = dataStruct.WPdata;
             [NWP,~] = size(dataStruct.WPdata);
-            NWP_popup.Value = NWP - 5; % Change NWP popup menu value
+            NWP_popup.Value = NWP - 1; % Change NWP popup menu value
         end
         if exist('Flight Plans','dir')
             cd ..
@@ -189,7 +191,7 @@ function optimTraj
         NWP = NWP_popup.Value;
         emptyDataCell = {[] [] [] [] [] [] [] [] false};
         emptyDataCellGroup = emptyDataCell;
-        for i = 1:(NWP+5 - 1)
+        for i = 1:(NWP)
             emptyDataCellGroup = [emptyDataCellGroup;emptyDataCell];
         end
         WP_table.Data = emptyDataCellGroup;
