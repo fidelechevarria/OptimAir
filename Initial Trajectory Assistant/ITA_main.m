@@ -99,7 +99,7 @@ function ITA_main(WP)
         arrowLengthEast = arrowLength*sin(WP.heading(i));
         posStartArrow = [WP.north(i) WP.east(i) WP.up(i)];
         posFinishArrow = [WP.north(i)+arrowLengthNorth WP.east(i)+arrowLengthEast WP.up(i)];
-        mArrow3(posStartArrow,posFinishArrow,'color','red','stemWidth',1,'facealpha',0.5)
+        mArrow3(posStartArrow,posFinishArrow,'color','red','stemWidth',1,'facealpha',0.5);
     end
     grid
 %     title(['Estimated time ' num2str(propagatedState.totalTime) 's'])
