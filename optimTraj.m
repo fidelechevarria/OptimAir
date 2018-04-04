@@ -119,27 +119,34 @@ function optimTraj
     
     function optimize_Callback(~,~)
         wpData = WP_table.Data;
-        llaData = wpData(1:end,1:6);
-        [north, east, up] = custom_lla2flat(llaData);
-        hdngData = deg2rad(str2double(wpData(1:end,7)));
-        gateTypeData = wpData(1:end,8);
-        expectedManoeuvreData = wpData(1:end,9);
-        for i = 1:numel(expectedManoeuvreData)
-            if expectedManoeuvreData{i} == true
-                expectedManoeuvreData{i} = '3D';
-            elseif expectedManoeuvreData{i} == false
-                expectedManoeuvreData{i} = '2D';
+        checkForEmptyValues = cellfun('isempty',wpData);
+        if any(any(checkForEmptyValues))
+            warningstring = 'Empty fields remaining.';
+            dlgname = 'Warning';
+            warndlg(warningstring,dlgname)
+            return
+        else
+            llaData = wpData(1:end,1:6);
+            [north, east, up] = custom_lla2flat(llaData);
+            hdngData = deg2rad(str2double(wpData(1:end,7)));
+            gateTypeData = wpData(1:end,8);
+            expectedManoeuvreData = wpData(1:end,9);
+            for i = 1:numel(expectedManoeuvreData)
+                if expectedManoeuvreData{i} == true
+                    expectedManoeuvreData{i} = '3D';
+                elseif expectedManoeuvreData{i} == false
+                    expectedManoeuvreData{i} = '2D';
+                end
             end
+            WP.north = north;
+            WP.east = east;
+            WP.up = up;
+            WP.heading = hdngData;
+            WP.gateType = gateTypeData;
+            WP.expectedManoeuvre = expectedManoeuvreData;
+            WP.numOfWP = numel(north);
+            ITA_main(WP); % Launch Initial Trajectory Assistant
         end
-        WP.north = north;
-        WP.east = east;
-        WP.up = up;
-        WP.heading = hdngData;
-        WP.gateType = gateTypeData;
-        WP.expectedManoeuvre = expectedManoeuvreData;
-        WP.numOfWP = numel(north);
-        ITA_main(WP); % Launch Initial Trajectory Assistant
-%         optimize(WP); % Optimize trajectory
     end
     
     function NWP_Callback(Object,~)
