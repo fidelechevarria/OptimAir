@@ -34,6 +34,7 @@ function ITA_main(WP)
         end
     end
     WP.numOfWP_ITA = numel(WP.ITA_north);
+    WP.ITA_numOfSegments = WP.numOfWP_ITA - 1;
     WP.ITA_north_orig = WP.ITA_north;
     WP.ITA_east_orig = WP.ITA_east;
     WP.ITA_up_orig = WP.ITA_up;
@@ -41,14 +42,10 @@ function ITA_main(WP)
     WP.numOfVirtualWP_ITA = numel(WP.ITA_virtualWPindices);
     
     % Generate natural cubic spline through all WP
+    generateTraj();
     N = 200;
-    estimatedTraj = cscvn([WP.ITA_north;WP.ITA_east;WP.ITA_up]);
-    space = linspace(estimatedTraj.breaks(1),estimatedTraj.breaks(end),N);
-    smooth = fnval(estimatedTraj,space);
-    smooth_north = smooth(1,:)';
-    smooth_east = smooth(2,:)';
-    smooth_up = smooth(3,:)';
-
+    [smooth_north,smooth_east,smooth_up] = multiEvaluateSpline(estimatedTraj,N);
+    
     % Compute arclength of the trajectory projection in the horizontal plane
     verticalLinesSeparation = 30;
     arclengthHoriz = zeros(N-1,1);
@@ -217,6 +214,18 @@ function ITA_main(WP)
     % Make GUI visible.
     ita_fig.Visible = 'on';
    
+    function generateTraj()
+        estimatedTraj = cscvn([WP.ITA_north;WP.ITA_east;WP.ITA_up]);
+    end
+
+    function [north,east,up] = multiEvaluateSpline(spline,numberOfPoints)
+        space = linspace(spline.breaks(1),spline.breaks(end),numberOfPoints);
+        points = fnval(spline,space);
+        north = points(1,:)';
+        east = points(2,:)';
+        up = points(3,:)';
+    end
+    
     function sliderNorthCallback(sliderNorthHandle,~)
         % Utilizar las funciones robotics.Rate y waitfor con Matlab R2017b
         % para agilizar los cálculos de estas funciones.
@@ -410,7 +419,39 @@ function ITA_main(WP)
     end
 
     function ITA_finish_Callback(~,~)
+        generateGuess();
+        optimize(WP,guess);
+    end
+
+    function generateGuess()
         
+        numOfPointsSegmentGuess = 30;
+        segmentGuess = cell(WP.ITA_numOfSegments,1);
+        northGuess = cell(WP.ITA_numOfSegments,1);
+        eastGuess = cell(WP.ITA_numOfSegments,1);
+        upGuess = cell(WP.ITA_numOfSegments,1);
+        pitchGuess = cell(WP.ITA_numOfSegments,1);
+        headingGuess = cell(WP.ITA_numOfSegments,1);
+        
+        generateTraj();
+        
+        for s = 1:WP.ITA_numOfSegments
+            segmentGuess{s} = fnbrk(estimatedTraj,s);
+            [northGuess{s},eastGuess{s},upGuess{s}] = multiEvaluateSpline(segmentGuess{s},numOfPointsSegmentGuess);
+            temp_pitch = [];
+            temp_heading = [];
+            for t = 1:numOfPointsSegmentGuess-1
+                temp_pitch = [temp_pitch atan2(upGuess{s}(t+1)-upGuess{s}(t),sqrt((northGuess{s}(t+1)-northGuess{s}(t))^2+(eastGuess{s}(t+1)-eastGuess{s}(t))^2))];
+                temp_heading = [temp_heading atan2(eastGuess{s}(t+1)-eastGuess{s}(t),northGuess{s}(t+1)-northGuess{s}(t))];
+            end
+            pitchGuess{s} = temp_pitch;
+            headingGuess{s} = temp_heading;
+        end
+        
+%         guess.time = ;
+%         guess.state = ;
+%         guess.control = ;
+
     end
 
 end

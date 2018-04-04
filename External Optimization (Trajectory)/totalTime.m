@@ -1,5 +1,5 @@
 
-function [f,c,ceq,totalTrajectory] = totalTime(params,WP)
+function [f,c,ceq,totalTrajectory] = totalTime(params,WP,guess)
 
     trajectory = cell(WP.numOfWP-1,1);
 

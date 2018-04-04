@@ -145,6 +145,7 @@ function optimTraj
             WP.gateType = gateTypeData;
             WP.expectedManoeuvre = expectedManoeuvreData;
             WP.numOfWP = numel(north);
+            WP.numOfSegments = WP.numOfWP - 1;
             ITA_main(WP); % Launch Initial Trajectory Assistant
         end
     end

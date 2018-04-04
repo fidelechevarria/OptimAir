@@ -1,7 +1,7 @@
-function [x,fval,x_G,fval_G] = optimize(WP)
+function [x,fval,x_G,fval_G] = optimize(WP,guess)
 
     params = zeros(WP.numOfWP,1);
-    plotResults(params,WP,0);
+    plotResults(params,WP,guess,0);
 
 %     % Perform global optimization using multiStart fminbnd in a parallel pool
 %     [x,fval] = multiStartParallel(WP);
