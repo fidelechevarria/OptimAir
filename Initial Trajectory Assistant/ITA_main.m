@@ -423,6 +423,13 @@ function ITA_main(WP)
         optimize(WP,guess);
     end
 
+    function arcLength = calculateArcLength(north,east,up)
+        arcLength = zeros(1,numel(north)-1);
+        for k = 1:numel(north)-1
+            arcLength(k) = sqrt((north(k+1)-north(k))^2+(east(k+1)-east(k))^2+(up(k+1)-up(k))^2);
+        end
+    end
+
     function generateGuess()
         
         numOfPointsSegmentGuess = 30;
@@ -432,6 +439,16 @@ function ITA_main(WP)
         upGuess = cell(WP.ITA_numOfSegments,1);
         pitchGuess = cell(WP.ITA_numOfSegments,1);
         headingGuess = cell(WP.ITA_numOfSegments,1);
+        thrustGuess = cell(WP.ITA_numOfSegments,1);
+        velocityGuess = cell(WP.ITA_numOfSegments,1);
+        alphaGuess = cell(WP.ITA_numOfSegments,1);
+        rollGuess = cell(WP.ITA_numOfSegments,1);
+        q0Guess = cell(WP.ITA_numOfSegments,1);
+        q1Guess = cell(WP.ITA_numOfSegments,1);
+        q2Guess = cell(WP.ITA_numOfSegments,1);
+        q3Guess = cell(WP.ITA_numOfSegments,1);
+        timeGuess = cell(WP.ITA_numOfSegments,1);
+        stateIndeces = [];
         
         generateTraj();
         
@@ -444,8 +461,46 @@ function ITA_main(WP)
                 temp_pitch = [temp_pitch atan2(upGuess{s}(t+1)-upGuess{s}(t),sqrt((northGuess{s}(t+1)-northGuess{s}(t))^2+(eastGuess{s}(t+1)-eastGuess{s}(t))^2))];
                 temp_heading = [temp_heading atan2(eastGuess{s}(t+1)-eastGuess{s}(t),northGuess{s}(t+1)-northGuess{s}(t))];
             end
-            pitchGuess{s} = temp_pitch;
-            headingGuess{s} = temp_heading;
+            pitchGuess{s} = [temp_pitch temp_pitch(end)]';
+            headingGuess{s} = [temp_heading temp_heading(end)]';
+            arcLengthGuess{s} = calculateArcLength(northGuess{s},eastGuess{s},upGuess{s});
+            stateIndeces = [stateIndeces s*(numOfPointsSegmentGuess-1)];
+        end
+        
+        arcLengthGuessMatrix = cell2mat(arcLengthGuess);
+        arcLengthGuessVector = reshape(arcLengthGuessMatrix,[],1);
+        arcLengthGuessCumsum = [0;cumsum(arcLengthGuessVector)];
+        arcLengthValuesForStates = [0;arcLengthGuessCumsum(stateIndeces)];
+        
+        stateData = cell2mat(stateTable.Data);
+        thrustGuessInWP = stateData(:,1)';
+        velocityGuessInWP = stateData(:,2)';
+        alphaGuessInWP = stateData(:,3)';
+        rollGuessInWP = stateData(:,4)';
+        
+        thrustGuessTotal = pchip(arcLengthValuesForStates,thrustGuessInWP,arcLengthGuessCumsum);
+        velocityGuessTotal = pchip(arcLengthValuesForStates,velocityGuessInWP,arcLengthGuessCumsum);
+        alphaGuessTotal = pchip(arcLengthValuesForStates,alphaGuessInWP,arcLengthGuessCumsum);
+        rollGuessTotal = pchip(arcLengthValuesForStates,rollGuessInWP,arcLengthGuessCumsum);
+        
+        for s = 1:WP.ITA_numOfSegments
+            thrustGuess{s} = thrustGuessTotal((s-1)*(numOfPointsSegmentGuess-1)+1:s*(numOfPointsSegmentGuess-1));
+            velocityGuess{s} = velocityGuessTotal((s-1)*(numOfPointsSegmentGuess-1)+1:s*(numOfPointsSegmentGuess-1));
+            alphaGuess{s} = alphaGuessTotal((s-1)*(numOfPointsSegmentGuess-1)+1:s*(numOfPointsSegmentGuess-1));
+            rollGuess{s} = rollGuessTotal((s-1)*(numOfPointsSegmentGuess-1)+1:s*(numOfPointsSegmentGuess-1));
+            
+            thrustGuess{s} = [thrustGuess{s};thrustGuess{s}(end)];
+            velocityGuess{s} = [velocityGuess{s};velocityGuess{s}(end)];
+            alphaGuess{s} = [alphaGuess{s};alphaGuess{s}(end)];
+            rollGuess{s} = [rollGuess{s};rollGuess{s}(end)];
+            
+            quat = eul2quat(deg2rad([headingGuess{s} pitchGuess{s} rollGuess{s}]),'ZYX');
+            q0Guess{s} = quat(:,1);
+            q1Guess{s} = quat(:,2);
+            q2Guess{s} = quat(:,3);
+            q3Guess{s} = quat(:,4);
+            
+            timeGuess{s} = [arcLengthGuess{s}';0]./velocityGuess{s};
         end
         
 %         guess.time = ;
