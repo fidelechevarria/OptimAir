@@ -48,10 +48,9 @@ function [f,c,ceq,totalTrajectory] = totalTime(params,WP,guess)
         segment.bounds.control.low = [-10; -9000; -7.3];
         segment.bounds.control.upp = [10; 9000; 7.3];
 
-        segment.guess.time = [0 5];
-        segment.guess.state = [[5000; 100; 0.1; initAttitudeLow; initPosLow]...
-                               [5000; 100; 0.1; initAttitudeLow; finalPosLow]];
-        segment.guess.control = zeros(3,2);
+        segment.guess.time = guess.time{i};
+        segment.guess.state = guess.state{i};
+        segment.guess.control = guess.control{i};
 
         trajectory{i} = optimizeSegment(segment);
         

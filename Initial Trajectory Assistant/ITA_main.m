@@ -416,7 +416,7 @@ function ITA_main(WP)
     end
 
     function ITA_finish_Callback(~,~)
-        generateGuess();
+        guess = generateGuess();
         optimize(WP,guess);
     end
 
@@ -427,7 +427,7 @@ function ITA_main(WP)
         end
     end
 
-    function generateGuess()
+    function guess = generateGuess()
         
         numOfPointsSubsegmentGuess = 30;
         subsegmentGuess = cell(WP.ITA_numOfSegments,1);
@@ -511,6 +511,10 @@ function ITA_main(WP)
         northGuess = cell(WP.numOfSegments,1);
         eastGuess = cell(WP.numOfSegments,1);
         upGuess = cell(WP.numOfSegments,1);
+        rollGuess = cell(WP.numOfSegments,1);
+        thrustDotGuess = cell(WP.numOfSegments,1);
+        alphaDotGuess = cell(WP.numOfSegments,1);
+        pGuess = cell(WP.numOfSegments,1);
         
         for k = 1:WP.numOfSegments
             timeGuessMatrix = cell2mat(timeGuessSubsegment(WP.ITA_realWPindices(k):WP.ITA_realWPindices(k+1)-1));
@@ -524,6 +528,7 @@ function ITA_main(WP)
             northGuessMatrix = cell2mat(northGuessSubsegment(WP.ITA_realWPindices(k):WP.ITA_realWPindices(k+1)-1));
             eastGuessMatrix = cell2mat(eastGuessSubsegment(WP.ITA_realWPindices(k):WP.ITA_realWPindices(k+1)-1));
             upGuessMatrix = cell2mat(upGuessSubsegment(WP.ITA_realWPindices(k):WP.ITA_realWPindices(k+1)-1));
+            rollGuessMatrix = cell2mat(rollGuessSubsegment(WP.ITA_realWPindices(k):WP.ITA_realWPindices(k+1)-1));
             
             timeGuess{k} = cumsum(reshape(timeGuessMatrix,[],1));
             thrustGuess{k} = reshape(thrustGuessMatrix,[],1);
@@ -536,11 +541,61 @@ function ITA_main(WP)
             northGuess{k} = reshape(northGuessMatrix,[],1);
             eastGuess{k} = reshape(eastGuessMatrix,[],1);
             upGuess{k} = reshape(upGuessMatrix,[],1);
+            rollGuess{k} = reshape(rollGuessMatrix,[],1);
+            
+            thrustGuessTS{k} = timeseries(thrustGuess{k},timeGuess{k});
+            velocityGuessTS{k} = timeseries(velocityGuess{k},timeGuess{k});
+            alphaGuessTS{k} = timeseries(alphaGuess{k},timeGuess{k});
+            q0GuessTS{k} = timeseries(q0Guess{k},timeGuess{k});
+            q1GuessTS{k} = timeseries(q1Guess{k},timeGuess{k});
+            q2GuessTS{k} = timeseries(q2Guess{k},timeGuess{k});
+            q3GuessTS{k} = timeseries(q3Guess{k},timeGuess{k});
+            northGuessTS{k} = timeseries(northGuess{k},timeGuess{k});
+            eastGuessTS{k} = timeseries(eastGuess{k},timeGuess{k});
+            upGuessTS{k} = timeseries(upGuess{k},timeGuess{k});
+            rollGuessTS{k} = timeseries(rollGuess{k},timeGuess{k});
+            
+            thrustGuessTS{k} = resample(thrustGuessTS{k},linspace(timeGuess{k}(1),timeGuess{k}(end),20));
+            velocityGuessTS{k} = resample(velocityGuessTS{k},linspace(timeGuess{k}(1),timeGuess{k}(end),20));
+            alphaGuessTS{k} = resample(alphaGuessTS{k},linspace(timeGuess{k}(1),timeGuess{k}(end),20));
+            q0GuessTS{k} = resample(q0GuessTS{k},linspace(timeGuess{k}(1),timeGuess{k}(end),20));
+            q1GuessTS{k} = resample(q1GuessTS{k},linspace(timeGuess{k}(1),timeGuess{k}(end),20));
+            q2GuessTS{k} = resample(q2GuessTS{k},linspace(timeGuess{k}(1),timeGuess{k}(end),20));
+            q3GuessTS{k} = resample(q3GuessTS{k},linspace(timeGuess{k}(1),timeGuess{k}(end),20));
+            northGuessTS{k} = resample(northGuessTS{k},linspace(timeGuess{k}(1),timeGuess{k}(end),20));
+            eastGuessTS{k} = resample(eastGuessTS{k},linspace(timeGuess{k}(1),timeGuess{k}(end),20));
+            upGuessTS{k} = resample(upGuessTS{k},linspace(timeGuess{k}(1),timeGuess{k}(end),20));
+            rollGuessTS{k} = resample(rollGuessTS{k},linspace(timeGuess{k}(1),timeGuess{k}(end),20));
+            
+            timeGuess{k} = linspace(timeGuess{k}(1),timeGuess{k}(end),20)';
+            thrustGuess{k} = thrustGuessTS{k}.Data;
+            velocityGuess{k} = velocityGuessTS{k}.Data;
+            alphaGuess{k} = alphaGuessTS{k}.Data;
+            q0Guess{k} = q0GuessTS{k}.Data;
+            q1Guess{k} = q1GuessTS{k}.Data;
+            q2Guess{k} = q2GuessTS{k}.Data;
+            q3Guess{k} = q3GuessTS{k}.Data;
+            northGuess{k} = northGuessTS{k}.Data;
+            eastGuess{k} = eastGuessTS{k}.Data;
+            upGuess{k} = upGuessTS{k}.Data;
+            rollGuess{k} = rollGuessTS{k}.Data;
+            
+            timeder = diff(timeGuess{k});
+            aux1 = diff(thrustGuess{k})./timeder;
+            aux2 = diff(alphaGuess{k})./timeder;
+            aux3 = diff(rollGuess{k})./timeder;
+            thrustDotGuess{k} = [aux1(1);aux1];
+            alphaDotGuess{k} = [aux2(1);aux2];
+            pGuess{k} = [aux3(1);aux3];
         end
         
-%         guess.time = ;
-%         guess.state = ;
-%         guess.control = ;
+        for segment = 1:WP.numOfSegments
+            guess.time{segment} = timeGuess{segment}';
+            guess.state{segment} = [thrustGuess{segment} velocityGuess{segment} alphaGuess{segment}...
+                           q0Guess{segment} q1Guess{segment} q2Guess{segment} q3Guess{segment}...
+                           northGuess{segment} eastGuess{segment} upGuess{segment}]';
+            guess.control{segment} = [thrustDotGuess{segment} alphaDotGuess{segment} pGuess{segment}]';
+        end
 
     end
 

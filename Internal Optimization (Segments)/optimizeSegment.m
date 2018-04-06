@@ -22,13 +22,13 @@ function [trajectory] = optimizeSegment(segment)
     problem.guess = segment.guess;
 
     % Select a solver:
-%     problem.options(1).method = 'rungeKutta'; % Buen comportamiento en al
-%                                               % menos "medium"
-%     problem.options(1).defaultAccuracy = 'medium';
+    problem.options(1).method = 'rungeKutta'; % Buen comportamiento en al
+                                              % menos "medium"
+    problem.options(1).defaultAccuracy = 'medium';
 
-    problem.options(1).method = 'trapezoid';
-    problem.options(1).trapezoid.nGrid = 10;
-    problem.options(1).nlpOpt.MaxIter = 20;
+%     problem.options(1).method = 'trapezoid';
+%     problem.options(1).trapezoid.nGrid = 20;
+%     problem.options(1).nlpOpt.MaxIter = 400;
 
     % problem.options(2).method = 'hermiteSimpson';
     % problem.options(2).hermiteSimpson.nSegment = 15;
