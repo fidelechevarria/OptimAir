@@ -25,14 +25,15 @@ function [trajectory] = optimizeSegment(segment)
     problem.options(1).method = 'rungeKutta'; % Buen comportamiento en al
                                               % menos "medium"
     problem.options(1).defaultAccuracy = 'medium';
+%     problem.options(1).nlpOpt.MaxIter = 0;
 
 %     problem.options(1).method = 'trapezoid';
 %     problem.options(1).trapezoid.nGrid = 20;
-%     problem.options(1).nlpOpt.MaxIter = 400;
+%     problem.options(1).nlpOpt.MaxIter = 5;
 
-    % problem.options(2).method = 'hermiteSimpson';
-    % problem.options(2).hermiteSimpson.nSegment = 15;
-    % problem.options(2).nlpOpt.MaxIter = 400;
+%     problem.options(1).method = 'hermiteSimpson';
+%     problem.options(1).hermiteSimpson.nSegment = 15;
+%     problem.options(1).nlpOpt.MaxIter = 5;
 
     % Solve the problem
     soln = optimTrajDirCol(problem);

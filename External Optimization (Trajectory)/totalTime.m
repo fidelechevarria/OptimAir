@@ -18,10 +18,10 @@ function [f,c,ceq,totalTrajectory] = totalTime(params,WP,guess)
             initAlphaUpp = initAlphaLow;
             finalAlphaLow = -0.7;
             finalAlphaUpp = 0.7;
-            initAttitudeLow = eul2quat(deg2rad([WP.heading(i)+params(i) 0 0]))';
+            initAttitudeLow = eul2quat([WP.heading(i)+params(i) 0 0])';
             initAttitudeUpp = initAttitudeLow;
             if isequal(WP.gateType{i+1},'D')
-                finalAttitudeLow = eul2quat(deg2rad([WP.heading(i+1)+params(i+1) 0 0]))';
+                finalAttitudeLow = eul2quat([WP.heading(i+1)+params(i+1) 0 0])';
                 finalAttitudeUpp = finalAttitudeLow;
             else
                 finalAttitudeLow = [-1 -1 -1 -1]';
@@ -72,7 +72,7 @@ function [f,c,ceq,totalTrajectory] = totalTime(params,WP,guess)
                                trajectory{i}.states(6,end) trajectory{i}.states(7,end)]';
             initAttitudeUpp = initAttitudeLow;
             if isequal(WP.gateType{i+2},'D')
-                finalAttitudeLow = eul2quat(deg2rad([WP.heading(i+2)+params(i+2) 0 0]))';
+                finalAttitudeLow = eul2quat([WP.heading(i+2)+params(i+2) 0 0])';
                 finalAttitudeUpp = finalAttitudeLow;
             else
                 finalAttitudeLow = [-1 -1 -1 -1]';
