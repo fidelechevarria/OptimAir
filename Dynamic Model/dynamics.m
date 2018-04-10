@@ -26,11 +26,12 @@ function states_dot = dynamics(states,controls,params)
     Clalpha = params.Clalpha;
     K = params.K;
     Cd0 = params.Cd0;
+    Cdp = params.Cdp;
     
     % Dynamic model
     Cl = Clalpha.*alpha;
     L = 0.5.*rho.*V.^2.*S.*Cl;
-    D = 0.5.*rho.*V.^2.*S.*(Cd0+K.*Cl.^2);
+    D = 0.5.*rho.*V.^2.*S.*(Cd0+K.*Cl.^2+Cdp*abs(p));
     q = (T.*sin(alpha)+L-m.*g.*(q0.^2-q1.^2-q2.^2+q3.^2))./(m.*V);
     r = (2.*m.*g.*(q0.*q1+q2.*q3))./(m.*V);
     V_dot = (T.*cos(alpha)-D+2.*m.*g.*(q1.*q3-q0.*q2))./m;

@@ -9,6 +9,7 @@ function [trajectory] = optimizeSegment(segment)
     p.Clalpha = 4;
     p.K = 0.1779;
     p.Cd0 = 0.15;
+    p.Cdp = 0.05;
 
     % User-defined dynamics and objective functions
     problem.func.dynamics = @(t,x,u)( dynamics(x,u,p) );
