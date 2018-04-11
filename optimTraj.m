@@ -14,6 +14,9 @@ function optimTraj
         cd(mydocdir)
     end
     
+    % Add to path directory of Falcon toolbox
+    addpath([matlabroot '\toolbox\falcon']);
+    
     % Add folders to path
     addpath('Dynamic Model');
     addpath('External Optimization (Trajectory)');
