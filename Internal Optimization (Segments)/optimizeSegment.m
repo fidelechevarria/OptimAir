@@ -48,7 +48,7 @@ function [trajectory] = optimizeSegment(segment)
     % Plots:
 
     % Show the error in the collocation constraint between grid points:
-    if 0;%strcmp(soln(end).problem.options.method,'trapezoid') || strcmp(soln(end).problem.options.method,'hermiteSimpson')
+    if 0%strcmp(soln(end).problem.options.method,'trapezoid') || strcmp(soln(end).problem.options.method,'hermiteSimpson')
         % Then we can plot an estimate of the error along the trajectory
         figure(5); clf;
 

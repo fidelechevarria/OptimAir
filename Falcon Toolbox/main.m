@@ -21,6 +21,9 @@ tf = falcon.Parameter('Final_Time',15,0,100,1e-2);
 % Create the problem
 problem = falcon.Problem('RBAR');
 
+% Set major iteration limit
+problem.setMajorIterLimit(20000);
+
 % Specify discretization
 tau = linspace(0,1,101);
 
@@ -38,7 +41,7 @@ phase.setFinalBoundaries([0;40;-0.700000000000000;0.882947592858927;0;0;0.469471
 problem.addNewParameterCost(tf);
 
 % Path Constraint
-pathconstraint = falcon.Constraint('quat_const', -inf, 0);
+pathconstraint = falcon.Constraint('quat_const', 0, 0);
 phase.addNewPathConstraint(@source_path, pathconstraint,tau);
 
 % Solve problem
@@ -54,3 +57,19 @@ xlabel('time');
 ylabel(phase.StateGrid.DataTypes(numState).Name);
 plot(phase.RealTime,phase.StateGrid.Values(numState,:));
 end
+
+% 3D Graphical representation
+f1 = figure;
+movegui(f1,'northwest') % Move the GUI to the center of the screen.
+ax = axes;
+hold on
+plot3(phase.StateGrid.Values(8,:),phase.StateGrid.Values(9,:),phase.StateGrid.Values(10,:));
+hold off
+grid
+axis equal
+axis vis3d % Lock aspect ratio of axes
+view(-45,30); % Azimuth and elevation of initial view (degrees)
+set(ax, 'Ydir', 'reverse')
+xlabel('North')
+ylabel('East')
+zlabel('Up')
