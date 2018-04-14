@@ -26,7 +26,7 @@ function [trajectory] = optimizeSegment(segment)
     problem.options(1).method = 'rungeKutta'; % Buen comportamiento en al
                                               % menos "medium"
     problem.options(1).defaultAccuracy = 'medium';
-%     problem.options(1).nlpOpt.MaxIter = 0;
+    problem.options(1).nlpOpt.MaxIter = 0;
 
 %     problem.options(1).method = 'trapezoid';
 %     problem.options(1).trapezoid.nGrid = 20;
