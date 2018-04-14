@@ -183,7 +183,7 @@ function optimTraj
     end
 
     function loadFP_Callback(~,~)
-        if (exist('Flight Plans','dir') && (isempty(strfind(pwd,'Flight Plans'))))
+        if (exist('Flight Plans','dir') && (~contains(pwd,'Flight Plans')))
             cd([pwd '\Flight Plans'])
         end
         [file,path] = uigetfile('*.mat','Select a MAT file');

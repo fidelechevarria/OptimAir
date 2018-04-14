@@ -1,4 +1,4 @@
-function [constraints] = source_path(states, ~)
+function [constraints] = pathConstraints(states, ~)
 % constraint interface created by falcon.m
 
 % Extract states

@@ -1,4 +1,4 @@
-function [states_dot] = source_aircraft(states, controls)
+function [states_dot] = dynamicModel(states, controls)
 % model interface created by falcon.m
 
 % Extract states
