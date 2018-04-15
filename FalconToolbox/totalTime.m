@@ -17,10 +17,10 @@ function [f,c,ceq,totalTrajectory] = totalTime(WP,guess)
         % Properties for the rest of the segments
         if i ~= WP.numOfWP-1 % Not necessary in the last iteration
             initStates = segment{i}.Phases(1).StateGrid.Values(1:3,end);
-            configuration.phase1.initBoundsLow = [initStates;eul2quat([WP.heading(i) 0 0])';WP.north(i);WP.east(i);WP.up(i)];
-            configuration.phase1.initBoundsUpp = [initStates;eul2quat([WP.heading(i) 0 0])';WP.north(i);WP.east(i);WP.up(i)];
-            configuration.phase1.finalBoundsLow = [0;40;-0.7;eul2quat([WP.heading(i+1) 0 0])';WP.north(i+1);WP.east(i+1);WP.up(i+1)];
-            configuration.phase1.finalBoundsUpp = [9000;200;0.7;eul2quat([WP.heading(i+1) 0 0])';WP.north(i+1);WP.east(i+1);WP.up(i+1)];
+            configuration.phase1.initBoundsLow = [initStates;eul2quat([WP.heading(i+1) 0 0])';WP.north(i+1);WP.east(i+1);WP.up(i+1)];
+            configuration.phase1.initBoundsUpp = [initStates;eul2quat([WP.heading(i+1) 0 0])';WP.north(i+1);WP.east(i+1);WP.up(i+1)];
+            configuration.phase1.finalBoundsLow = [0;40;-0.7;eul2quat([WP.heading(i+2) 0 0])';WP.north(i+2);WP.east(i+2);WP.up(i+2)];
+            configuration.phase1.finalBoundsUpp = [9000;200;0.7;eul2quat([WP.heading(i+2) 0 0])';WP.north(i+2);WP.east(i+2);WP.up(i+2)];
         end
         
     end
@@ -30,8 +30,8 @@ function [f,c,ceq,totalTrajectory] = totalTime(WP,guess)
     totalTrajectory.states = [];
     totalTrajectory.controls = [];
     for i = 1:WP.numOfWP-1
+        totalTrajectory.time = [totalTrajectory.time segment{i}.Phases(1).RealTime+totalTrajectory.totalTime];
         totalTrajectory.totalTime = totalTrajectory.totalTime + segment{i}.Phases(1).FinalTime.Value;
-        totalTrajectory.time = [totalTrajectory.time segment{i}.Phases(1).RealTime];
         totalTrajectory.states = [totalTrajectory.states segment{i}.Phases(1).StateGrid.Values];
         totalTrajectory.controls = [totalTrajectory.controls segment{i}.Phases(1).ControlGrids.Values];
     end

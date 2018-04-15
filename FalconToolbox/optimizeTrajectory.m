@@ -28,7 +28,7 @@ problem = falcon.Problem('optimTraj');
 problem.setMajorIterLimit(5000);
 
 %% Specify discretization
-tau = linspace(0,1,51);
+tau = linspace(0,1,251);
 
 %% Create phase
 

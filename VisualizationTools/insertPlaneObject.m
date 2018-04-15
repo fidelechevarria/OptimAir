@@ -33,7 +33,7 @@ function insertPlaneObject(position,attitude,scale)
 
     end
 
-    camlight(0,180);
+    camlight('headlight');
     material('shiny');
 
 end
