@@ -64,7 +64,9 @@ function graphics3D(WP,totalTrajectory)
     title(['Total time ' num2str(totalTrajectory.totalTime) 's'])
     % [~,~] = legend('Original points'); % "[~,~]=" prevents the bug in R2015b (https://www.mathworks.com/support/bugreports/1283854)
     axis equal
-    axis vis3d % Lock aspect ratio of axes
+    axis vis3d
+    axis tight
+    setAxes3DPanAndZoomStyle(zoom,gca,'camera')
     view(-45,30); % Azimuth and elevation of initial view (degrees)
     set(ax, 'Ydir', 'reverse')
     xlabel('North')

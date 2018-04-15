@@ -1,7 +1,4 @@
-function plotResults(params,WP,guess,automaticFGlaunchIsActivated)
-
-    % Optimize complete trajectory using optimal parameters
-    [~,~,~,totalTrajectory] = totalTime(params,WP,guess);
+function plotResults(WP,totalTrajectory)
 
     % Graphics generation
     % 3D Graphical representation

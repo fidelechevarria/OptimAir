@@ -15,17 +15,20 @@ function optimTraj
     end
     
     % Add to path directory of Falcon toolbox
-    addpath([matlabroot '\toolbox\falcon']);
+    if exist([matlabroot '\toolbox\falcon'],'dir')
+        addpath([matlabroot '\toolbox\falcon']);
+    elseif exist('C:\Users\fidel\Desktop\falcon','dir') % (UAV Nav MSI Laptop)
+        addpath('C:\Users\fidel\Desktop\falcon')
+    end
     
     % Add folders to path
     addpath('Dynamic Model');
-    addpath('External Optimization (Trajectory)');
     addpath('FalconToolbox');
     addpath('Flight Plans');
     addpath('FlightGear');
     addpath('Initial Trajectories');
     addpath('Initial Trajectory Assistant');
-    addpath('Internal Optimization (Segments)');
+    addpath('Miscellaneous Tools');
     addpath('Simulink Models');
     addpath('Test Functions');
     addpath('Visualization Tools');

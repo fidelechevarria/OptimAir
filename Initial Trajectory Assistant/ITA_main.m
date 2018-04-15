@@ -101,9 +101,10 @@ function ITA_main(WP)
     end
     grid
 %     title(['Estimated time ' num2str(propagatedState.totalTime) 's'])
-    axis equal;
-    axis vis3d; % Lock aspect ratio of axes
-    axis tight;
+    axis equal
+    axis vis3d
+    axis tight
+    setAxes3DPanAndZoomStyle(zoom,gca,'camera')
     view(-45,30); % Azimuth and elevation of initial view (degrees)
     set(plot3D_ax, 'Ydir', 'reverse')
     xlabel('North')
@@ -417,7 +418,8 @@ function ITA_main(WP)
 
     function ITA_finish_Callback(~,~)
         guess = generateGuess();
-        optimize(WP,guess);
+        [~,~,~,totalTrajectory] = totalTime(WP,guess);
+        plotResults(WP,totalTrajectory);
     end
 
     function arcLength = calculateArcLength(north,east,up)
@@ -430,7 +432,7 @@ function ITA_main(WP)
     function guess = generateGuess()
         
         numOfPointsSubsegmentGuess = 200;
-        numOfPointsSegmentGuess = 2;
+        numOfPointsSegmentGuess = 6;
         subsegmentGuess = cell(WP.ITA_numOfSegments,1);
         northGuessSubsegment = cell(WP.ITA_numOfSegments,1);
         eastGuessSubsegment = cell(WP.ITA_numOfSegments,1);
