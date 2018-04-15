@@ -10,10 +10,6 @@ function [f,c,ceq,totalTrajectory] = totalTime(WP,guess)
             configuration.phase1.initBoundsUpp = [5000;80;0.1;eul2quat([WP.heading(1) 0 0])';WP.north(1);WP.east(1);WP.up(1)];
             configuration.phase1.finalBoundsLow = [0;40;-0.7;eul2quat([WP.heading(2) 0 0])';WP.north(2);WP.east(2);WP.up(2)];
             configuration.phase1.finalBoundsUpp = [9000;200;0.7;eul2quat([WP.heading(2) 0 0])';WP.north(2);WP.east(2);WP.up(2)];
-            configuration.phase2.initBoundsLow = [0;40;-0.7;eul2quat([WP.heading(2) 0 0])';WP.north(2);WP.east(2);WP.up(2)];
-            configuration.phase2.initBoundsUpp = [9000;200;0.7;eul2quat([WP.heading(2) 0 0])';WP.north(2);WP.east(2);WP.up(2)];
-            configuration.phase2.finalBoundsLow = [0;40;-0.7;eul2quat([WP.heading(3) 0 0])';WP.north(3);WP.east(3);WP.up(3)];
-            configuration.phase2.finalBoundsUpp = [9000;200;0.7;eul2quat([WP.heading(3) 0 0])';WP.north(3);WP.east(3);WP.up(3)];
         end
 
         segment{i} = optimizeTrajectory(configuration);
@@ -25,10 +21,6 @@ function [f,c,ceq,totalTrajectory] = totalTime(WP,guess)
             configuration.phase1.initBoundsUpp = [initStates;eul2quat([WP.heading(i) 0 0])';WP.north(i);WP.east(i);WP.up(i)];
             configuration.phase1.finalBoundsLow = [0;40;-0.7;eul2quat([WP.heading(i+1) 0 0])';WP.north(i+1);WP.east(i+1);WP.up(i+1)];
             configuration.phase1.finalBoundsUpp = [9000;200;0.7;eul2quat([WP.heading(i+1) 0 0])';WP.north(i+1);WP.east(i+1);WP.up(i+1)];
-            configuration.phase2.initBoundsLow = [0;40;-0.7;eul2quat([WP.heading(i+1) 0 0])';WP.north(i+1);WP.east(i+1);WP.up(i+1)];
-            configuration.phase2.initBoundsUpp = [9000;200;0.7;eul2quat([WP.heading(i+1) 0 0])';WP.north(i+1);WP.east(i+1);WP.up(i+1)];
-            configuration.phase2.finalBoundsLow = [0;40;-0.7;eul2quat([WP.heading(i+2) 0 0])';WP.north(i+2);WP.east(i+2);WP.up(i+2)];
-            configuration.phase2.finalBoundsUpp = [9000;200;0.7;eul2quat([WP.heading(i+2) 0 0])';WP.north(i+2);WP.east(i+2);WP.up(i+2)];
         end
         
     end

@@ -373,11 +373,11 @@ function ITA_main(WP)
     end
     
     function ITA_save_Callback(~,~)
-        if ~exist('Initial Trajectories','dir')
-            mkdir('Initial Trajectories')
-            cd([pwd '\Initial Trajectories'])
+        if ~exist('InitialTrajectories','dir')
+            mkdir('InitialTrajectories')
+            cd([pwd '\InitialTrajectories'])
         else
-            cd([pwd '\Initial Trajectories'])
+            cd([pwd '\InitialTrajectories'])
         end
         trajData = WP;
         stateData = stateTable.Data;
@@ -387,8 +387,8 @@ function ITA_main(WP)
     end
 
     function ITA_load_Callback(~,~)
-        if (exist('Initial Trajectories','dir') && (isempty(strfind(pwd,'Initial Trajectories'))))
-            cd([pwd '\Initial Trajectories'])
+        if (exist('InitialTrajectories','dir') && (isempty(strfind(pwd,'InitialTrajectories'))))
+            cd([pwd '\InitialTrajectories'])
         end
         [file,path] = uigetfile('*.mat','Select a MAT file');
         if (file ~= 0)
@@ -411,7 +411,7 @@ function ITA_main(WP)
                 return
             end
         end
-        if exist('Initial Trajectories','dir')
+        if exist('InitialTrajectories','dir')
             cd ..
         end
     end
