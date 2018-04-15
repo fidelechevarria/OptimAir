@@ -22,16 +22,16 @@ function optimTraj
     end
     
     % Add folders to path
-    addpath('Dynamic Model');
+    addpath('DynamicModel');
     addpath('FalconToolbox');
-    addpath('Flight Plans');
+    addpath('FlightPlans');
     addpath('FlightGear');
-    addpath('Initial Trajectories');
-    addpath('Initial Trajectory Assistant');
-    addpath('Miscellaneous Tools');
-    addpath('Simulink Models');
-    addpath('Test Functions');
-    addpath('Visualization Tools');
+    addpath('InitialTrajectories');
+    addpath('InitialTrajectoryAssistant');
+    addpath('MiscellaneousTools');
+    addpath('SimulinkModels');
+    addpath('TestFunctions');
+    addpath('VisualizationTools');
     
     % Create GUI 
 
