@@ -2,18 +2,18 @@
 function problem = optimizeTrajectory(configuration)
 
 %% Create States
-states = [falcon.State('vx',-200,200,1e-2);
-          falcon.State('vy',-200,200,1e-2);
-		  falcon.State('vz',-200,200,1e-2);
-          falcon.State('roll',-5,5,1);
-          falcon.State('pitch',-5,5,1);
-          falcon.State('yaw',-5,5,1);
-		  falcon.State('p',-8,8,1);
-          falcon.State('q',-8,8,1);
-	      falcon.State('r',-8,8,1);
-          falcon.State('x',-2000,2000,1e-3);
-          falcon.State('y',-2000,2000,1e-3);
-          falcon.State('h',5,2000,1e-3)];
+states = [falcon.State('vx',-inf,inf,1e-2);
+          falcon.State('vy',-inf,inf,1e-2);
+		  falcon.State('vz',-inf,inf,1e-2);
+          falcon.State('roll',-inf,inf,1);
+          falcon.State('pitch',-inf,inf,1);
+          falcon.State('yaw',-inf,inf,1);
+		  falcon.State('p',-inf,inf,1);
+          falcon.State('q',-inf,inf,1);
+	      falcon.State('r',-inf,inf,1);
+          falcon.State('x',-inf,inf,1e-3);
+          falcon.State('y',-inf,inf,1e-3);
+          falcon.State('h',5,inf,1e-3)];
 
 %% Create Controls
 controls = [falcon.Control('da',-0.35,0.35,1);
