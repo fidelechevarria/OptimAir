@@ -3,7 +3,6 @@ function graphics2D(WP,totalTrajectory)
     % Select variables to plot
     plotStates = true; % Without quaternions or positions
     plotControls = false;
-    plotEuler = true;
 
     % Calculate corresponding time for each WP
     middlePositions = [];
@@ -15,10 +14,12 @@ function graphics2D(WP,totalTrajectory)
 
     % PLOT STATES
     if plotStates
-        statesToPlot = {'Thrust [N]' 'Velocity [m/s]' 'Angle of Attack [º]' 'q0' 'q1' 'q2' 'q3'...
+        statesToPlot = {'Vx [m/s]' 'Vy [m/s]' 'Vz [m/s]'...
+            'Roll [º]' 'Pitch [º]' 'Yaw [º]'...
+            'p [rad/s]' 'q [rad/s]' 'r [rad/s]'...
             'North Position [m]' 'East Position [m]' 'Altitude [m]'};
         for i = 1:totalTrajectory.numOfStates
-            if i == 3 % Convert from radians to degrees
+            if (i > 3) && (i < 10) % Convert from radians to degrees
                 figure
                 hold on
                 plot(totalTrajectory.time,rad2deg(totalTrajectory.states(i,:)))
@@ -38,8 +39,6 @@ function graphics2D(WP,totalTrajectory)
                 title(statesToPlot{i})
                 xlabel('Time [s]')
                 ylabel(statesToPlot{i})
-            elseif i > 3
-                % Do not plot quaternions or positions
             else
                 figure
                 hold on
@@ -110,32 +109,6 @@ function graphics2D(WP,totalTrajectory)
                 xlabel('Time [s]')
                 ylabel(controlsToPlot{i})
             end
-        end
-    end
-    
-    % PLOT EULER ANGLES (Convert from radians to degrees)
-    if plotEuler
-        eulerToPlot = {'Yaw [º]' 'Pitch [º]' 'Roll [º]'};
-        for i = 1:3
-            figure
-            hold on
-            plot(totalTrajectory.time,rad2deg(totalTrajectory.euler(i,:)))
-            for j = 1:numel(WP_time)
-                xval = WP_time(j);
-                ymin = min(rad2deg(totalTrajectory.euler(i,WP_index(j))),0);
-                ymax = max(rad2deg(totalTrajectory.euler(i,WP_index(j))),0);
-                xPoints = [xval,xval];
-                yPoints = [ymin,ymax];
-                plot(xPoints,yPoints,'r--')
-                text(xval,ymax,num2str(j),'Color','r','VerticalAlignment','bottom')
-            end
-            hold off
-            grid
-            margin = totalTrajectory.totalTime/20; % Lateral margins for x-axis in seconds
-            xlim([-margin totalTrajectory.totalTime+margin]);
-            title(eulerToPlot{i})
-            xlabel('Time [s]')
-            ylabel(eulerToPlot{i})
         end
     end
     

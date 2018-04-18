@@ -11,7 +11,7 @@ function [f,c,ceq,totalTrajectory] = totalTime(WP,guess)
             initVy = initVelocity.*cos(WP.heading(1)-pi/2);
             configuration.phase1.initBoundsLow = [initVx;initVy;0;0;0;WP.heading(1);0;0;0;WP.north(1);WP.east(1);WP.up(1)];
             configuration.phase1.initBoundsUpp = [initVx;initVy;0;0;0;WP.heading(1);0;0;0;WP.north(1);WP.east(1);WP.up(1)];
-            configuration.phase1.finalBoundsLow = [20;20;20;0;0;WP.heading(2);0;0;0;WP.north(2);WP.east(2);WP.up(2)];
+            configuration.phase1.finalBoundsLow = [-200;-200;-200;0;0;WP.heading(2);0;0;0;WP.north(2);WP.east(2);WP.up(2)];
             configuration.phase1.finalBoundsUpp = [200;200;200;0;0;WP.heading(2);0;0;0;WP.north(2);WP.east(2);WP.up(2)];
         end
 
@@ -22,7 +22,7 @@ function [f,c,ceq,totalTrajectory] = totalTime(WP,guess)
             initStates = segment{i}.Phases(1).StateGrid.Values(:,end);
             configuration.phase1.initBoundsLow = initStates;
             configuration.phase1.initBoundsUpp = initStates;
-            configuration.phase1.finalBoundsLow = [20;20;20;0;0;WP.heading(i+2);0;0;0;WP.north(i+2);WP.east(i+2);WP.up(i+2)];
+            configuration.phase1.finalBoundsLow = [-200;-200;-200;0;0;WP.heading(i+2);0;0;0;WP.north(i+2);WP.east(i+2);WP.up(i+2)];
             configuration.phase1.finalBoundsUpp = [200;200;200;0;0;WP.heading(i+2);0;0;0;WP.north(i+2);WP.east(i+2);WP.up(i+2)];
         end
         
@@ -43,7 +43,7 @@ function [f,c,ceq,totalTrajectory] = totalTime(WP,guess)
     totalTrajectory.numOfPoints = numel(totalTrajectory.time);
     [totalTrajectory.numOfStates,~] = size(totalTrajectory.states);
     [totalTrajectory.numOfControls,~] = size(totalTrajectory.controls);
-    totalTrajectory.euler = quat2eul(totalTrajectory.states(4:7,:)','ZYX')';
+    totalTrajectory.euler = totalTrajectory.states(4:6,:);
     
     f = totalTrajectory.totalTime;
     c = [];
