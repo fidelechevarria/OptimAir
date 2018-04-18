@@ -2,21 +2,23 @@
 function states_dot = dynamics(states,controls,params)
 
     % States
-    T = states(1,:);
-    V = states(2,:);
-    alpha = states(3,:);
-    q0 = states(4,:);
-    q1 = states(5,:);
-    q2 = states(6,:);
-    q3 = states(7,:);
-    % x = states(8,:); %Not used in dynamics
-    % y = states(9,:); %Not used in dynamics
-    % h = states(10,:); %Not used in dynamics
+    vx = states(1,:);
+    vy = states(2,:);
+    vz = states(3,:);
+    roll = states(4,:);
+    pitch = states(5,:);
+    yaw = states(6,:);
+    p = states(7,:);
+    q = states(8,:);
+    r = states(9,:);
+    x = states(10,:);
+    y = states(11,:);
+    h = states(12,:);
 
     % Controls
-    alpha_dot = controls(1,:);
-    T_dot = controls(2,:);
-    p = controls(3,:);
+    de = controls(1,:);
+    da = controls(2,:);
+    dt = controls(3,:);
 
     % Constant parameters
     m = params.m;
@@ -29,21 +31,43 @@ function states_dot = dynamics(states,controls,params)
     Cdp = params.Cdp;
     
     % Dynamic model
-    Cl = Clalpha.*alpha;
-    L = 0.5.*rho.*V.^2.*S.*Cl;
-    D = 0.5.*rho.*V.^2.*S.*(Cd0+K.*Cl.^2+Cdp*abs(p));
-    q = (T.*sin(alpha)+L-m.*g.*(q0.^2-q1.^2-q2.^2+q3.^2))./(m.*V);
-    r = (2.*m.*g.*(q0.*q1+q2.*q3))./(m.*V);
-    V_dot = (T.*cos(alpha)-D+2.*m.*g.*(q1.*q3-q0.*q2))./m;
-    q0_dot = -0.5.*(q1.*p+q2.*q+q3.*r);
-    q1_dot =  0.5.*(q0.*p+q2.*r-q3.*q);
-    q2_dot =  0.5.*(q0.*q+q3.*p-q1.*r);
-    q3_dot =  0.5.*(q0.*r+q1.*q-q2.*p);
-    x_dot = V.*(q0.^2+q1.^2-q2.^2-q3.^2);
-    y_dot = 2.*V.*(q0.*q3+q1.*q2);
-    h_dot = 2.*V.*(q0.*q2-q1.*q3);
+    V = sqrt(vx.^2+vy.^2+vz.^2);
+    cr = cos(roll);
+    sr = sin(roll);
+    cp = cos(pitch);
+    sp = sin(pitch);
+    tp = tan(pitch);
+    cy = cos(yaw);
+    sy = sin(yaw);
+    Cd = ;
+    Cy = ;
+    Cl = ;
+    qd_times_S = 0.5.*rho.*V.^2.*S;
+    D = qd_times_S.*Cd;
+    Y = qd_times_S.*Cy;
+    L = qd_times_S.*Cl;
+    LL = ;
+    MM = ;
+    NN = ;
+    Xa = ;
+    Ya = ;
+    Za = ;
+    Xt = ;
+    vx_dot = r.*vy-q.*vz-g.*sp+(Xa+Xt)./m;
+    vy_dot = -r.*vx+p.*vz+g.*sr.*cp+Ya./m;
+    vz_dot = q.*vx-p.*vy+g.*cr.*cp+Za./m;
+    roll_dot = p+tp.*(q.*sr+r.*cr);
+    pitch_dot = q.*cr-r.*sr;
+    yaw_dot = (q.*sr+r.*cr)./cp;
+    aux = Ix.*Iz-Ixz.^2;
+    p_dot = (Ixz.*(Ix-Iy+Iz).*p.*q-(Iz.*(Iz-Iy)+Ixz.^2).*q.*r+Iz.*LL+Ixz.*NN)./aux;
+    q_dot = ((Iz-Ix).*p.*r-Ixz.*(p.^2-r.^2)+MM)./Iy;
+    r_dot = (((Ix-Iy).*Ix+Ixz.^2).*p.*q-Ixz.*(Ix-Iy+Iz).*q.*r+Ixz.*LL+Ix.*NN)./aux;
+    x_dot = vx.*cp.*cy+vy.*(-cr.*sy+sr.*sp.*cy)+vz.*(sr.*sy+cr.*sp.*cy);
+    y_dot = vx.*cp.*sy+vy.*(cr.*cy+sr.*sp.*sy)+vz.*(-sr.*cy+cr.*sp.*sy);
+    h_dot = vx.*sp-vy.*sr.*cp-vz.*cr.*cp;
 
-    states_dot = [T_dot;V_dot;alpha_dot;q0_dot;q1_dot;q2_dot;q3_dot;x_dot;y_dot;h_dot];
+    states_dot = [vx_dot;vy_dot;vz_dot;roll_dot;pitch_dot;yaw_dot;p_dot;q_dot;r_dot;x_dot;y_dot;h_dot];
 
 end
 
