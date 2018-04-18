@@ -1,4 +1,4 @@
-function [states_dot] = dynamicModel(states, controls)
+function [states_dot] = dyn_complete(states, controls)
 % model interface created by falcon.m
 
 % Extract states
@@ -71,14 +71,14 @@ sp = sin(pitch);
 tp = tan(pitch);
 cy = cos(yaw);
 sy = sin(yaw);
-factor_1 = (b./(2.*V));
-factor_2 = (c./(2.*V));
+coeffA = (b./(2.*V));
+coeffB = (c./(2.*V));
 Cd = Cd0+Cda2.*alpha+Cdb.*abs(beta);
-Cy = Cyb.*beta+Cydr.*dr+Cyda.*da+factor_1.*(Cyp.*p+Cyr.*r);
+Cy = Cyb.*beta+Cydr.*dr+Cyda.*da+coeffA.*(Cyp.*p+Cyr.*r);
 Cl = Cl0+Cla.*alpha;
-Cll = Cllb.*beta+Cllda.*da+Clldr.*dr+factor_1.*(Cllp.*p+Cllr.*r);
-Cmm = Cmm0+Cmma.*alpha+Cmmde.*de+Cmmdr.*dr+Cmmda.*abs(da)+factor_2.*(Cmmq.*q);
-Cnn = Cnnb.*beta+Cnnda.*da+Cnndr.*dr+factor_1.*(Cnnp.*p+Cnnr.*r);
+Cll = Cllb.*beta+Cllda.*da+Clldr.*dr+coeffA.*(Cllp.*p+Cllr.*r);
+Cmm = Cmm0+Cmma.*alpha+Cmmde.*de+Cmmdr.*dr+Cmmda.*abs(da)+coeffB.*(Cmmq.*q);
+Cnn = Cnnb.*beta+Cnnda.*da+Cnndr.*dr+coeffA.*(Cnnp.*p+Cnnr.*r);
 qd_times_S = 0.5.*rho.*V.^2.*S;
 qd_times_S_times_b = qd_times_S.*b;
 qd_times_S_times_c = qd_times_S.*c;
