@@ -13,7 +13,7 @@ states = [falcon.State('vx',-inf,inf,1e-2);
 	      falcon.State('r',-inf,inf,1);
           falcon.State('x',-inf,inf,1e-3);
           falcon.State('y',-inf,inf,1e-3);
-          falcon.State('h',5,inf,1e-3)];
+          falcon.State('h',5,inf,1e-1)];
 
 %% Create Controls
 controls = [falcon.Control('da',-0.35,0.35,1);
