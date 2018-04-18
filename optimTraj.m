@@ -22,10 +22,9 @@ function optimTraj
     end
     
     % Add folders to path
-    addpath('DynamicModel');
     addpath('FalconToolbox');
-    addpath('FlightPlans');
     addpath('FlightGear');
+    addpath('FlightPlans');
     addpath('InitialTrajectories');
     addpath('InitialTrajectoryAssistant');
     addpath('MiscellaneousTools');

@@ -6,21 +6,24 @@ function [f,c,ceq,totalTrajectory] = totalTime(WP,guess)
     for i = 1:WP.numOfWP-1
         
         if i == 1 % Properties for first segment
-            configuration.phase1.initBoundsLow = [5000;80;0.1;eul2quat([WP.heading(1) 0 0])';WP.north(1);WP.east(1);WP.up(1)];
-            configuration.phase1.initBoundsUpp = [5000;80;0.1;eul2quat([WP.heading(1) 0 0])';WP.north(1);WP.east(1);WP.up(1)];
-            configuration.phase1.finalBoundsLow = [0;40;-0.7;eul2quat([WP.heading(2) 0 0])';WP.north(2);WP.east(2);WP.up(2)];
-            configuration.phase1.finalBoundsUpp = [9000;200;0.7;eul2quat([WP.heading(2) 0 0])';WP.north(2);WP.east(2);WP.up(2)];
+            initVelocity = 80;
+            initVx = initVelocity.*cos(WP.heading(1));
+            initVy = initVelocity.*cos(WP.heading(1)-pi/2);
+            configuration.phase1.initBoundsLow = [initVx;initVy;0;0;0;WP.heading(1);0;0;0;WP.north(1);WP.east(1);WP.up(1)];
+            configuration.phase1.initBoundsUpp = [initVx;initVy;0;0;0;WP.heading(1);0;0;0;WP.north(1);WP.east(1);WP.up(1)];
+            configuration.phase1.finalBoundsLow = [20;20;20;0;0;WP.heading(2);0;0;0;WP.north(2);WP.east(2);WP.up(2)];
+            configuration.phase1.finalBoundsUpp = [200;200;200;0;0;WP.heading(2);0;0;0;WP.north(2);WP.east(2);WP.up(2)];
         end
 
         segment{i} = optimizeTrajectory(configuration);
         
         % Properties for the rest of the segments
         if i ~= WP.numOfWP-1 % Not necessary in the last iteration
-            initStates = segment{i}.Phases(1).StateGrid.Values(1:3,end);
-            configuration.phase1.initBoundsLow = [initStates;eul2quat([WP.heading(i+1) 0 0])';WP.north(i+1);WP.east(i+1);WP.up(i+1)];
-            configuration.phase1.initBoundsUpp = [initStates;eul2quat([WP.heading(i+1) 0 0])';WP.north(i+1);WP.east(i+1);WP.up(i+1)];
-            configuration.phase1.finalBoundsLow = [0;40;-0.7;eul2quat([WP.heading(i+2) 0 0])';WP.north(i+2);WP.east(i+2);WP.up(i+2)];
-            configuration.phase1.finalBoundsUpp = [9000;200;0.7;eul2quat([WP.heading(i+2) 0 0])';WP.north(i+2);WP.east(i+2);WP.up(i+2)];
+            initStates = segment{i}.Phases(1).StateGrid.Values(:,end);
+            configuration.phase1.initBoundsLow = initStates;
+            configuration.phase1.initBoundsUpp = initStates;
+            configuration.phase1.finalBoundsLow = [20;20;20;0;0;WP.heading(i+2);0;0;0;WP.north(i+2);WP.east(i+2);WP.up(i+2)];
+            configuration.phase1.finalBoundsUpp = [200;200;200;0;0;WP.heading(i+2);0;0;0;WP.north(i+2);WP.east(i+2);WP.up(i+2)];
         end
         
     end
