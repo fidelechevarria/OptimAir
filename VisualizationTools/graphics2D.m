@@ -2,7 +2,7 @@ function graphics2D(WP,totalTrajectory)
 
     % Select variables to plot
     plotStates = true; % Without quaternions or positions
-    plotControls = false;
+    plotControls = true;
 
     % Calculate corresponding time for each WP
     middlePositions = [];
@@ -65,10 +65,10 @@ function graphics2D(WP,totalTrajectory)
         
     % PLOT CONTROLS
     if plotControls
-        controlsToPlot = {'Angle of Attack Derivative [º/s]' 'Thrust Derivative [N/s]'...
-            'Angular Velocity in x-axis [º/s]'};
+        controlsToPlot = {'Aileron deflection [º]' 'Elevator deflection [º]'...
+            'Rudder deflection [º]' 'Throttle command [%]'};
         for i = 1:totalTrajectory.numOfControls
-            if i == 1 || i == 3 % Convert from radians to degrees
+            if i < 4 % Convert from radians to degrees
                 figure
                 hold on
                 plot(totalTrajectory.time,rad2deg(totalTrajectory.controls(i,:)))
@@ -91,11 +91,11 @@ function graphics2D(WP,totalTrajectory)
             else
                 figure
                 hold on
-                plot(totalTrajectory.time,totalTrajectory.controls(i,:))
+                plot(totalTrajectory.time,totalTrajectory.controls(i,:).*100)
                 for j = 1:numel(WP_time)
                     xval = WP_time(j);
-                    ymin = min(totalTrajectory.controls(i,WP_index(j)),0);
-                    ymax = max(totalTrajectory.controls(i,WP_index(j)),0);
+                    ymin = min(totalTrajectory.controls(i,WP_index(j)).*100,0);
+                    ymax = max(totalTrajectory.controls(i,WP_index(j)).*100,0);
                     xPoints = [xval,xval];
                     yPoints = [ymin,ymax];
                     plot(xPoints,yPoints,'r--')

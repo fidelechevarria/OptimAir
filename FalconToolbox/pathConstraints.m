@@ -2,13 +2,21 @@ function [constraints] = pathConstraints(states, ~)
 % constraint interface created by falcon.m
 
 % Extract states
-q0 = states(4);
-q1 = states(5);
-q2 = states(6);
-q3 = states(7);
+vx = states(1);
+vy = states(2);
+vz = states(3);
+% roll = states(4);
+% pitch = states(5);
+% yaw = states(6);
+% p = states(7);
+% q = states(8);
+% r = states(9);
+% x = states(10);
+% y = states(11);
+% h = states(12);
 
 % Constraint functions
-quat_const = sqrt(q0.^2+q1.^2+q2.^2+q3.^2)-1;
-constraints = quat_const;
+accel_const = ;
+constraints = accel_const;
 
 end

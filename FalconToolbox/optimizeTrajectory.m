@@ -2,18 +2,18 @@
 function problem = optimizeTrajectory(configuration)
 
 %% Create States
-states = [falcon.State('vx',-inf,inf,1e-2);
-          falcon.State('vy',-inf,inf,1e-2);
-		  falcon.State('vz',-inf,inf,1e-2);
-          falcon.State('roll',-inf,inf,1);
-          falcon.State('pitch',-inf,inf,1);
-          falcon.State('yaw',-inf,inf,1);
-		  falcon.State('p',-inf,inf,1);
-          falcon.State('q',-inf,inf,1);
-	      falcon.State('r',-inf,inf,1);
-          falcon.State('x',-inf,inf,1e-3);
-          falcon.State('y',-inf,inf,1e-3);
-          falcon.State('h',5,inf,1e-1)];
+states = [falcon.State('vx',10,100,1e-2);
+          falcon.State('vy',-100,100,1e-2);
+		  falcon.State('vz',-100,100,1e-2);
+          falcon.State('roll',-4,4,1);
+          falcon.State('pitch',-4,4,1);
+          falcon.State('yaw',-4,4,1);
+		  falcon.State('p',-8,8,1);
+          falcon.State('q',-8,8,1);
+	      falcon.State('r',-8,8,1);
+          falcon.State('x',-2000,2000,1e-3);
+          falcon.State('y',-2000,2000,1e-3);
+          falcon.State('h',5,2000,1e-1)];
 
 %% Create Controls
 controls = [falcon.Control('da',-0.35,0.35,1);
@@ -28,10 +28,10 @@ FinalTime = falcon.Parameter('FinalTime',10,0,50,0.1);
 problem = falcon.Problem('optimTraj');
 
 %% Set major iteration limit
-problem.setMajorIterLimit(5000);
+problem.setMajorIterLimit(1000);
 
 %% Specify discretization
-tau = linspace(0,1,51);
+tau = linspace(0,1,501);
 
 %% Create Model
 mdl = falcon.SimulationModelBuilder('dynamicModel', states, controls);
@@ -172,6 +172,10 @@ phase1.setInitialBoundaries(configuration.phase1.initBoundsLow,...
 phase1.setFinalBoundaries(configuration.phase1.finalBoundsLow,...
                           configuration.phase1.finalBoundsUpp);
 
+% % Path Constraint
+% pathconstraint = falcon.Constraint('accel_const',10,150);
+% phase1.addNewPathConstraint(@pathConstraints,pathconstraint);
+                      
 %% Add cost function
 problem.addNewParameterCost(FinalTime);
 

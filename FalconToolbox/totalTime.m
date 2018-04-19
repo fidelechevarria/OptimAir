@@ -6,13 +6,10 @@ function [f,c,ceq,totalTrajectory] = totalTime(WP,guess)
     for i = 1:WP.numOfWP-1
         
         if i == 1 % Properties for first segment
-            initVelocity = 100;
-            initVx = initVelocity.*cos(WP.heading(1));
-            initVy = initVelocity.*cos(WP.heading(1)-pi/2);
-            configuration.phase1.initBoundsLow = [initVx;initVy;0;0;0;WP.heading(1);0;0;0;WP.north(1);WP.east(1);WP.up(1)];
-            configuration.phase1.initBoundsUpp = [initVx;initVy;0;0;0;WP.heading(1);0;0;0;WP.north(1);WP.east(1);WP.up(1)];
-            configuration.phase1.finalBoundsLow = [-inf;-inf;-inf;0;0;WP.heading(2);0;0;0;WP.north(2);WP.east(2);WP.up(2)];
-            configuration.phase1.finalBoundsUpp = [inf;inf;inf;0;0;WP.heading(2);0;0;0;WP.north(2);WP.east(2);WP.up(2)];
+            configuration.phase1.initBoundsLow = [80;0;0;0;0;WP.heading(1);0;0;0;WP.north(1);WP.east(1);WP.up(1)];
+            configuration.phase1.initBoundsUpp = [80;0;0;0;0;WP.heading(1);0;0;0;WP.north(1);WP.east(1);WP.up(1)];
+            configuration.phase1.finalBoundsLow = [10;-100;-100;0;0;WP.heading(2);0;0;0;WP.north(2);WP.east(2);WP.up(2)];
+            configuration.phase1.finalBoundsUpp = [100;100;100;0;0;WP.heading(2);0;0;0;WP.north(2);WP.east(2);WP.up(2)];
         end
 
         segment{i} = optimizeTrajectory(configuration);
@@ -22,8 +19,8 @@ function [f,c,ceq,totalTrajectory] = totalTime(WP,guess)
             initStates = segment{i}.Phases(1).StateGrid.Values(:,end);
             configuration.phase1.initBoundsLow = initStates;
             configuration.phase1.initBoundsUpp = initStates;
-            configuration.phase1.finalBoundsLow = [-inf;-inf;-inf;0;0;WP.heading(i+2);0;0;0;WP.north(i+2);WP.east(i+2);WP.up(i+2)];
-            configuration.phase1.finalBoundsUpp = [inf;inf;inf;0;0;WP.heading(i+2);0;0;0;WP.north(i+2);WP.east(i+2);WP.up(i+2)];
+            configuration.phase1.finalBoundsLow = [10;-100;-100;0;0;WP.heading(i+2);0;0;0;WP.north(i+2);WP.east(i+2);WP.up(i+2)];
+            configuration.phase1.finalBoundsUpp = [100;100;100;0;0;WP.heading(i+2);0;0;0;WP.north(i+2);WP.east(i+2);WP.up(i+2)];
         end
         
     end
