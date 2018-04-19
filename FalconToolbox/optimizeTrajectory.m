@@ -22,16 +22,18 @@ controls = [falcon.Control('da',-0.35,0.35,1);
             falcon.Control('dt',0,1,1)];
         
 %% Create phase time
-FinalTime = falcon.Parameter('FinalTime',10,5,50,0.1);
+FinalTime = falcon.Parameter('FinalTime',10,1,50,0.1);
 
 %% Create complete problem
 problem = falcon.Problem('optimTraj');
 
-%% Set major iteration limit
-problem.setMajorIterLimit(1000);
+%% Set optimization parameters
+problem.setMajorIterLimit(1);
+% problem.setMajorFeasTol(1e-3);
+% problem.setMajorOptTol(1e-14);
 
 %% Specify discretization
-tau = linspace(0,1,101);
+tau = linspace(0,1,40);
 
 %% Create Model
 mdl = falcon.SimulationModelBuilder('dynamicModel', states, controls);
@@ -74,6 +76,8 @@ mdl.addConstant('Ix',3531.9); % kg*m^2
 mdl.addConstant('Iy',2196.4); % kg*m^2
 mdl.addConstant('Iz',4887.7); % kg*m^2
 mdl.addConstant('Ixz',0); % kg*m^3
+
+% mdl.addConstant('dr',0); % No rudder control
 
 % Aerodynamic angles
 mdl.addSubsystem(@dyn_alphaBeta,...
@@ -163,8 +167,18 @@ mdl.Build();
 % Phase
 phase1 = problem.addNewPhase(@dynamicModel,states,tau,0,FinalTime);
 
+% State grid
+load('initTrajTest.mat')
+phase1.StateGrid.setValues(time_test,states_test,'Realtime',true);
+% phase1.StateGrid.setValues([0 5 10],...
+%     [[80;0;0;0;0;4.188;0;0;0;0;0;20],...
+%     [50;0;0;-pi/2;0;1.2;0;0;0;-70;60;140],...
+%     [80;0;0;0;0;0.977;0;0;0;135.07;267.24;20]],...
+%     'Realtime',true);
+
 % Control grid
-phase1.addNewControlGrid(controls,tau);
+controlgrid = phase1.addNewControlGrid(controls,tau);
+controlgrid.setValues(time_test,controls_test,'Realtime',true);
 
 % Set boundary condition
 phase1.setInitialBoundaries(configuration.phase1.initBoundsLow,...
@@ -181,5 +195,8 @@ problem.addNewParameterCost(FinalTime);
 
 %% Solve problem
 problem.Solve();
+
+%% Create timeseries from solution
+[statesTS, controlTS, outputTS, statesdotTS, postprocessedTS] = problem.getTimeSeries();
 
 end
