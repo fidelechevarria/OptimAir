@@ -31,7 +31,7 @@ problem = falcon.Problem('optimTraj');
 problem.setMajorIterLimit(1000);
 
 %% Specify discretization
-tau = linspace(0,1,501);
+tau = linspace(0,1,51);
 
 %% Create Model
 mdl = falcon.SimulationModelBuilder('dynamicModel', states, controls);
