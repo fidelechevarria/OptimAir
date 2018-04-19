@@ -28,7 +28,7 @@ FinalTime = falcon.Parameter('FinalTime',10,1,50,0.1);
 problem = falcon.Problem('optimTraj');
 
 %% Set optimization parameters
-problem.setMajorIterLimit(1);
+problem.setMajorIterLimit(500);
 % problem.setMajorFeasTol(1e-3);
 % problem.setMajorOptTol(1e-14);
 

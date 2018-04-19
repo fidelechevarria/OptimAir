@@ -1,8 +1,8 @@
 function graphics2D(WP,totalTrajectory)
 
     % Select variables to plot
-    plotStates = true; % Without quaternions or positions
-    plotControls = true;
+    plotStates = false; % Without quaternions or positions
+    plotControls = false;
 
     % Calculate corresponding time for each WP
     middlePositions = [];
