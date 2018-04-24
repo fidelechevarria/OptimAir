@@ -22,7 +22,7 @@ controls = [falcon.Control('da',-0.35,0.35,1);
             falcon.Control('dt',0,1,1)];
         
 %% Create phase time
-FinalTime = falcon.Parameter('FinalTime',10,1,50,0.1);
+FinalTime = falcon.Parameter('FinalTime',12.5402,1,50,0.1);
 
 %% Create complete problem
 problem = falcon.Problem('optimTraj');
@@ -33,7 +33,7 @@ problem.setMajorIterLimit(500);
 % problem.setMajorOptTol(1e-14);
 
 %% Specify discretization
-tau = linspace(0,1,40);
+tau = linspace(0,1,80);
 
 %% Create Model
 mdl = falcon.SimulationModelBuilder('dynamicModel', states, controls);
