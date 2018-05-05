@@ -28,7 +28,7 @@ FinalTime = falcon.Parameter('FinalTime',guess.time(end),1,50,0.1);
 problem = falcon.Problem('optimTraj');
 
 %% Set optimization parameters
-problem.setMajorIterLimit(1);
+problem.setMajorIterLimit(500);
 % problem.setMajorFeasTol(1e-3);
 % problem.setMajorOptTol(1e-14);
 
@@ -76,8 +76,6 @@ mdl.addConstant('Ix',3531.9); % kg*m^2
 mdl.addConstant('Iy',2196.4); % kg*m^2
 mdl.addConstant('Iz',4887.7); % kg*m^2
 mdl.addConstant('Ixz',0); % kg*m^3
-
-% mdl.addConstant('dr',0); % No rudder control
 
 % Aerodynamic angles
 mdl.addSubsystem(@dyn_alphaBeta,...
