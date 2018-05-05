@@ -387,7 +387,7 @@ function ITA_main(WP)
     end
 
     function ITA_load_Callback(~,~)
-        if (exist('InitialTrajectories','dir') && (isempty(strfind(pwd,'InitialTrajectories'))))
+        if (exist('InitialTrajectories','dir') && (~contains(pwd,'InitialTrajectories')))
             cd([pwd '\InitialTrajectories'])
         end
         [file,path] = uigetfile('*.mat','Select a MAT file');
@@ -431,114 +431,164 @@ function ITA_main(WP)
 
     function guess = generateGuess()
         
-%         numOfPointsSubsegmentGuess = 200;
-%         numOfPointsSegmentGuess = 6;
-%         subsegmentGuess = cell(WP.ITA_numOfSegments,1);
-%         velocityGuessSubsegment = cell(WP.ITA_numOfSegments,1);
-%         rollGuessSubsegment = cell(WP.ITA_numOfSegments,1);
-%         pitchGuessSubsegment = cell(WP.ITA_numOfSegments,1);
-%         headingGuessSubsegment = cell(WP.ITA_numOfSegments,1);
-%         northGuessSubsegment = cell(WP.ITA_numOfSegments,1);
-%         eastGuessSubsegment = cell(WP.ITA_numOfSegments,1);
-%         upGuessSubsegment = cell(WP.ITA_numOfSegments,1);
-%         timeGuessSubsegment = cell(WP.ITA_numOfSegments,1);
-%         stateIndeces = [];
-%         
-%         generateTraj();
-%         
-%         for s = 1:WP.ITA_numOfSegments
-%             subsegmentGuess{s} = fnbrk(estimatedTraj,s);
-%             [northGuessSubsegment{s},eastGuessSubsegment{s},upGuessSubsegment{s}] = multiEvaluateSpline(subsegmentGuess{s},numOfPointsSubsegmentGuess);
-%             temp_pitch = [];
-%             temp_heading = [];
-%             for t = 1:numOfPointsSubsegmentGuess-1
-%                 temp_pitch = [temp_pitch atan2(upGuessSubsegment{s}(t+1)-upGuessSubsegment{s}(t),sqrt((northGuessSubsegment{s}(t+1)-northGuessSubsegment{s}(t))^2+(eastGuessSubsegment{s}(t+1)-eastGuessSubsegment{s}(t))^2))];
-%                 temp_heading = [temp_heading atan2(eastGuessSubsegment{s}(t+1)-eastGuessSubsegment{s}(t),northGuessSubsegment{s}(t+1)-northGuessSubsegment{s}(t))];
-%             end
-%             pitchGuessSubsegment{s} = [temp_pitch temp_pitch(end)]';
-%             headingGuessSubsegment{s} = [temp_heading temp_heading(end)]';
-%             arcLengthGuessSubsegment{s} = calculateArcLength(northGuessSubsegment{s},eastGuessSubsegment{s},upGuessSubsegment{s});
-%             stateIndeces = [stateIndeces s*(numOfPointsSubsegmentGuess-1)];
-%         end
-%         
-%         arcLengthGuessMatrix = cell2mat(arcLengthGuessSubsegment);
-%         arcLengthGuessVector = reshape(arcLengthGuessMatrix,[],1);
-%         arcLengthGuessCumsum = [0;cumsum(arcLengthGuessVector)];
-%         arcLengthValuesForStates = [0;arcLengthGuessCumsum(stateIndeces)];
-%         
-%         stateData = cell2mat(stateTable.Data);
-%         velocityGuessInWP = stateData(:,2)';
-%         rollGuessInWP = stateData(:,4)';
-%         
-%         velocityGuessTotal = pchip(arcLengthValuesForStates,velocityGuessInWP,arcLengthGuessCumsum);
-%         rollGuessTotal = pchip(arcLengthValuesForStates,deg2rad(rollGuessInWP),arcLengthGuessCumsum);
-%         
-%         for s = 1:WP.ITA_numOfSegments
-%             velocityGuessSubsegment{s} = velocityGuessTotal((s-1)*(numOfPointsSubsegmentGuess-1)+1:s*(numOfPointsSubsegmentGuess-1));
-%             rollGuessSubsegment{s} = rollGuessTotal((s-1)*(numOfPointsSubsegmentGuess-1)+1:s*(numOfPointsSubsegmentGuess-1));
-%             
-%             rollGuessSubsegment{s} = [rollGuessSubsegment{s};rollGuessSubsegment{s}(end)];
-%             
-%             timeGuessSubsegment{s} = [arcLengthGuessSubsegment{s}';0]./velocityGuessSubsegment{s};
-%         end
-%         
-%         timeGuess = cell(WP.numOfSegments,1);
-%         rollGuess = cell(WP.numOfSegments,1);
-%         pitchGuess = cell(WP.numOfSegments,1);
-%         headingGuess = cell(WP.numOfSegments,1);
-%         northGuess = cell(WP.numOfSegments,1);
-%         eastGuess = cell(WP.numOfSegments,1);
-%         upGuess = cell(WP.numOfSegments,1);
-%         
-%         for k = 1:WP.numOfSegments
-%             timeGuessMatrix = cell2mat(timeGuessSubsegment(WP.ITA_realWPindices(k):WP.ITA_realWPindices(k+1)-1));
-%             rollGuessMatrix = cell2mat(rollGuessSubsegment(WP.ITA_realWPindices(k):WP.ITA_realWPindices(k+1)-1));
-%             pitchGuessMatrix = cell2mat(pitchGuessSubsegment(WP.ITA_realWPindices(k):WP.ITA_realWPindices(k+1)-1));
-%             headingGuessMatrix = cell2mat(headingGuessSubsegment(WP.ITA_realWPindices(k):WP.ITA_realWPindices(k+1)-1));
-%             northGuessMatrix = cell2mat(northGuessSubsegment(WP.ITA_realWPindices(k):WP.ITA_realWPindices(k+1)-1));
-%             eastGuessMatrix = cell2mat(eastGuessSubsegment(WP.ITA_realWPindices(k):WP.ITA_realWPindices(k+1)-1));
-%             upGuessMatrix = cell2mat(upGuessSubsegment(WP.ITA_realWPindices(k):WP.ITA_realWPindices(k+1)-1));
-%             
-%             timeGuess{k} = cumsum(reshape(timeGuessMatrix,[],1));
-%             rollGuess{k} = reshape(rollGuessMatrix,[],1);
-%             pitchGuess{k} = reshape(pitchGuessMatrix,[],1);
-%             headingGuess{k} = reshape(headingGuessMatrix,[],1);
-%             northGuess{k} = reshape(northGuessMatrix,[],1);
-%             eastGuess{k} = reshape(eastGuessMatrix,[],1);
-%             upGuess{k} = reshape(upGuessMatrix,[],1);
-%             
-%             rollGuessTS{k} = timeseries(rollGuess{k},timeGuess{k});
-%             pitchGuessTS{k} = timeseries(pitchGuess{k},timeGuess{k});
-%             headingGuessTS{k} = timeseries(headingGuess{k},timeGuess{k});
-%             northGuessTS{k} = timeseries(northGuess{k},timeGuess{k});
-%             eastGuessTS{k} = timeseries(eastGuess{k},timeGuess{k});
-%             upGuessTS{k} = timeseries(upGuess{k},timeGuess{k});
-% 
-%             rollGuessTS{k} = resample(rollGuessTS{k},linspace(timeGuess{k}(1),timeGuess{k}(end),numOfPointsSegmentGuess));
-%             pitchGuessTS{k} = resample(pitchGuessTS{k},linspace(timeGuess{k}(1),timeGuess{k}(end),numOfPointsSegmentGuess));
-%             headingGuessTS{k} = resample(headingGuessTS{k},linspace(timeGuess{k}(1),timeGuess{k}(end),numOfPointsSegmentGuess));
-%             northGuessTS{k} = resample(northGuessTS{k},linspace(timeGuess{k}(1),timeGuess{k}(end),numOfPointsSegmentGuess));
-%             eastGuessTS{k} = resample(eastGuessTS{k},linspace(timeGuess{k}(1),timeGuess{k}(end),numOfPointsSegmentGuess));
-%             upGuessTS{k} = resample(upGuessTS{k},linspace(timeGuess{k}(1),timeGuess{k}(end),numOfPointsSegmentGuess));
-%             
-%             timeGuess{k} = linspace(timeGuess{k}(1),timeGuess{k}(end),numOfPointsSegmentGuess)';
-%             rollGuess{k} = rollGuessTS{k}.Data;
-%             pitchGuess{k} = pitchGuessTS{k}.Data;
-%             headingGuess{k} = headingGuessTS{k}.Data;
-%             northGuess{k} = northGuessTS{k}.Data;
-%             eastGuess{k} = eastGuessTS{k}.Data;
-%             upGuess{k} = upGuessTS{k}.Data;
-%             
-%         end
-%         
-%         for segment = 1:WP.numOfSegments
-%             guess.time{segment} = timeGuess{segment}';
-%             guess.state{segment} = [thrustGuess{segment} velocityGuess{segment} alphaGuess{segment}...
-%                            q0Guess{segment} q1Guess{segment} q2Guess{segment} q3Guess{segment}...
-%                            northGuess{segment} eastGuess{segment} upGuess{segment}]';
-%             guess.control{segment} = [thrustDotGuess{segment} alphaDotGuess{segment} pGuess{segment}]';
-%         end
-        guess = 0;
+        numOfPointsSubsegmentGuess = 200;
+        numOfPointsSegmentGuess = 6;
+        subsegmentGuess = cell(WP.ITA_numOfSegments,1);
+        velocityGuessSubsegment = cell(WP.ITA_numOfSegments,1);
+        rollGuessSubsegment = cell(WP.ITA_numOfSegments,1);
+        pitchGuessSubsegment = cell(WP.ITA_numOfSegments,1);
+        headingGuessSubsegment = cell(WP.ITA_numOfSegments,1);
+        northGuessSubsegment = cell(WP.ITA_numOfSegments,1);
+        eastGuessSubsegment = cell(WP.ITA_numOfSegments,1);
+        upGuessSubsegment = cell(WP.ITA_numOfSegments,1);
+        timeGuessSubsegment = cell(WP.ITA_numOfSegments,1);
+        stateIndeces = [];
+        
+        generateTraj();
+        
+        for s = 1:WP.ITA_numOfSegments
+            subsegmentGuess{s} = fnbrk(estimatedTraj,s);
+            [northGuessSubsegment{s},eastGuessSubsegment{s},upGuessSubsegment{s}] = multiEvaluateSpline(subsegmentGuess{s},numOfPointsSubsegmentGuess);
+            temp_pitch = [];
+            temp_heading = [];
+            for t = 1:numOfPointsSubsegmentGuess-1
+                temp_pitch = [temp_pitch atan2(upGuessSubsegment{s}(t+1)-upGuessSubsegment{s}(t),sqrt((northGuessSubsegment{s}(t+1)-northGuessSubsegment{s}(t))^2+(eastGuessSubsegment{s}(t+1)-eastGuessSubsegment{s}(t))^2))];
+                temp_heading = [temp_heading atan2(eastGuessSubsegment{s}(t+1)-eastGuessSubsegment{s}(t),northGuessSubsegment{s}(t+1)-northGuessSubsegment{s}(t))];
+            end
+            pitchGuessSubsegment{s} = [temp_pitch temp_pitch(end)]';
+            headingGuessSubsegment{s} = [temp_heading temp_heading(end)]';
+            arcLengthGuessSubsegment{s} = calculateArcLength(northGuessSubsegment{s},eastGuessSubsegment{s},upGuessSubsegment{s});
+            stateIndeces = [stateIndeces s*(numOfPointsSubsegmentGuess-1)];
+        end
+        
+        arcLengthGuessMatrix = cell2mat(arcLengthGuessSubsegment);
+        arcLengthGuessVector = reshape(arcLengthGuessMatrix,[],1);
+        arcLengthGuessCumsum = [0;cumsum(arcLengthGuessVector)];
+        arcLengthValuesForStates = [0;arcLengthGuessCumsum(stateIndeces)];
+        
+        stateData = cell2mat(stateTable.Data);
+        velocityGuessInWP = stateData(:,1)';
+        rollGuessInWP = deg2rad(stateData(:,2))';
+        
+        velocityGuessTotal = pchip(arcLengthValuesForStates,velocityGuessInWP,arcLengthGuessCumsum);
+        rollGuessTotal = pchip(arcLengthValuesForStates,rollGuessInWP,arcLengthGuessCumsum);
+        
+        for s = 1:WP.ITA_numOfSegments
+            velocityGuessSubsegment{s} = velocityGuessTotal((s-1)*(numOfPointsSubsegmentGuess-1)+1:s*(numOfPointsSubsegmentGuess-1));
+            rollGuessSubsegment{s} = rollGuessTotal((s-1)*(numOfPointsSubsegmentGuess-1)+1:s*(numOfPointsSubsegmentGuess-1));
+            
+            velocityGuessSubsegment{s} = [velocityGuessSubsegment{s};velocityGuessSubsegment{s}(end)];
+            
+            rollGuessSubsegment{s} = [rollGuessSubsegment{s};rollGuessSubsegment{s}(end)];
+            
+            timeGuessSubsegment{s} = [arcLengthGuessSubsegment{s}';0]./velocityGuessSubsegment{s};
+        end
+        
+        timeGuess = cell(WP.numOfSegments,1);
+        velocityGuess = cell(WP.numOfSegments,1);
+        rollGuess = cell(WP.numOfSegments,1);
+        pitchGuess = cell(WP.numOfSegments,1);
+        headingGuess = cell(WP.numOfSegments,1);
+        northGuess = cell(WP.numOfSegments,1);
+        eastGuess = cell(WP.numOfSegments,1);
+        upGuess = cell(WP.numOfSegments,1);
+        pGuess = cell(WP.numOfSegments,1);
+        qGuess = cell(WP.numOfSegments,1);
+        rGuess = cell(WP.numOfSegments,1);
+        vxGuess = cell(WP.numOfSegments,1);
+        vyGuess = cell(WP.numOfSegments,1);
+        vzGuess = cell(WP.numOfSegments,1);
+        daGuess = cell(WP.numOfSegments,1);
+        deGuess = cell(WP.numOfSegments,1);
+        drGuess = cell(WP.numOfSegments,1);
+        dtGuess = cell(WP.numOfSegments,1);
+        
+        for k = 1:WP.numOfSegments
+            timeGuessMatrix = cumsum(cell2mat(timeGuessSubsegment(WP.ITA_realWPindices(k):WP.ITA_realWPindices(k+1)-1)));
+            velocityGuessMatrix = cell2mat(velocityGuessSubsegment(WP.ITA_realWPindices(k):WP.ITA_realWPindices(k+1)-1));
+            rollGuessMatrix = cell2mat(rollGuessSubsegment(WP.ITA_realWPindices(k):WP.ITA_realWPindices(k+1)-1));
+            pitchGuessMatrix = cell2mat(pitchGuessSubsegment(WP.ITA_realWPindices(k):WP.ITA_realWPindices(k+1)-1));
+            headingGuessMatrix = cell2mat(headingGuessSubsegment(WP.ITA_realWPindices(k):WP.ITA_realWPindices(k+1)-1));
+            northGuessMatrix = cell2mat(northGuessSubsegment(WP.ITA_realWPindices(k):WP.ITA_realWPindices(k+1)-1));
+            eastGuessMatrix = cell2mat(eastGuessSubsegment(WP.ITA_realWPindices(k):WP.ITA_realWPindices(k+1)-1));
+            upGuessMatrix = cell2mat(upGuessSubsegment(WP.ITA_realWPindices(k):WP.ITA_realWPindices(k+1)-1));
+            timeGuessMatrixDiff = diff(timeGuessMatrix);
+            pGuessMatrix = diff(rollGuessMatrix)./timeGuessMatrixDiff;
+            qGuessMatrix = diff(pitchGuessMatrix)./timeGuessMatrixDiff;
+            rGuessMatrix = diff(headingGuessMatrix)./timeGuessMatrixDiff;
+            pGuessMatrix((isnan(pGuessMatrix))) = 0;
+            qGuessMatrix((isnan(qGuessMatrix))) = 0;
+            rGuessMatrix((isnan(rGuessMatrix))) = 0;
+            pGuessMatrix = [pGuessMatrix;0];
+            qGuessMatrix = [qGuessMatrix;0];
+            rGuessMatrix = [rGuessMatrix;0];
+            
+            timeGuess{k} = reshape(timeGuessMatrix,[],1);
+            velocityGuess{k} = reshape(velocityGuessMatrix,[],1);
+            rollGuess{k} = reshape(rollGuessMatrix,[],1);
+            pitchGuess{k} = reshape(pitchGuessMatrix,[],1);
+            headingGuess{k} = reshape(headingGuessMatrix,[],1);
+            northGuess{k} = reshape(northGuessMatrix,[],1);
+            eastGuess{k} = reshape(eastGuessMatrix,[],1);
+            upGuess{k} = reshape(upGuessMatrix,[],1);
+            pGuess{k} = reshape(pGuessMatrix,[],1);
+            qGuess{k} = reshape(qGuessMatrix,[],1);
+            rGuess{k} = reshape(rGuessMatrix,[],1);
+            
+            velocityGuessTS{k} = timeseries(velocityGuess{k},timeGuess{k});
+            rollGuessTS{k} = timeseries(rollGuess{k},timeGuess{k});
+            pitchGuessTS{k} = timeseries(pitchGuess{k},timeGuess{k});
+            headingGuessTS{k} = timeseries(headingGuess{k},timeGuess{k});
+            northGuessTS{k} = timeseries(northGuess{k},timeGuess{k});
+            eastGuessTS{k} = timeseries(eastGuess{k},timeGuess{k});
+            upGuessTS{k} = timeseries(upGuess{k},timeGuess{k});
+            pGuessTS{k} = timeseries(pGuess{k},timeGuess{k});
+            qGuessTS{k} = timeseries(qGuess{k},timeGuess{k});
+            rGuessTS{k} = timeseries(rGuess{k},timeGuess{k});
+
+            auxlinspace = linspace(timeGuess{k}(1),timeGuess{k}(end),numOfPointsSegmentGuess);
+            velocityGuessTS{k} = resample(velocityGuessTS{k},auxlinspace);
+            rollGuessTS{k} = resample(rollGuessTS{k},auxlinspace);
+            pitchGuessTS{k} = resample(pitchGuessTS{k},auxlinspace);
+            headingGuessTS{k} = resample(headingGuessTS{k},auxlinspace);
+            northGuessTS{k} = resample(northGuessTS{k},auxlinspace);
+            eastGuessTS{k} = resample(eastGuessTS{k},auxlinspace);
+            upGuessTS{k} = resample(upGuessTS{k},auxlinspace);
+            pGuessTS{k} = resample(pGuessTS{k},auxlinspace);
+            qGuessTS{k} = resample(pGuessTS{k},auxlinspace);
+            rGuessTS{k} = resample(rGuessTS{k},auxlinspace);
+            
+            timeGuess{k} = linspace(timeGuess{k}(1),timeGuess{k}(end),numOfPointsSegmentGuess)';
+            velocityGuess{k} = velocityGuessTS{k}.Data;
+            rollGuess{k} = rollGuessTS{k}.Data;
+            pitchGuess{k} = pitchGuessTS{k}.Data;
+            headingGuess{k} = headingGuessTS{k}.Data;
+            northGuess{k} = northGuessTS{k}.Data;
+            eastGuess{k} = eastGuessTS{k}.Data;
+            upGuess{k} = upGuessTS{k}.Data;
+            pGuess{k} = pGuessTS{k}.Data;
+            qGuess{k} = qGuessTS{k}.Data;
+            rGuess{k} = rGuessTS{k}.Data;
+            
+            vxGuess{k} = velocityGuess{k};
+            vyGuess{k} = zeros(numel(vxGuess{k}),1);
+            vzGuess{k} = zeros(numel(vxGuess{k}),1);
+            
+            daGuess{k} = zeros(numel(vxGuess{k}),1);
+            deGuess{k} = zeros(numel(vxGuess{k}),1);
+            drGuess{k} = zeros(numel(vxGuess{k}),1);
+            dtGuess{k} = zeros(numel(vxGuess{k}),1);
+            
+        end
+        
+        for segment = 1:WP.numOfSegments
+            guess.time{segment} = timeGuess{segment}';
+            guess.states{segment} = [vxGuess{segment} vyGuess{segment} vzGuess{segment}...
+                           rollGuess{segment} pitchGuess{segment} headingGuess{segment}...
+                           pGuess{segment} qGuess{segment} rGuess{segment}...
+                           northGuess{segment} eastGuess{segment} upGuess{segment}]';
+            guess.controls{segment} = [daGuess{segment} deGuess{segment} drGuess{segment} dtGuess{segment}]';
+        end
     end
 
 end

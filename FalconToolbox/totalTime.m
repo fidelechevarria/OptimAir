@@ -8,19 +8,22 @@ function [f,c,ceq,totalTrajectory] = totalTime(WP,guess)
         if i == 1 % Properties for first segment
             configuration.phase1.initBoundsLow = [80;0;0;0;0;WP.heading(1);0;0;0;WP.north(1);WP.east(1);WP.up(1)];
             configuration.phase1.initBoundsUpp = [80;0;0;0;0;WP.heading(1);0;0;0;WP.north(1);WP.east(1);WP.up(1)];
-            configuration.phase1.finalBoundsLow = [10;-100;-100;0;0;WP.heading(2);0;0;0;WP.north(2);WP.east(2);WP.up(2)];
-            configuration.phase1.finalBoundsUpp = [100;100;100;0;0;WP.heading(2);0;0;0;WP.north(2);WP.east(2);WP.up(2)];
+            configuration.phase1.finalBoundsLow = [10;-50;-50;0;0;WP.heading(2);0;0;0;WP.north(2);WP.east(2);WP.up(2)];
+            configuration.phase1.finalBoundsUpp = [100;50;50;0;0;WP.heading(2);0;0;0;WP.north(2);WP.east(2);WP.up(2)];
         end
 
-        segment{i} = optimizeTrajectory(configuration);
+        segmentGuess.time = guess.time{i};
+        segmentGuess.states = guess.states{i};
+        segmentGuess.controls = guess.controls{i};
+        segment{i} = optimizeTrajectory(configuration,segmentGuess);
         
         % Properties for the rest of the segments
         if i ~= WP.numOfWP-1 % Not necessary in the last iteration
             initStates = segment{i}.Phases(1).StateGrid.Values(:,end);
             configuration.phase1.initBoundsLow = initStates;
             configuration.phase1.initBoundsUpp = initStates;
-            configuration.phase1.finalBoundsLow = [10;-100;-100;0;0;WP.heading(i+2);0;0;0;WP.north(i+2);WP.east(i+2);WP.up(i+2)];
-            configuration.phase1.finalBoundsUpp = [100;100;100;0;0;WP.heading(i+2);0;0;0;WP.north(i+2);WP.east(i+2);WP.up(i+2)];
+            configuration.phase1.finalBoundsLow = [10;-50;-50;0;0;WP.heading(i+2);0;0;0;WP.north(i+2);WP.east(i+2);WP.up(i+2)];
+            configuration.phase1.finalBoundsUpp = [100;50;50;0;0;WP.heading(i+2);0;0;0;WP.north(i+2);WP.east(i+2);WP.up(i+2)];
         end
         
     end

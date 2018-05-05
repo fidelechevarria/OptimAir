@@ -1,5 +1,5 @@
 
-function problem = optimizeTrajectory(configuration)
+function problem = optimizeTrajectory(configuration,guess)
 
 %% Create States
 states = [falcon.State('vx',10,100,1e-2);
@@ -22,13 +22,13 @@ controls = [falcon.Control('da',-0.35,0.35,1);
             falcon.Control('dt',0,1,1)];
         
 %% Create phase time
-FinalTime = falcon.Parameter('FinalTime',12.5402,1,50,0.1);
+FinalTime = falcon.Parameter('FinalTime',guess.time(end),1,50,0.1);
 
 %% Create complete problem
 problem = falcon.Problem('optimTraj');
 
 %% Set optimization parameters
-problem.setMajorIterLimit(500);
+problem.setMajorIterLimit(1);
 % problem.setMajorFeasTol(1e-3);
 % problem.setMajorOptTol(1e-14);
 
@@ -168,17 +168,11 @@ mdl.Build();
 phase1 = problem.addNewPhase(@dynamicModel,states,tau,0,FinalTime);
 
 % State grid
-load('initTrajTest.mat')
-phase1.StateGrid.setValues(time_test,states_test,'Realtime',true);
-% phase1.StateGrid.setValues([0 5 10],...
-%     [[80;0;0;0;0;4.188;0;0;0;0;0;20],...
-%     [50;0;0;-pi/2;0;1.2;0;0;0;-70;60;140],...
-%     [80;0;0;0;0;0.977;0;0;0;135.07;267.24;20]],...
-%     'Realtime',true);
+phase1.StateGrid.setValues(guess.time,guess.states,'Realtime',true);
 
 % Control grid
 controlgrid = phase1.addNewControlGrid(controls,tau);
-controlgrid.setValues(time_test,controls_test,'Realtime',true);
+controlgrid.setValues(guess.time,guess.controls,'Realtime',true);
 
 % Set boundary condition
 phase1.setInitialBoundaries(configuration.phase1.initBoundsLow,...
