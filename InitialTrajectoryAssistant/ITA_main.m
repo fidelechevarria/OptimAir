@@ -1,5 +1,5 @@
     
-function ITA_main(WP)
+function ITA_main(WP,configuration)
     
     % Generate new sequence of WP
     WP.ITA_WP_type = [];
@@ -418,7 +418,7 @@ function ITA_main(WP)
 
     function ITA_finish_Callback(~,~)
         guess = generateGuess();
-        [~,~,~,totalTrajectory] = totalTime(WP,guess);
+        [~,~,~,totalTrajectory] = totalTime(WP,guess,configuration);
         plotResults(WP,totalTrajectory);
     end
 

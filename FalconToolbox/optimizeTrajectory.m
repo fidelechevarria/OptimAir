@@ -1,5 +1,5 @@
 
-function problem = optimizeTrajectory(configuration,guess)
+function problem = optimizeTrajectory(boundaries,guess,configuration)
 
 %% Create States
 states = [falcon.State('vx',10,100,1e-2);
@@ -28,12 +28,12 @@ FinalTime = falcon.Parameter('FinalTime',guess.time(end),1,50,0.1);
 problem = falcon.Problem('optimTraj');
 
 %% Set optimization parameters
-problem.setMajorIterLimit(500);
+problem.setMajorIterLimit(configuration.majIterLim);
 % problem.setMajorFeasTol(1e-3);
 % problem.setMajorOptTol(1e-14);
 
 %% Specify discretization
-tau = linspace(0,1,80);
+tau = linspace(0,1,configuration.discretizationPoints);
 
 %% Create Model
 mdl = falcon.SimulationModelBuilder('dynamicModel', states, controls);
@@ -173,10 +173,10 @@ controlgrid = phase1.addNewControlGrid(controls,tau);
 controlgrid.setValues(guess.time,guess.controls,'Realtime',true);
 
 % Set boundary condition
-phase1.setInitialBoundaries(configuration.phase1.initBoundsLow,...
-                            configuration.phase1.initBoundsUpp);
-phase1.setFinalBoundaries(configuration.phase1.finalBoundsLow,...
-                          configuration.phase1.finalBoundsUpp);
+phase1.setInitialBoundaries(boundaries.phase1.initBoundsLow,...
+                            boundaries.phase1.initBoundsUpp);
+phase1.setFinalBoundaries(boundaries.phase1.finalBoundsLow,...
+                          boundaries.phase1.finalBoundsUpp);
 
 % % Path Constraint
 % pathconstraint = falcon.Constraint('accel_const',10,150);
