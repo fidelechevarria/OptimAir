@@ -1,5 +1,5 @@
     
-function ITA_main(WP,configuration)
+function ITA_completeModel(WP,configuration)
     
     % Generate new sequence of WP
     WP.ITA_WP_type = [];
@@ -100,7 +100,7 @@ function ITA_main(WP,configuration)
         mArrow3(posStartArrow,posFinishArrow,'color','red','stemWidth',1,'facealpha',0.5);
     end
     grid
-%     title(['Estimated time ' num2str(propagatedState.totalTime) 's'])
+%     title(['Estimated time ' num2str(propagatedState.optimizeTrajectoryCompleteModel) 's'])
     axis equal
     axis vis3d
     axis tight
@@ -418,7 +418,7 @@ function ITA_main(WP,configuration)
 
     function ITA_finish_Callback(~,~)
         guess = generateGuess();
-        [~,~,~,totalTrajectory] = totalTime(WP,guess,configuration);
+        [~,~,~,totalTrajectory] = optimizeTrajectoryCompleteModel(WP,guess,configuration);
         plotResults(WP,totalTrajectory);
     end
 

@@ -1,5 +1,5 @@
 
-function problem = optimizeTrajectory(boundaries,guess,configuration)
+function problem = optimizeSegmentCompleteModel(boundaries,guess,configuration)
 
 %% Create States
 states = [falcon.State('vx',10,100,1e-2);
@@ -180,7 +180,7 @@ phase1.setFinalBoundaries(boundaries.phase1.finalBoundsLow,...
 
 % % Path Constraint
 % pathconstraint = falcon.Constraint('accel_const',10,150);
-% phase1.addNewPathConstraint(@pathConstraints,pathconstraint);
+% phase1.addNewPathConstraint(@pathConstraintsCompleteModel,pathconstraint);
                       
 %% Add cost function
 problem.addNewParameterCost(FinalTime);

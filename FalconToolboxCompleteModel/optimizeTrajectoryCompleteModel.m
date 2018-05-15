@@ -1,5 +1,5 @@
 
-function [f,c,ceq,totalTrajectory] = totalTime(WP,guess,configuration)
+function [f,c,ceq,totalTrajectory] = optimizeTrajectoryCompleteModel(WP,guess,configuration)
 
     segment = cell(WP.numOfWP-1,1);
 
@@ -15,7 +15,7 @@ function [f,c,ceq,totalTrajectory] = totalTime(WP,guess,configuration)
         segmentGuess.time = guess.time{i};
         segmentGuess.states = guess.states{i};
         segmentGuess.controls = guess.controls{i};
-        segment{i} = optimizeTrajectory(boundaries,segmentGuess,configuration);
+        segment{i} = optimizeSegmentCompleteModel(boundaries,segmentGuess,configuration);
         
         % Properties for the rest of the segments
         if i ~= WP.numOfWP-1 % Not necessary in the last iteration
@@ -28,13 +28,13 @@ function [f,c,ceq,totalTrajectory] = totalTime(WP,guess,configuration)
         
     end
     
-    totalTrajectory.totalTime = 0;
+    totalTrajectory.optimizeTrajectoryCompleteModel = 0;
     totalTrajectory.time = [];
     totalTrajectory.states = [];
     totalTrajectory.controls = [];
     for i = 1:WP.numOfWP-1
-        totalTrajectory.time = [totalTrajectory.time segment{i}.Phases(1).RealTime+totalTrajectory.totalTime];
-        totalTrajectory.totalTime = totalTrajectory.totalTime + segment{i}.Phases(1).FinalTime.Value;
+        totalTrajectory.time = [totalTrajectory.time segment{i}.Phases(1).RealTime+totalTrajectory.optimizeTrajectoryCompleteModel];
+        totalTrajectory.optimizeTrajectoryCompleteModel = totalTrajectory.optimizeTrajectoryCompleteModel + segment{i}.Phases(1).FinalTime.Value;
         totalTrajectory.states = [totalTrajectory.states segment{i}.Phases(1).StateGrid.Values];
         totalTrajectory.controls = [totalTrajectory.controls segment{i}.Phases(1).ControlGrids.Values];
     end
@@ -45,7 +45,7 @@ function [f,c,ceq,totalTrajectory] = totalTime(WP,guess,configuration)
     [totalTrajectory.numOfControls,~] = size(totalTrajectory.controls);
     totalTrajectory.euler = totalTrajectory.states(4:6,:);
     
-    f = totalTrajectory.totalTime;
+    f = totalTrajectory.optimizeTrajectoryCompleteModel;
     c = [];
     ceq = [];
     

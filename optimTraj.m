@@ -22,7 +22,8 @@ function optimTraj
     end
     
     % Add folders to path
-    addpath('FalconToolbox');
+    addpath('FalconToolboxCompleteModel');
+    addpath('FalconToolboxPointMassModel');
     addpath('FlightGear');
     addpath('FlightPlans');
     addpath('InitialTrajectories');
@@ -114,6 +115,20 @@ function optimTraj
          'Parent',tab3,...
          'String',{'Discretization' 'points per segment'},...
          'Position',[10 370 100 30]);
+    modelPanel = uibuttongroup('Parent',tab2,...
+         'Units','pixels',...
+         'Title','Model',...
+         'Position',[10 343 100 67]);
+    pointMassButton = uicontrol('style','radiobutton',...
+         'Parent',modelPanel,...
+         'String','Point-Mass',...
+         'Position',[7 30 195 15],...
+         'Value',1);
+    completeModelButton = uicontrol('style','radiobutton',...
+         'Parent',modelPanel,...
+         'String','Complete',...
+         'Position',[7 10 195 15],...
+         'Value',0);
     
     % Initialize GUI
     majIterLimField.String = '500';
@@ -171,7 +186,11 @@ function optimTraj
             WP.numOfSegments = WP.numOfWP - 1;
             configuration.majIterLim = str2double(majIterLimField.String);
             configuration.discretizationPoints = str2double(discrPointsField.String);
-            ITA_main(WP,configuration); % Launch Initial Trajectory Assistant
+            if pointMassButton.Value == 1
+                ITA_pointMassModel(WP); % Launch Initial Trajectory Assistant
+            elseif completeModelButton.Value == 1
+                ITA_completeModel(WP,configuration); % Launch Initial Trajectory Assistant
+            end
         end
     end
     
