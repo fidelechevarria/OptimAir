@@ -104,7 +104,7 @@ function ITA_pointMassModel(WP)
     axis equal
     axis vis3d
     axis tight
-    setAxes3DPanAndZoomStyle(zoom,gca,'camera')
+%     setAxes3DPanAndZoomStyle(zoom,gca,'camera')
     view(-45,30); % Azimuth and elevation of initial view (degrees)
     set(plot3D_ax, 'Ydir', 'reverse')
     xlabel('North')
@@ -387,7 +387,7 @@ function ITA_pointMassModel(WP)
     end
 
     function ITA_load_Callback(~,~)
-        if (exist('InitialTrajectories','dir') && (~contains(pwd,'InitialTrajectories')))
+        if (exist('InitialTrajectories','dir') && isempty(strfind(pwd,'InitialTrajectories')))
             cd([pwd '\InitialTrajectories'])
         end
         [file,path] = uigetfile('*.mat','Select a MAT file');
