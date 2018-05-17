@@ -104,7 +104,7 @@ function ITA_pointMassModel(WP)
     axis equal
     axis vis3d
     axis tight
-%     setAxes3DPanAndZoomStyle(zoom,gca,'camera')
+    setAxes3DPanAndZoomStyle(zoom,gca,'camera')
     view(-45,30); % Azimuth and elevation of initial view (degrees)
     set(plot3D_ax, 'Ydir', 'reverse')
     xlabel('North')
@@ -418,8 +418,9 @@ function ITA_pointMassModel(WP)
 
     function ITA_finish_Callback(~,~)
         guess = generateGuess();
-        [~,~,~,totalTrajectory] = optimizeTrajectoryPointMassModel(WP,guess);
-        plotResults(WP,totalTrajectory);
+        [~,~,~,totalTrajectory] = optimizeTrajectoryPointMassModel(WP,guess);       
+        graphics3D_pointMassModel(WP,totalTrajectory); % 3D Graphical representation
+        graphics2D_pointMassModel(WP,totalTrajectory); % 2D Graphical representation
     end
 
     function arcLength = calculateArcLength(north,east,up)

@@ -1,4 +1,4 @@
-function graphics3D(WP,totalTrajectory)
+function graphics3D_completeModel(WP,totalTrajectory)
 
     % Compute trajectory arclength and prepare 3D planes states
     planeSeparation = 50;

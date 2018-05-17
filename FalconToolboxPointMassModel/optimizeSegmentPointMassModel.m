@@ -58,7 +58,7 @@ phase1.setFinalBoundaries(configuration.phase1.finalBoundsLow,...
 
 % Path Constraint
 pathconstraint = falcon.Constraint('quat_const', 0, 0);
-phase1.addNewPathConstraint(@pathConstraints, pathconstraint);
+phase1.addNewPathConstraint(@pathConstraintsPointMassModel, pathconstraint);
 
 %% Add cost function
 problem.addNewParameterCost(FinalTime);
