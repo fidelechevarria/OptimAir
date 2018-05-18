@@ -1,5 +1,5 @@
     
-function ITA_pointMassModel(WP,configuration)
+function ITA_pointMassModel(WP,configuration,dir)
     
     % Generate new sequence of WP
     WP.ITA_WP_type = [];
@@ -423,6 +423,7 @@ function ITA_pointMassModel(WP,configuration)
     end
 
     function ITA_finish_Callback(~,~)
+        cd(dir);
         guess = generateGuess();
         [~,~,~,totalTrajectory] = optimizeTrajectoryPointMassModel(WP,guess,configuration);       
         graphics3D_pointMassModel(WP,totalTrajectory); % 3D Graphical representation

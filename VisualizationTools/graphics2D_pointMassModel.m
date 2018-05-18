@@ -1,9 +1,9 @@
 function graphics2D_pointMassModel(WP,totalTrajectory)
 
     % Select variables to plot
-    plotStates = true; % Without quaternions or positions
+    plotStates = false; % Without quaternions or positions
     plotControls = false;
-    plotEuler = true;
+    plotEuler = false;
 
     % Calculate corresponding time for each WP
     middlePositions = [];

@@ -21,6 +21,8 @@ function optimTraj
         addpath('C:\Users\fidel\Desktop\falcon')
     end
     
+    dir = pwd; % Save initial directory root
+    
     % Add folders to path
     addpath('FalconToolboxCompleteModel');
     addpath('FalconToolboxPointMassModel');
@@ -187,9 +189,9 @@ function optimTraj
             configuration.majIterLim = str2double(majIterLimField.String);
             configuration.discretizationPoints = str2double(discrPointsField.String);
             if pointMassButton.Value == 1
-                ITA_pointMassModel(WP,configuration); % Launch Initial Trajectory Assistant
+                ITA_pointMassModel(WP,configuration,dir); % Launch Initial Trajectory Assistant
             elseif completeModelButton.Value == 1
-                ITA_completeModel(WP,configuration); % Launch Initial Trajectory Assistant
+                ITA_completeModel(WP,configuration,dir); % Launch Initial Trajectory Assistant
             end
         end
     end
@@ -211,6 +213,7 @@ function optimTraj
     end
 
     function saveFP_Callback(~,~)
+        cd(dir);
         if ~exist('FlightPlans','dir')
             mkdir('FlightPlans')
             cd([pwd '\FlightPlans'])
@@ -223,6 +226,7 @@ function optimTraj
     end
 
     function loadFP_Callback(~,~)
+        cd(dir);
         if (exist('FlightPlans','dir') && isempty(strfind(pwd,'FlightPlans')))
             cd([pwd '\FlightPlans'])
         end

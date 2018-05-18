@@ -1,5 +1,5 @@
     
-function ITA_completeModel(WP,configuration)
+function ITA_completeModel(WP,configuration,dir)
     
     % Generate new sequence of WP
     WP.ITA_WP_type = [];
@@ -423,6 +423,7 @@ function ITA_completeModel(WP,configuration)
     end
 
     function ITA_finish_Callback(~,~)
+        cd(dir);
         guess = generateGuess();
         [~,~,~,totalTrajectory] = optimizeTrajectoryCompleteModel(WP,guess,configuration);
         graphics3D_completeModel(WP,totalTrajectory); % 3D Graphical representation
