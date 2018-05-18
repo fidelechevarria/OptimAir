@@ -28,13 +28,13 @@ function [f,c,ceq,totalTrajectory] = optimizeTrajectoryCompleteModel(WP,guess,co
         
     end
     
-    totalTrajectory.optimizeTrajectoryCompleteModel = 0;
+    totalTrajectory.totalTime = 0;
     totalTrajectory.time = [];
     totalTrajectory.states = [];
     totalTrajectory.controls = [];
     for i = 1:WP.numOfWP-1
-        totalTrajectory.time = [totalTrajectory.time segment{i}.Phases(1).RealTime+totalTrajectory.optimizeTrajectoryCompleteModel];
-        totalTrajectory.optimizeTrajectoryCompleteModel = totalTrajectory.optimizeTrajectoryCompleteModel + segment{i}.Phases(1).FinalTime.Value;
+        totalTrajectory.time = [totalTrajectory.time segment{i}.Phases(1).RealTime+totalTrajectory.totalTime];
+        totalTrajectory.totalTime = totalTrajectory.totalTime + segment{i}.Phases(1).FinalTime.Value;
         totalTrajectory.states = [totalTrajectory.states segment{i}.Phases(1).StateGrid.Values];
         totalTrajectory.controls = [totalTrajectory.controls segment{i}.Phases(1).ControlGrids.Values];
     end
@@ -45,7 +45,7 @@ function [f,c,ceq,totalTrajectory] = optimizeTrajectoryCompleteModel(WP,guess,co
     [totalTrajectory.numOfControls,~] = size(totalTrajectory.controls);
     totalTrajectory.euler = totalTrajectory.states(4:6,:);
     
-    f = totalTrajectory.optimizeTrajectoryCompleteModel;
+    f = totalTrajectory.totalTime;
     c = [];
     ceq = [];
     
