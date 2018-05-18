@@ -187,7 +187,7 @@ function optimTraj
             configuration.majIterLim = str2double(majIterLimField.String);
             configuration.discretizationPoints = str2double(discrPointsField.String);
             if pointMassButton.Value == 1
-                ITA_pointMassModel(WP); % Launch Initial Trajectory Assistant
+                ITA_pointMassModel(WP,configuration); % Launch Initial Trajectory Assistant
             elseif completeModelButton.Value == 1
                 ITA_completeModel(WP,configuration); % Launch Initial Trajectory Assistant
             end

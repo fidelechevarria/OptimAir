@@ -1,5 +1,5 @@
     
-function ITA_pointMassModel(WP)
+function ITA_pointMassModel(WP,configuration)
     
     % Generate new sequence of WP
     WP.ITA_WP_type = [];
@@ -418,7 +418,7 @@ function ITA_pointMassModel(WP)
 
     function ITA_finish_Callback(~,~)
         guess = generateGuess();
-        [~,~,~,totalTrajectory] = optimizeTrajectoryPointMassModel(WP,guess);       
+        [~,~,~,totalTrajectory] = optimizeTrajectoryPointMassModel(WP,guess,configuration);       
         graphics3D_pointMassModel(WP,totalTrajectory); % 3D Graphical representation
         graphics2D_pointMassModel(WP,totalTrajectory); % 2D Graphical representation
     end
@@ -607,10 +607,10 @@ function ITA_pointMassModel(WP)
         
         for segment = 1:WP.numOfSegments
             guess.time{segment} = timeGuess{segment}';
-            guess.state{segment} = [thrustGuess{segment} velocityGuess{segment} alphaGuess{segment}...
+            guess.states{segment} = [thrustGuess{segment} velocityGuess{segment} alphaGuess{segment}...
                            q0Guess{segment} q1Guess{segment} q2Guess{segment} q3Guess{segment}...
                            northGuess{segment} eastGuess{segment} upGuess{segment}]';
-            guess.control{segment} = [thrustDotGuess{segment} alphaDotGuess{segment} pGuess{segment}]';
+            guess.controls{segment} = [thrustDotGuess{segment} alphaDotGuess{segment} pGuess{segment}]';
         end
 
     end
