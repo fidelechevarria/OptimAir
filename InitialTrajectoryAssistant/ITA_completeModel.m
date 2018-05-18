@@ -396,7 +396,13 @@ function ITA_completeModel(WP,configuration)
             dataStruct = load(filename,'-mat');
             trajData = dataStruct.ITAdata{1};
             stateData = dataStruct.ITAdata{2};
-            if isequal(trajData.north,WP.north)
+            if size(stateData,2) ~= 2
+                warningstring = 'This data corresponds to different dynamic model.';
+                dlgname = 'Warning';
+                warndlg(warningstring,dlgname)
+                cd ..
+                return
+            elseif isequal(trajData.north,WP.north)
                 set(ITA_WP{WP.ITA_activeWP},'MarkerFaceColor','b');
                 stateTable.Data = stateData;
                 WP = trajData;
