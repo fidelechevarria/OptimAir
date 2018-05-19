@@ -1,10 +1,10 @@
-function [constraints] = pathConstraints(states, ~)
+function [constraints] = pathConstraintsCompleteModel(states,~)
 % constraint interface created by falcon.m
 
 % Extract states
-vx = states(1);
-vy = states(2);
-vz = states(3);
+% vx = states(1);
+% vy = states(2);
+% vz = states(3);
 % roll = states(4);
 % pitch = states(5);
 % yaw = states(6);
@@ -16,7 +16,6 @@ vz = states(3);
 % h = states(12);
 
 % Constraint functions
-accel_const = ;
-constraints = accel_const;
+constraints = ;
 
 end
