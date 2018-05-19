@@ -1,4 +1,4 @@
-function [states_dot] = pointMassModel(states, controls)
+function [states_dot] = dyn_complete(states, controls)
 % model interface created by falcon.m
 
 % Extract states

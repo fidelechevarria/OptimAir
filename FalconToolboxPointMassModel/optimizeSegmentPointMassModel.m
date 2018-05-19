@@ -32,6 +32,52 @@ problem.setMajorIterLimit(configuration.majIterLim);
 %% Specify discretization
 tau = linspace(0,1,configuration.discretizationPoints);
 
+%% Create Model
+mdl = falcon.SimulationModelBuilder('pointMassModel', states, controls);
+
+% Add constants
+mdl.addConstant('m',750); % kg
+mdl.addConstant('g',9.8056); % m/s^2
+mdl.addConstant('rho',1.225); % kg/m^3
+mdl.addConstant('S',9.84); % m^2
+mdl.addConstant('Clalpha',5.7);
+mdl.addConstant('K',0.18); 
+mdl.addConstant('Cd0',0.15);
+mdl.addConstant('Cdp',0.05);
+
+% Aerodynamic forces
+mdl.addSubsystem(@dyn_forces,...
+    {'Clalpha','rho','S','Cd0','Cdp','K','alpha','V','p'},... % Inputs
+    {'Cl','L','D'}); % Outputs
+
+% Angular velocities
+mdl.addSubsystem(@dyn_angVels,...
+    {'m','g','T','V','q0','q1','q2','q3','L','alpha'},... % Inputs
+    {'q','r'}); % Outputs
+
+% Velocity derivative
+mdl.addSubsystem(@dyn_velDot,...
+    {'m','g','T','alpha','D','q0','q1','q2','q3'},... % Inputs
+    {'V_dot'}); % Outputs
+
+% Quaternion derivatives
+mdl.addSubsystem(@dyn_quatDot,...
+    {'q0','q1','q2','q3','p','q','r'},... % Inputs
+    {'q0_dot','q1_dot','q2_dot','q3_dot'}); % Outputs
+
+% Position derivatives
+mdl.addSubsystem(@dyn_posDot,...
+    {'q0','q1','q2','q3','V'},... % Inputs
+    {'x_dot','y_dot','h_dot'}); % Outputs
+
+% Set the variable names of the derivatives to tell FALCON the correct
+% outputs
+mdl.setStateDerivativeNames('T_dot','V_dot','alpha_dot','q0_dot','q1_dot','q2_dot',...
+    'q3_dot','x_dot','y_dot','h_dot');
+
+% Build the Model evaluating the subsystem chain
+mdl.Build();
+
 %% Create phase
 
 % Phase
