@@ -373,6 +373,7 @@ function ITA_completeModel(WP,configuration,dir)
     end
     
     function ITA_save_Callback(~,~)
+        cd(dir);
         if ~exist('InitialTrajectories','dir')
             mkdir('InitialTrajectories')
             cd([pwd '\InitialTrajectories'])
@@ -387,6 +388,7 @@ function ITA_completeModel(WP,configuration,dir)
     end
 
     function ITA_load_Callback(~,~)
+        cd(dir);
         if (exist('InitialTrajectories','dir') && (~contains(pwd,'InitialTrajectories')))
             cd([pwd '\InitialTrajectories'])
         end
