@@ -429,7 +429,7 @@ function ITA_pointMassModel(WP,configuration,dir)
         guess = generateGuess();
         [~,~,~,totalTrajectory] = optimizeTrajectoryPointMassModel(WP,guess,configuration);       
         graphics3D_pointMassModel(WP,totalTrajectory); % 3D Graphical representation
-        graphics2D_pointMassModel(WP,totalTrajectory); % 2D Graphical representation
+        graphics2D_pointMassModel(WP,totalTrajectory,configuration); % 2D Graphical representation
     end
 
     function arcLength = calculateArcLength(north,east,up)

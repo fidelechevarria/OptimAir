@@ -1,9 +1,9 @@
-function graphics2D_pointMassModel(WP,totalTrajectory)
+function graphics2D_pointMassModel(WP,totalTrajectory,configuration)
 
     % Select variables to plot
-    plotStates = false; % Without quaternions or positions
-    plotControls = false;
-    plotEuler = false;
+    plotStates = configuration.plotStates; % Without quaternions
+    plotControls = configuration.plotControls;
+    plotEuler = configuration.plotStates;
 
     % Calculate corresponding time for each WP
     middlePositions = [];
@@ -38,8 +38,8 @@ function graphics2D_pointMassModel(WP,totalTrajectory)
                 title(statesToPlot{i})
                 xlabel('Time [s]')
                 ylabel(statesToPlot{i})
-            elseif i > 3
-                % Do not plot quaternions or positions
+            elseif (i > 3) && (i < 8)
+                % Do not plot quaternions
             else
                 figure
                 hold on

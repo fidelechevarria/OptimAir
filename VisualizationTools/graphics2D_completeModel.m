@@ -1,8 +1,8 @@
-function graphics2D_completeModel(WP,totalTrajectory)
+function graphics2D_completeModel(WP,totalTrajectory,configuration)
 
     % Select variables to plot
-    plotStates = false; % Without quaternions or positions
-    plotControls = false;
+    plotStates = configuration.plotStates;
+    plotControls = configuration.plotControls;
 
     % Calculate corresponding time for each WP
     middlePositions = [];

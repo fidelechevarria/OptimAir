@@ -429,7 +429,7 @@ function ITA_completeModel(WP,configuration,dir)
         guess = generateGuess();
         [~,~,~,totalTrajectory] = optimizeTrajectoryCompleteModel(WP,guess,configuration);
         graphics3D_completeModel(WP,totalTrajectory); % 3D Graphical representation
-        graphics2D_completeModel(WP,totalTrajectory); % 2D Graphical representation
+        graphics2D_completeModel(WP,totalTrajectory,configuration); % 2D Graphical representation
     end
 
     function arcLength = calculateArcLength(north,east,up)
