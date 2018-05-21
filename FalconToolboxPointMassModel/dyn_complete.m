@@ -17,16 +17,17 @@ p = controls(3);
 
 % Constants
 m = 750;
-g = 9.81;
+g = 9.8056;
 rho = 1.225;
-S = 9.1;
-Clalpha = 4;
-K = 0.1779;
-Cd0 = 0.15;
+S = 9.84;
+Clalpha = 5.7;
+K = 0.18;
+Cd0 = 0.0054;
+Cl0 = 0.1205;
 Cdp = 0.05;
 
 % Dynamic model
-Cl = Clalpha.*alpha;
+Cl = Clalpha.*alpha + Cl0;
 L = 0.5.*rho.*V.^2.*S.*Cl;
 D = 0.5.*rho.*V.^2.*S.*(Cd0+K.*Cl.^2+Cdp*abs(p));
 q = (T.*sin(alpha)+L-m.*g.*(q0.^2-q1.^2-q2.^2+q3.^2))./(m.*V);

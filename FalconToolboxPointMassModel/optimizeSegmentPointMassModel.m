@@ -15,7 +15,7 @@ states = [falcon.State('T',0,9000,1e-4);
 
 %% Create Controls
 controls = [falcon.Control('alpha_dot',-10,10,0.1);
-		    falcon.Control('T_dot',-9000,9000,1e-4);
+		    falcon.Control('T_dot',-9000,9000,1e-4); %FEC: Controlar directamente T y alpha (max 1200N)
             falcon.Control('p',-7.3,7.3,0.1)];
         
 %% Create phase time
@@ -41,13 +41,14 @@ mdl.addConstant('g',9.8056); % m/s^2
 mdl.addConstant('rho',1.225); % kg/m^3
 mdl.addConstant('S',9.84); % m^2
 mdl.addConstant('Clalpha',5.7);
-mdl.addConstant('K',0.18); 
-mdl.addConstant('Cd0',0.15);
+mdl.addConstant('K',0.18);
+mdl.addConstant('Cd0',0.0054);
+mdl.addConstant('Cl0',0.1205);
 mdl.addConstant('Cdp',0.05);
 
 % Aerodynamic forces
 mdl.addSubsystem(@dyn_forces,...
-    {'Clalpha','rho','S','Cd0','Cdp','K','alpha','V','p'},... % Inputs
+    {'Clalpha','rho','S','Cd0','Cl0','Cdp','K','alpha','V','p'},... % Inputs
     {'Cl','L','D'}); % Outputs
 
 % Angular velocities
