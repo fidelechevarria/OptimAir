@@ -15,9 +15,24 @@ states = [falcon.State('V',40,200,0.005);
 controls = [falcon.Control('alpha',-0.5,0.5,1);
 		    falcon.Control('T',0,5000,1e-3);
             falcon.Control('p',-7.3,7.3,0.1)];
+
+% % Create parameters
+% parameters = [falcon.Parameter('gx',0,-10,10,0.1);
+%               falcon.Parameter('gy',0,-10,10,0.1);
+%               falcon.Parameter('gz',9.8056,-10,10,0.1)];
+
+% Create constraint variables
+parameters = [falcon.Parameter('Ax',0,-100,100,0.1);
+              falcon.Parameter('Ay',0,-100,100,0.1);
+              falcon.Parameter('Az',0,-100,100,0.1)];
+           
+%% Create model outputs
+modeloutputs = [falcon.Output('q');
+                falcon.Output('r');
+                falcon.Output('V_dot')];
         
 %% Create phase time
-FinalTime = falcon.Parameter('FinalTime',guess.time(end),1,200,0.1);
+FinalTime = falcon.Parameter('FinalTime',guess.time(end),0,200,0.1);
 
 %% Create complete problem
 problem = falcon.Problem('optimTraj');
@@ -74,8 +89,42 @@ mdl.addSubsystem(@dyn_positionDot,...
 mdl.setStateDerivativeNames('V_dot','q0_dot','q1_dot','q2_dot',...
     'q3_dot','x_dot','y_dot','h_dot');
 
+% Add model outputs
+mdl.setOutputs(modeloutputs);
+
 % Build the Model evaluating the subsystem chain
 mdl.Build();
+
+%% Create pathConstraint
+
+cnstr = falcon.PathConstraintBuilder('pathConstraintBuild',modeloutputs,states,controls);
+
+% Add constants
+cnstr.addConstant('m',750); % kg
+cnstr.addConstant('g',9.8056); % m/s^2
+cnstr.addConstant('rho',1.225); % kg/m^3
+cnstr.addConstant('S',9.84); % m^2
+cnstr.addConstant('Clalpha',5.7);
+cnstr.addConstant('K',0.18);
+cnstr.addConstant('Cd0',0.0054);
+cnstr.addConstant('Cl0',0.1205);
+cnstr.addConstant('Cdp',0.05);
+
+% Transform gravity vector to body axes
+cnstr.addSubsystem(@dyn_gravBody,...
+    {'q0','q1','q2','q3','g'},... % Inputs
+    {'gx','gy','gz'}); % Outputs
+
+% Calculate body accelerations
+cnstr.addSubsystem(@dyn_accelsBody,...
+    {'gx','gy','gz','q','r','V','V_dot'},... % Inputs
+    {'Ax','Ay','Az'}); % Outputs
+
+% Set the variable names of the constraints
+cnstr.setConstraintValueNames('Ax','Ay','Az');
+
+% Build the constraints evaluating the subsystem chain
+cnstr.Build();
 
 %% Create phase
 
@@ -96,8 +145,13 @@ phase1.setFinalBoundaries(boundaries.phase1.finalBoundsLow,...
                           boundaries.phase1.finalBoundsUpp);
 
 % Path Constraint
-% pathconstraint = falcon.Constraint('quat_const', 0, 0);
-% phase1.addNewPathConstraint(@pathConstraintsPointMassModel, pathconstraint);
+constraint_vals = [falcon.Constraint('max_accel_x',-10,10);
+                   falcon.Constraint('max_accel_y',-10,10);
+                   falcon.Constraint('max_accel_z',-10,10)];
+phase1.addNewPathConstraint(@pathConstraintBuild, constraint_vals);
+
+% Set model outputs
+phase1.Model.setModelOutputs(modeloutputs);
 
 %% Add cost function
 problem.addNewParameterCost(FinalTime);
