@@ -13,11 +13,11 @@ states = [falcon.State('V',40,200,0.005);
 
 %% Create Controls
 controls = [falcon.Control('alpha',-0.5,0.5,1);
-		    falcon.Control('T',0,1200,1e-3);
+		    falcon.Control('T',0,5000,1e-3);
             falcon.Control('p',-7.3,7.3,0.1)];
         
 %% Create phase time
-FinalTime = falcon.Parameter('FinalTime',guess.time(end),1,50,0.1);
+FinalTime = falcon.Parameter('FinalTime',guess.time(end),1,200,0.1);
 
 %% Create complete problem
 problem = falcon.Problem('optimTraj');
@@ -44,11 +44,6 @@ mdl.addConstant('Cd0',0.0054);
 mdl.addConstant('Cl0',0.1205);
 mdl.addConstant('Cdp',0.05);
 
-% Normalize quaternions
-mdl.addSubsystem(@dyn_normQuat,...
-    {'q0','q1','q2','q3'},... % Inputs
-    {'q0_norm','q1_norm','q2_norm','q3_norm'}); % Outputs
-
 % Aerodynamic forces
 mdl.addSubsystem(@dyn_forces,...
     {'Clalpha','rho','S','Cd0','Cl0','Cdp','K','alpha','V','p'},... % Inputs
@@ -56,22 +51,22 @@ mdl.addSubsystem(@dyn_forces,...
 
 % Angular velocities
 mdl.addSubsystem(@dyn_angVels,...
-    {'m','g','T','V','q0_norm','q1_norm','q2_norm','q3_norm','L','alpha'},... % Inputs
+    {'m','g','T','V','q0','q1','q2','q3','L','alpha'},... % Inputs
     {'q','r'}); % Outputs
 
 % Velocity derivative
 mdl.addSubsystem(@dyn_velDot,...
-    {'m','g','T','alpha','D','q0_norm','q1_norm','q2_norm','q3_norm'},... % Inputs
+    {'m','g','T','alpha','D','q0','q1','q2','q3'},... % Inputs
     {'V_dot'}); % Outputs
 
 % Quaternion derivatives
 mdl.addSubsystem(@dyn_quatDot,...
-    {'q0_norm','q1_norm','q2_norm','q3_norm','p','q','r'},... % Inputs
+    {'q0','q1','q2','q3','p','q','r'},... % Inputs
     {'q0_dot','q1_dot','q2_dot','q3_dot'}); % Outputs
 
 % Position derivatives
 mdl.addSubsystem(@dyn_positionDot,...
-    {'q0_norm','q1_norm','q2_norm','q3_norm','V'},... % Inputs
+    {'q0','q1','q2','q3','V'},... % Inputs
     {'x_dot','y_dot','h_dot'}); % Outputs
 
 % Set the variable names of the derivatives to tell FALCON the correct
