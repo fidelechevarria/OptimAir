@@ -606,20 +606,16 @@ function ITA_pointMassModel(WP,configuration,dir)
             headingGuess{k} = headingGuessTS{k}.Data;
             
             timeder = diff(timeGuess{k});
-            aux1 = diff(thrustGuess{k})./timeder;
-            aux2 = diff(alphaGuess{k})./timeder;
-            aux3 = diff(rollGuess{k})./timeder;
-            thrustDotGuess{k} = [aux1(1);aux1];
-            alphaDotGuess{k} = [aux2(1);aux2];
-            pGuess{k} = [aux3(1);aux3];
+            aux = diff(rollGuess{k})./timeder;
+            pGuess{k} = [aux(1);aux];
         end
         
         for segment = 1:WP.numOfSegments
             guess.time{segment} = timeGuess{segment}';
-            guess.states{segment} = [thrustGuess{segment} velocityGuess{segment} alphaGuess{segment}...
+            guess.states{segment} = [velocityGuess{segment}...
                            q0Guess{segment} q1Guess{segment} q2Guess{segment} q3Guess{segment}...
                            northGuess{segment} eastGuess{segment} upGuess{segment}]';
-            guess.controls{segment} = [thrustDotGuess{segment} alphaDotGuess{segment} pGuess{segment}]';
+            guess.controls{segment} = [thrustGuess{segment} alphaGuess{segment} pGuess{segment}]';
         end
 
     end

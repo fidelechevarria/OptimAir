@@ -2,17 +2,15 @@ function [states_dot] = dyn_complete(states, controls)
 % model interface created by falcon.m
 
 % Extract states
-T = states(1);
-V = states(2);
-alpha = states(3);
-q0 = states(4);
-q1 = states(5);
-q2 = states(6);
-q3 = states(7);
+V = states(1);
+q0 = states(2);
+q1 = states(3);
+q2 = states(4);
+q3 = states(5);
 
 % Extract controls
-alpha_dot = controls(1);
-T_dot = controls(2);
+alpha = controls(1);
+T = controls(2);
 p = controls(3);
 
 % Constants
@@ -33,6 +31,11 @@ D = 0.5.*rho.*V.^2.*S.*(Cd0+K.*Cl.^2+Cdp*abs(p));
 q = (T.*sin(alpha)+L-m.*g.*(q0.^2-q1.^2-q2.^2+q3.^2))./(m.*V);
 r = (2.*m.*g.*(q0.*q1+q2.*q3))./(m.*V);
 V_dot = (T.*cos(alpha)-D+2.*m.*g.*(q1.*q3-q0.*q2))./m;
+q_norm = sqrt(q0.^2 + q1.^2 + q2.^2 + q3.^2);
+q0 = q0./q_norm;
+q1 = q1./q_norm;
+q2 = q2./q_norm;
+q3 = q3./q_norm;
 q0_dot = -0.5.*(q1.*p+q2.*q+q3.*r);
 q1_dot =  0.5.*(q0.*p+q2.*r-q3.*q);
 q2_dot =  0.5.*(q0.*q+q3.*p-q1.*r);

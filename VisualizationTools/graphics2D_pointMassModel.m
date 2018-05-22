@@ -4,6 +4,7 @@ function graphics2D_pointMassModel(WP,totalTrajectory,configuration)
     plotStates = configuration.plotStates; % Without quaternions
     plotControls = configuration.plotControls;
     plotEuler = configuration.plotStates;
+    plotQuatNormError = configuration.plotStates;
 
     % Calculate corresponding time for each WP
     middlePositions = [];
@@ -15,30 +16,10 @@ function graphics2D_pointMassModel(WP,totalTrajectory,configuration)
 
     % PLOT STATES
     if plotStates
-        statesToPlot = {'Thrust [N]' 'Velocity [m/s]' 'Angle of Attack [º]' 'q0' 'q1' 'q2' 'q3'...
+        statesToPlot = {'Velocity [m/s]' 'q0' 'q1' 'q2' 'q3'...
             'North Position [m]' 'East Position [m]' 'Altitude [m]'};
         for i = 1:totalTrajectory.numOfStates
-            if i == 3 % Convert from radians to degrees
-                figure
-                hold on
-                plot(totalTrajectory.time,rad2deg(totalTrajectory.states(i,:)))
-                for j = 1:numel(WP_time)
-                    xval = WP_time(j);
-                    ymin = min(rad2deg(totalTrajectory.states(i,WP_index(j))),0);
-                    ymax = max(rad2deg(totalTrajectory.states(i,WP_index(j))),0);
-                    xPoints = [xval,xval];
-                    yPoints = [ymin,ymax];
-                    plot(xPoints,yPoints,'r--')
-                    text(xval,ymax,num2str(j),'Color','r','VerticalAlignment','bottom')
-                end
-                hold off
-                grid
-                margin = totalTrajectory.totalTime/20; % Lateral margins for x-axis in seconds
-                xlim([-margin totalTrajectory.totalTime+margin]);
-                title(statesToPlot{i})
-                xlabel('Time [s]')
-                ylabel(statesToPlot{i})
-            elseif (i > 3) && (i < 8)
+            if (i > 1) && (i < 6)
                 % Do not plot quaternions
             else
                 figure
@@ -66,7 +47,7 @@ function graphics2D_pointMassModel(WP,totalTrajectory,configuration)
         
     % PLOT CONTROLS
     if plotControls
-        controlsToPlot = {'Angle of Attack Derivative [º/s]' 'Thrust Derivative [N/s]'...
+        controlsToPlot = {'Angle of Attack [º]' 'Thrust [N]'...
             'Angular Velocity in x-axis [º/s]'};
         for i = 1:totalTrajectory.numOfControls
             if i == 1 || i == 3 % Convert from radians to degrees
@@ -137,6 +118,31 @@ function graphics2D_pointMassModel(WP,totalTrajectory,configuration)
             xlabel('Time [s]')
             ylabel(eulerToPlot{i})
         end
+    end
+    
+    % PLOT QUATERNION NORMALIZATION ERROR
+    if plotQuatNormError
+        quatNorm = sqrt(totalTrajectory.states(2,:).^2 + totalTrajectory.states(3,:).^2 + totalTrajectory.states(4,:).^2 + totalTrajectory.states(5,:).^2);
+        eulerToPlot = {'Quaternion norm'};
+        figure
+        hold on
+        plot(totalTrajectory.time,quatNorm)
+        for j = 1:numel(WP_time)
+            xval = WP_time(j);
+            ymin = min(quatNorm(WP_index(j)),0);
+            ymax = max(quatNorm(WP_index(j)),0);
+            xPoints = [xval,xval];
+            yPoints = [ymin,ymax];
+            plot(xPoints,yPoints,'r--')
+            text(xval,ymax,num2str(j),'Color','r','VerticalAlignment','bottom')
+        end
+        hold off
+        grid
+        margin = totalTrajectory.totalTime/20; % Lateral margins for x-axis in seconds
+        xlim([-margin totalTrajectory.totalTime+margin]);
+        title(eulerToPlot)
+        xlabel('Time [s]')
+        ylabel(eulerToPlot)
     end
     
 end
