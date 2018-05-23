@@ -15,16 +15,6 @@ states = [falcon.State('V',40,200,0.005);
 controls = [falcon.Control('alpha',-0.5,0.5,1);
 		    falcon.Control('T',0,5000,1e-3);
             falcon.Control('p',-7.3,7.3,0.1)];
-
-% % Create parameters
-% parameters = [falcon.Parameter('gx',0,-10,10,0.1);
-%               falcon.Parameter('gy',0,-10,10,0.1);
-%               falcon.Parameter('gz',9.8056,-10,10,0.1)];
-
-% Create constraint variables
-parameters = [falcon.Parameter('Ax',0,-100,100,0.1);
-              falcon.Parameter('Ay',0,-100,100,0.1);
-              falcon.Parameter('Az',0,-100,100,0.1)];
            
 %% Create model outputs
 modeloutputs = [falcon.Output('q');
@@ -100,15 +90,7 @@ mdl.Build();
 cnstr = falcon.PathConstraintBuilder('pathConstraintBuild',modeloutputs,states,controls);
 
 % Add constants
-cnstr.addConstant('m',750); % kg
 cnstr.addConstant('g',9.8056); % m/s^2
-cnstr.addConstant('rho',1.225); % kg/m^3
-cnstr.addConstant('S',9.84); % m^2
-cnstr.addConstant('Clalpha',5.7);
-cnstr.addConstant('K',0.18);
-cnstr.addConstant('Cd0',0.0054);
-cnstr.addConstant('Cl0',0.1205);
-cnstr.addConstant('Cdp',0.05);
 
 % Transform gravity vector to body axes
 cnstr.addSubsystem(@dyn_gravBody,...
@@ -145,9 +127,9 @@ phase1.setFinalBoundaries(boundaries.phase1.finalBoundsLow,...
                           boundaries.phase1.finalBoundsUpp);
 
 % Path Constraint
-constraint_vals = [falcon.Constraint('max_accel_x',-10,10);
-                   falcon.Constraint('max_accel_y',-10,10);
-                   falcon.Constraint('max_accel_z',-10,10)];
+constraint_vals = [falcon.Constraint('max_accel_x',-80,80);
+                   falcon.Constraint('max_accel_y',-80,80);
+                   falcon.Constraint('max_accel_z',-80,20)];
 phase1.addNewPathConstraint(@pathConstraintBuild, constraint_vals);
 
 % Set model outputs

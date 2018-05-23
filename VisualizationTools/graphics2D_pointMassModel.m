@@ -5,6 +5,7 @@ function graphics2D_pointMassModel(WP,totalTrajectory,configuration)
     plotControls = configuration.plotControls;
     plotEuler = configuration.plotStates;
     plotQuatNormError = configuration.plotStates;
+    plotAccels = configuration.plotStates;
 
     % Calculate corresponding time for each WP
     middlePositions = [];
@@ -143,6 +144,32 @@ function graphics2D_pointMassModel(WP,totalTrajectory,configuration)
         title(eulerToPlot)
         xlabel('Time [s]')
         ylabel(eulerToPlot)
+    end
+    
+    % PLOT BODY ACCELERATIONS
+    if plotAccels
+        accelsToPlot = {'Acceleration x-axis [m/s^2]' 'Acceleration y-axis [m/s^2]' 'Acceleration z-axis [m/s^2]'};
+        for i = 1:3
+            figure
+            hold on
+            plot(totalTrajectory.time,totalTrajectory.accels(i,:))
+            for j = 1:numel(WP_time)
+                xval = WP_time(j);
+                ymin = min(totalTrajectory.accels(i,WP_index(j)),0);
+                ymax = max(totalTrajectory.accels(i,WP_index(j)),0);
+                xPoints = [xval,xval];
+                yPoints = [ymin,ymax];
+                plot(xPoints,yPoints,'r--')
+                text(xval,ymax,num2str(j),'Color','r','VerticalAlignment','bottom')
+            end
+            hold off
+            grid
+            margin = totalTrajectory.totalTime/20; % Lateral margins for x-axis in seconds
+            xlim([-margin totalTrajectory.totalTime+margin]);
+            title(accelsToPlot{i})
+            xlabel('Time [s]')
+            ylabel(accelsToPlot{i})
+        end
     end
     
 end
