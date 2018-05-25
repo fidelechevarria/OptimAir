@@ -148,8 +148,8 @@ function graphics2D_pointMassModel(WP,totalTrajectory,configuration)
     
     % PLOT BODY ACCELERATIONS
     if plotAccels
-        accelsToPlot = {'Acceleration x-axis [m/s^2]' 'Acceleration y-axis [m/s^2]' 'Acceleration z-axis [m/s^2]'};
-        for i = 1:3
+        accelsToPlot = {'Acceleration module [m/s^2]' 'Acceleration z-axis [m/s^2]'};
+        for i = 1:2
             figure
             hold on
             plot(totalTrajectory.time,totalTrajectory.accels(i,:))

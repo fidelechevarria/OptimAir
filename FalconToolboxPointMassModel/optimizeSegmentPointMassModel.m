@@ -102,8 +102,13 @@ cnstr.addSubsystem(@dyn_accelsBody,...
     {'gx','gy','gz','q','r','V','V_dot'},... % Inputs
     {'Ax','Ay','Az'}); % Outputs
 
+% Calculate acceleration norm
+cnstr.addSubsystem(@dyn_accelNorm,...
+    {'Ax','Ay','Az'},... % Inputs
+    {'A_norm'}); % Outputs)
+
 % Set the variable names of the constraints
-cnstr.setConstraintValueNames('Ax','Ay','Az');
+cnstr.setConstraintValueNames('A_norm','Az');
 
 % Build the constraints evaluating the subsystem chain
 cnstr.Build();
@@ -127,9 +132,8 @@ phase1.setFinalBoundaries(boundaries.phase1.finalBoundsLow,...
                           boundaries.phase1.finalBoundsUpp);
 
 % Path Constraint
-constraint_vals = [falcon.Constraint('max_accel_x',-80,80);
-                   falcon.Constraint('max_accel_y',-80,80);
-                   falcon.Constraint('max_accel_z',-80,20)];
+constraint_vals = [falcon.Constraint('max_accel_norm',-100,100);
+                   falcon.Constraint('max_accel_z',-100,20)];
 phase1.addNewPathConstraint(@pathConstraintBuild, constraint_vals);
 
 % Set model outputs
