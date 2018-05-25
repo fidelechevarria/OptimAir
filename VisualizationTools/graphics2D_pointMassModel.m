@@ -146,7 +146,7 @@ function graphics2D_pointMassModel(WP,totalTrajectory,configuration)
         ylabel(eulerToPlot)
     end
     
-    % PLOT BODY ACCELERATIONS
+    % PLOT ACCELERATIONS
     if plotAccels
         accelsToPlot = {'Acceleration module [m/s^2]' 'Acceleration z-axis [m/s^2]'};
         for i = 1:2

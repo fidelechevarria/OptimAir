@@ -21,6 +21,11 @@ controls = [falcon.Control('da',-0.35,0.35,1);
             falcon.Control('dr',-0.35,0.35,1);
             falcon.Control('dt',0,1,1)];
         
+%% Create model outputs
+modeloutputs = [falcon.Output('vx_dot');
+                falcon.Output('vy_dot');
+                falcon.Output('vz_dot')];
+        
 %% Create phase time
 FinalTime = falcon.Parameter('FinalTime',guess.time(end),1,50,0.1);
 
@@ -157,8 +162,39 @@ mdl.addSubsystem(@dyn_posDot,...
 mdl.setStateDerivativeNames('vx_dot','vy_dot','vz_dot','roll_dot','pitch_dot','yaw_dot',...
     'p_dot','q_dot','r_dot','x_dot','y_dot','h_dot');
 
+% Add model outputs
+mdl.setOutputs(modeloutputs);
+
 % Build the Model evaluating the subsystem chain
 mdl.Build();
+
+%% Create pathConstraint
+
+cnstr = falcon.PathConstraintBuilder('pathConstraintBuild_comp',modeloutputs,states,controls);
+
+% Add constants
+cnstr.addConstant('g',9.8056); % m/s^2
+
+% Transform gravity vector to body axes
+cnstr.addSubsystem(@dyn_gravBody_comp,...
+    {'roll','pitch','g'},... % Inputs
+    {'gx','gy','gz'}); % Outputs
+
+% Calculate body accelerations
+cnstr.addSubsystem(@dyn_accelsBody_comp,...
+    {'gx','gy','gz','p','q','r','vx','vy','vz','vx_dot','vy_dot','vz_dot'},... % Inputs
+    {'Ax','Ay','Az'}); % Outputs
+
+% Calculate acceleration norm
+cnstr.addSubsystem(@dyn_accelNorm_comp,...
+    {'Ax','Ay','Az'},... % Inputs
+    {'A_norm'}); % Outputs)
+
+% Set the variable names of the constraints
+cnstr.setConstraintValueNames('A_norm','Az');
+
+% Build the constraints evaluating the subsystem chain
+cnstr.Build();
 
 %% Create phase
 
@@ -178,9 +214,13 @@ phase1.setInitialBoundaries(boundaries.phase1.initBoundsLow,...
 phase1.setFinalBoundaries(boundaries.phase1.finalBoundsLow,...
                           boundaries.phase1.finalBoundsUpp);
 
-% % Path Constraint
-% pathconstraint = falcon.Constraint('accel_const',10,150);
-% phase1.addNewPathConstraint(@pathConstraintsCompleteModel,pathconstraint);
+% Path Constraint
+constraint_vals = [falcon.Constraint('max_accel_norm_comp',-100,100);
+                   falcon.Constraint('max_accel_z_comp',-100,20)];
+phase1.addNewPathConstraint(@pathConstraintBuild_comp, constraint_vals);
+
+% Set model outputs
+phase1.Model.setModelOutputs(modeloutputs);
                       
 %% Add cost function
 problem.addNewParameterCost(FinalTime);

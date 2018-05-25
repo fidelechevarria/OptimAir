@@ -3,6 +3,7 @@ function graphics2D_completeModel(WP,totalTrajectory,configuration)
     % Select variables to plot
     plotStates = configuration.plotStates;
     plotControls = configuration.plotControls;
+    plotAccels = configuration.plotStates;
 
     % Calculate corresponding time for each WP
     middlePositions = [];
@@ -109,6 +110,32 @@ function graphics2D_completeModel(WP,totalTrajectory,configuration)
                 xlabel('Time [s]')
                 ylabel(controlsToPlot{i})
             end
+        end
+    end
+    
+    % PLOT ACCELERATIONS
+    if plotAccels
+        accelsToPlot = {'Acceleration module [m/s^2]' 'Acceleration z-axis [m/s^2]'};
+        for i = 1:2
+            figure
+            hold on
+            plot(totalTrajectory.time,totalTrajectory.accels(i,:))
+            for j = 1:numel(WP_time)
+                xval = WP_time(j);
+                ymin = min(totalTrajectory.accels(i,WP_index(j)),0);
+                ymax = max(totalTrajectory.accels(i,WP_index(j)),0);
+                xPoints = [xval,xval];
+                yPoints = [ymin,ymax];
+                plot(xPoints,yPoints,'r--')
+                text(xval,ymax,num2str(j),'Color','r','VerticalAlignment','bottom')
+            end
+            hold off
+            grid
+            margin = totalTrajectory.totalTime/20; % Lateral margins for x-axis in seconds
+            xlim([-margin totalTrajectory.totalTime+margin]);
+            title(accelsToPlot{i})
+            xlabel('Time [s]')
+            ylabel(accelsToPlot{i})
         end
     end
     

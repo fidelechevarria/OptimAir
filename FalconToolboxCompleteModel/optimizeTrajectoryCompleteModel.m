@@ -32,11 +32,13 @@ function [f,c,ceq,totalTrajectory] = optimizeTrajectoryCompleteModel(WP,guess,co
     totalTrajectory.time = [];
     totalTrajectory.states = [];
     totalTrajectory.controls = [];
+    totalTrajectory.accels = [];
     for i = 1:WP.numOfWP-1
         totalTrajectory.time = [totalTrajectory.time segment{i}.Phases(1).RealTime+totalTrajectory.totalTime];
         totalTrajectory.totalTime = totalTrajectory.totalTime + segment{i}.Phases(1).FinalTime.Value;
         totalTrajectory.states = [totalTrajectory.states segment{i}.Phases(1).StateGrid.Values];
         totalTrajectory.controls = [totalTrajectory.controls segment{i}.Phases(1).ControlGrids.Values];
+        totalTrajectory.accels = [totalTrajectory.accels segment{i}.Phases(1).PathConstraintFunctions(1).OutputGrid.Values];
     end
     totalTrajectory.segmentSize = numel(segment{1}.Phases(1).RealTime);
     totalTrajectory.numOfSegments = WP.numOfWP - 1;
