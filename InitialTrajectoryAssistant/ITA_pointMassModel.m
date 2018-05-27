@@ -1,5 +1,5 @@
     
-function ITA_pointMassModel(WP,configuration,dir)
+function ITA_pointMassModel(WP,configuration,dir,f)
     
     % Generate new sequence of WP
     WP.ITA_WP_type = [];
@@ -66,7 +66,8 @@ function ITA_pointMassModel(WP,configuration,dir)
                              smooth_east(verticalLinesPointIndex)];
     
     % Create ITA figure
-    ita_fig = figure('Visible','off','Resize','off','Position',[760,88,1000,500]);  %  Create and then hide the UI as it is being constructed.
+    ita_fig = figure('Visible','off','Resize','off','Position',[760,88,1000,500],...
+        'CloseRequestFcn',@ITA_closeRequestFunction);  %  Create and then hide the UI as it is being constructed.
     ita_fig.NumberTitle = 'off'; % Deactivate the label "Figure n" in the title bar
     ita_fig.Name = 'Initial Trajectory Assistant'; % Assign the name to appear in the GUI title.
     movegui(ita_fig,'northeast') % Move the GUI.
@@ -185,6 +186,11 @@ function ITA_pointMassModel(WP,configuration,dir)
               'BackgroundColor',[0 1 0.5],...
               'String','Finish',...
               'Callback',@ITA_finish_Callback);
+    uicontrol('Parent',ita_fig,...
+              'Units','pixels',...
+              'Position',[640 350 55 25],...
+              'String','Exit',...
+              'Callback',@ITA_exit_Callback);
     
     % Define Row names for state table 
     j = 0;
@@ -216,6 +222,12 @@ function ITA_pointMassModel(WP,configuration,dir)
     % Make GUI visible.
     ita_fig.Visible = 'on';
    
+    function ITA_closeRequestFunction(~,~)
+    % Close request function for ITA Window
+        delete(ita_fig);
+        f.Visible = 'on';
+    end
+    
     function generateTraj()
         estimatedTraj = cscvn([WP.ITA_north;WP.ITA_east;WP.ITA_up]);
     end
@@ -426,10 +438,21 @@ function ITA_pointMassModel(WP,configuration,dir)
 
     function ITA_finish_Callback(~,~)
         cd(dir);
+        stateData = cell2mat(stateTable.Data);
+        if numel(stateData) ~= WP.numOfWP_ITA * 4
+            warningstring = 'Empty fields remaining.';
+            dlgname = 'Warning';
+            warndlg(warningstring,dlgname)
+            return;
+        end
         guess = generateGuess();
         [~,~,~,totalTrajectory] = optimizeTrajectoryPointMassModel(WP,guess,configuration);       
         graphics3D_pointMassModel(WP,totalTrajectory); % 3D Graphical representation
         graphics2D_pointMassModel(WP,totalTrajectory,configuration); % 2D Graphical representation
+    end
+
+    function ITA_exit_Callback(~,~)
+        close(ita_fig);
     end
 
     function arcLength = calculateArcLength(north,east,up)
@@ -617,7 +640,7 @@ function ITA_pointMassModel(WP,configuration,dir)
                            northGuess{segment} eastGuess{segment} upGuess{segment}]';
             guess.controls{segment} = [thrustGuess{segment} alphaGuess{segment} pGuess{segment}]';
         end
-
+        
     end
 
 end
