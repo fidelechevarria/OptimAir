@@ -132,8 +132,11 @@ phase1.setFinalBoundaries(boundaries.phase1.finalBoundsLow,...
                           boundaries.phase1.finalBoundsUpp);
 
 % Path Constraint
-constraint_vals = [falcon.Constraint('max_accel_norm',-100,100);
-                   falcon.Constraint('max_accel_z',-100,20)];
+
+maxms = configuration.pathconstraint.maxG * configuration.parameters.g;
+maxms_neg = configuration.pathconstraint.maxG_neg * configuration.parameters.g;
+constraint_vals = [falcon.Constraint('max_accel_norm',-maxms,maxms);
+                   falcon.Constraint('max_accel_z',-maxms,maxms_neg)];
 phase1.addNewPathConstraint(@pathConstraintBuild, constraint_vals);
 
 % Set model outputs
