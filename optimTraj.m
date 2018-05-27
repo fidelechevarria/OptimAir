@@ -138,6 +138,7 @@ function optimTraj
          'Value',0);
     
     % Initialize GUI
+    DynamicModel_table.Data = {'750';'9.8056';'1.225';'9.84';'0.1205';'5.7';'0.0054';'0.18';'0.05'};
     Options_table.Data = {'500';'80';true;true};
 
     % Make GUI visible.
@@ -254,6 +255,15 @@ function optimTraj
         configuration.discretizationPoints = str2double(Options_table.Data{2});
         configuration.plotStates = Options_table.Data{3};
         configuration.plotControls = Options_table.Data{4};
+        configuration.parameters.m = str2double(DynamicModel_table.Data{1});
+        configuration.parameters.g = str2double(DynamicModel_table.Data{2});
+        configuration.parameters.rho = str2double(DynamicModel_table.Data{3});
+        configuration.parameters.S = str2double(DynamicModel_table.Data{4});
+        configuration.parameters.Cl0 = str2double(DynamicModel_table.Data{5});
+        configuration.parameters.Clalpha = str2double(DynamicModel_table.Data{6});
+        configuration.parameters.Cd0 = str2double(DynamicModel_table.Data{7});
+        configuration.parameters.K = str2double(DynamicModel_table.Data{8});
+        configuration.parameters.Cdp = str2double(DynamicModel_table.Data{9});
     end
 
     function WP = createWP(north,east,up,hdngData,gateTypeData,expectedManoeuvreData)

@@ -39,15 +39,15 @@ tau = linspace(0,1,configuration.discretizationPoints);
 mdl = falcon.SimulationModelBuilder('pointMassModel', states, controls);
 
 % Add constants
-mdl.addConstant('m',750); % kg
-mdl.addConstant('g',9.8056); % m/s^2
-mdl.addConstant('rho',1.225); % kg/m^3
-mdl.addConstant('S',9.84); % m^2
-mdl.addConstant('Clalpha',5.7);
-mdl.addConstant('K',0.18);
-mdl.addConstant('Cd0',0.0054);
-mdl.addConstant('Cl0',0.1205);
-mdl.addConstant('Cdp',0.05);
+mdl.addConstant('m',configuration.parameters.m); % kg
+mdl.addConstant('g',configuration.parameters.g); % m/s^2
+mdl.addConstant('rho',configuration.parameters.rho); % kg/m^3
+mdl.addConstant('S',configuration.parameters.S); % m^2
+mdl.addConstant('Cl0',configuration.parameters.Cl0);
+mdl.addConstant('Clalpha',configuration.parameters.Clalpha);
+mdl.addConstant('Cd0',configuration.parameters.Cd0);
+mdl.addConstant('K',configuration.parameters.K);
+mdl.addConstant('Cdp',configuration.parameters.Cdp);
 
 % Aerodynamic forces
 mdl.addSubsystem(@dyn_forces,...
@@ -90,7 +90,7 @@ mdl.Build();
 cnstr = falcon.PathConstraintBuilder('pathConstraintBuild',modeloutputs,states,controls);
 
 % Add constants
-cnstr.addConstant('g',9.8056); % m/s^2
+cnstr.addConstant('g',configuration.parameters.g); % m/s^2
 
 % Transform gravity vector to body axes
 cnstr.addSubsystem(@dyn_gravBody,...
