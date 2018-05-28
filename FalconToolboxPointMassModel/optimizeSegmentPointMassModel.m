@@ -2,19 +2,19 @@
 function problem = optimizeSegmentPointMassModel(boundaries,guess,configuration)
 
 %% Create States
-states = [falcon.State('V',40,200,0.005);
+states = [falcon.State('V',configuration.dynamics.minVel,configuration.dynamics.maxVel,0.005);
 		  falcon.State('q0',-1,1,1);
           falcon.State('q1',-1,1,1);
 	      falcon.State('q2',-1,1,1);
           falcon.State('q3',-1,1,1);
-          falcon.State('x',-1e5,1e5,1e-3);
-          falcon.State('y',-1e5,1e5,1e-3);
-          falcon.State('h',5,2000,1e-3)];
+          falcon.State('x',configuration.dynamics.minPosNorth,configuration.dynamics.maxPosNorth,1e-3);
+          falcon.State('y',configuration.dynamics.minPosEast,configuration.dynamics.maxPosEast,1e-3);
+          falcon.State('h',configuration.dynamics.minAlt,configuration.dynamics.maxAlt,1e-3)];
 
 %% Create Controls
-controls = [falcon.Control('alpha',-0.5,0.5,1);
-		    falcon.Control('T',0,5000,1e-3);
-            falcon.Control('p',-7.3,7.3,0.1)];
+controls = [falcon.Control('alpha',configuration.dynamics.minAlpha,configuration.dynamics.maxAlpha,1);
+		    falcon.Control('T',0,configuration.dynamics.maxThrust,1e-3);
+            falcon.Control('p',-configuration.dynamics.max_p,configuration.dynamics.max_p,0.1)];
            
 %% Create model outputs
 modeloutputs = [falcon.Output('q');
@@ -22,32 +22,33 @@ modeloutputs = [falcon.Output('q');
                 falcon.Output('V_dot')];
         
 %% Create phase time
-FinalTime = falcon.Parameter('FinalTime',guess.time(end),0,200,0.1);
+FinalTime = falcon.Parameter('FinalTime',guess.time(end),...
+    configuration.options.minSegmentTime,configuration.options.maxSegmentTime,0.1);
 
 %% Create complete problem
 problem = falcon.Problem('optimTraj');
 
 %% Set optimization parameters
-problem.setMajorIterLimit(configuration.majIterLim);
+problem.setMajorIterLimit(configuration.options.majIterLim);
 % problem.setMajorFeasTol(1e-3);
 % problem.setMajorOptTol(1e-14);
 
 %% Specify discretization
-tau = linspace(0,1,configuration.discretizationPoints);
+tau = linspace(0,1,configuration.options.discretizationPoints);
 
 %% Create Model
 mdl = falcon.SimulationModelBuilder('pointMassModel', states, controls);
 
 % Add constants
-mdl.addConstant('m',configuration.parameters.m); % kg
-mdl.addConstant('g',configuration.parameters.g); % m/s^2
-mdl.addConstant('rho',configuration.parameters.rho); % kg/m^3
-mdl.addConstant('S',configuration.parameters.S); % m^2
-mdl.addConstant('Cl0',configuration.parameters.Cl0);
-mdl.addConstant('Clalpha',configuration.parameters.Clalpha);
-mdl.addConstant('Cd0',configuration.parameters.Cd0);
-mdl.addConstant('K',configuration.parameters.K);
-mdl.addConstant('Cdp',configuration.parameters.Cdp);
+mdl.addConstant('m',configuration.dynamics.m); % kg
+mdl.addConstant('g',configuration.dynamics.g); % m/s^2
+mdl.addConstant('rho',configuration.dynamics.rho); % kg/m^3
+mdl.addConstant('S',configuration.dynamics.S); % m^2
+mdl.addConstant('Cl0',configuration.dynamics.Cl0);
+mdl.addConstant('Clalpha',configuration.dynamics.Clalpha);
+mdl.addConstant('Cd0',configuration.dynamics.Cd0);
+mdl.addConstant('K',configuration.dynamics.K);
+mdl.addConstant('Cdp',configuration.dynamics.Cdp);
 
 % Aerodynamic forces
 mdl.addSubsystem(@dyn_forces,...
@@ -90,7 +91,7 @@ mdl.Build();
 cnstr = falcon.PathConstraintBuilder('pathConstraintBuild',modeloutputs,states,controls);
 
 % Add constants
-cnstr.addConstant('g',configuration.parameters.g); % m/s^2
+cnstr.addConstant('g',configuration.dynamics.g); % m/s^2
 
 % Transform gravity vector to body axes
 cnstr.addSubsystem(@dyn_gravBody,...
@@ -133,8 +134,8 @@ phase1.setFinalBoundaries(boundaries.phase1.finalBoundsLow,...
 
 % Path Constraint
 
-maxms = configuration.pathconstraint.maxG * configuration.parameters.g;
-maxms_neg = configuration.pathconstraint.maxG_neg * configuration.parameters.g;
+maxms = configuration.dynamics.maxG * configuration.dynamics.g;
+maxms_neg = configuration.dynamics.maxG_neg * configuration.dynamics.g;
 constraint_vals = [falcon.Constraint('max_accel_norm',-maxms,maxms);
                    falcon.Constraint('max_accel_z',-maxms,maxms_neg)];
 phase1.addNewPathConstraint(@pathConstraintBuild, constraint_vals);

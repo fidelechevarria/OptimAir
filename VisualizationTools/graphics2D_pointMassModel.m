@@ -1,11 +1,11 @@
 function graphics2D_pointMassModel(WP,totalTrajectory,configuration)
 
     % Select variables to plot
-    plotStates = configuration.plotStates; % Without quaternions
-    plotControls = configuration.plotControls;
-    plotEuler = configuration.plotStates;
-    plotQuatNormError = configuration.plotStates;
-    plotAccels = configuration.plotStates;
+    plotStates = configuration.options.plotStates; % Without quaternions
+    plotControls = configuration.options.plotControls;
+    plotEuler = configuration.options.plotStates;
+    plotQuatNormError = configuration.options.plotStates;
+    plotAccels = configuration.options.plotStates;
 
     % Calculate corresponding time for each WP
     middlePositions = [];

@@ -107,7 +107,11 @@ function optimTraj
         'RowName',{'m [kg]';'g [m/s^2]';...
         'rho [kg/m^3]';'S [m^2]';...
         'CL_0';'CL_alpha';'CD_0';'K';'CD_p';...
-        'Max G''s [Total]';'Max G''s [Negative z-axis]'},...
+        'Max G''s [Total]';'Max G''s [Negative z-axis]';...
+        'Min vel [m/s]';'Max vel [m/s]';'Min Pos North [m]';...
+        'Max Pos North [m]';'Min Pos East [m]';'Max Pos East [m]';...
+        'Min alt [m]';'Max alt [m]';'Min alpha [º]';'Max alpha [º]';...
+        'Max thrust [N]';'Max Ang Vel x-axis [º/s]';'Init Vel [m/s]'},...
         'ColumnEditable',true,...
         'Position',[13 13 460 390],...
         'ColumnWidth',{40},...
@@ -116,8 +120,11 @@ function optimTraj
     Options_table = uitable('Parent',tab3,...
         'Data',{[];[];true;true},...
         'ColumnName',{'Value'},...
-        'RowName',{'Max iterations per segment';'Discretization points per segment';...
-        'Plot States';'Plot Controls'},...
+        'RowName',{'Plot States';'Plot Controls';'Max iterations per segment';...
+        'Segment Discretization Points';'Min Segment Time [s]';...
+        'Max Segment Time [s]';'Vertical Lines Separation [m]';...
+        '3D Arrow Length [m]';'3D Plane Separation [m]';'3D Plane Scale Factor';...
+        'ITA Spline Points';'ITA Subsegment Points';'ITA Segment Points'},...
         'ColumnEditable',true,...
         'Position',[13 13 460 390],...
         'ColumnWidth',{'auto'},...
@@ -142,8 +149,9 @@ function optimTraj
     
     % Initialize GUI
     DynamicModel_table.Data = {'750';'9.8056';'1.225';'9.84';'0.1205';...
-        '5.7';'0.0054';'0.18';'0.05';'10';'2'};
-    Options_table.Data = {'500';'80';true;true};
+        '5.7';'0.0054';'0.18';'0.05';'10';'2';'40';'200';'-10000';...
+        '10000';'-10000';'10000';'15';'1000';'-30';'30';'5000';'420';'80'};
+    Options_table.Data = {true;true;'500';'80';'0';'200';'30';'40';'50';'4';'200';'200';'6'};
 
     % Make GUI visible.
     
@@ -256,21 +264,43 @@ function optimTraj
     end
 
     function configuration = createConfiguration()
-        configuration.majIterLim = str2double(Options_table.Data{1});
-        configuration.discretizationPoints = str2double(Options_table.Data{2});
-        configuration.plotStates = Options_table.Data{3};
-        configuration.plotControls = Options_table.Data{4};
-        configuration.parameters.m = str2double(DynamicModel_table.Data{1});
-        configuration.parameters.g = str2double(DynamicModel_table.Data{2});
-        configuration.parameters.rho = str2double(DynamicModel_table.Data{3});
-        configuration.parameters.S = str2double(DynamicModel_table.Data{4});
-        configuration.parameters.Cl0 = str2double(DynamicModel_table.Data{5});
-        configuration.parameters.Clalpha = str2double(DynamicModel_table.Data{6});
-        configuration.parameters.Cd0 = str2double(DynamicModel_table.Data{7});
-        configuration.parameters.K = str2double(DynamicModel_table.Data{8});
-        configuration.parameters.Cdp = str2double(DynamicModel_table.Data{9});
-        configuration.pathconstraint.maxG = str2double(DynamicModel_table.Data{10});
-        configuration.pathconstraint.maxG_neg = str2double(DynamicModel_table.Data{11});
+        configuration.options.plotStates = Options_table.Data{1};
+        configuration.options.plotControls = Options_table.Data{2};
+        configuration.options.majIterLim = str2double(Options_table.Data{3});
+        configuration.options.discretizationPoints = str2double(Options_table.Data{4});
+        configuration.options.minSegmentTime = str2double(Options_table.Data{5});
+        configuration.options.maxSegmentTime = str2double(Options_table.Data{6});
+        configuration.options.vertLinesSeparation = str2double(Options_table.Data{7});
+        configuration.options.arrowLength = str2double(Options_table.Data{8});
+        configuration.options.planeSeparation = str2double(Options_table.Data{9});
+        configuration.options.planeScaleFactor = str2double(Options_table.Data{10});
+        configuration.options.ITA_splinePoints = str2double(Options_table.Data{11});
+        configuration.options.ITA_subsegmentPoints = str2double(Options_table.Data{12});
+        configuration.options.ITA_segmentPoints = str2double(Options_table.Data{13});
+        configuration.dynamics.m = str2double(DynamicModel_table.Data{1});
+        configuration.dynamics.g = str2double(DynamicModel_table.Data{2});
+        configuration.dynamics.rho = str2double(DynamicModel_table.Data{3});
+        configuration.dynamics.S = str2double(DynamicModel_table.Data{4});
+        configuration.dynamics.Cl0 = str2double(DynamicModel_table.Data{5});
+        configuration.dynamics.Clalpha = str2double(DynamicModel_table.Data{6});
+        configuration.dynamics.Cd0 = str2double(DynamicModel_table.Data{7});
+        configuration.dynamics.K = str2double(DynamicModel_table.Data{8});
+        configuration.dynamics.Cdp = str2double(DynamicModel_table.Data{9});
+        configuration.dynamics.maxG = str2double(DynamicModel_table.Data{10});
+        configuration.dynamics.maxG_neg = str2double(DynamicModel_table.Data{11});
+        configuration.dynamics.minVel = str2double(DynamicModel_table.Data{12});
+        configuration.dynamics.maxVel = str2double(DynamicModel_table.Data{13});
+        configuration.dynamics.minPosNorth = str2double(DynamicModel_table.Data{14});
+        configuration.dynamics.maxPosNorth = str2double(DynamicModel_table.Data{15});
+        configuration.dynamics.minPosEast = str2double(DynamicModel_table.Data{16});
+        configuration.dynamics.maxPosEast = str2double(DynamicModel_table.Data{17});
+        configuration.dynamics.minAlt = str2double(DynamicModel_table.Data{18});
+        configuration.dynamics.maxAlt = str2double(DynamicModel_table.Data{19});
+        configuration.dynamics.minAlpha = deg2rad(str2double(DynamicModel_table.Data{20}));
+        configuration.dynamics.maxAlpha = deg2rad(str2double(DynamicModel_table.Data{21}));
+        configuration.dynamics.maxThrust = str2double(DynamicModel_table.Data{22});
+        configuration.dynamics.max_p = deg2rad(str2double(DynamicModel_table.Data{23}));
+        configuration.dynamics.initVel = str2double(DynamicModel_table.Data{24});
     end
 
     function WP = createWP(north,east,up,hdngData,gateTypeData,expectedManoeuvreData)

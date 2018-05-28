@@ -1,8 +1,8 @@
-function graphics3D_pointMassModel(WP,totalTrajectory)
+function graphics3D_pointMassModel(WP,totalTrajectory,configuration)
 
     % Compute trajectory arclength and prepare 3D planes states
-    planeSeparation = 50;
-    planeScale = 4;
+    planeSeparation = configuration.options.planeSeparation;
+    planeScale = configuration.options.planeScaleFactor;
     arclength = zeros(totalTrajectory.numOfPoints-1,1);
     for i = 1:totalTrajectory.numOfPoints-1
         arclength(i) = sqrt((totalTrajectory.states(6,i+1)-totalTrajectory.states(6,i))^2+...
@@ -25,7 +25,7 @@ function graphics3D_pointMassModel(WP,totalTrajectory)
                 totalTrajectory.euler(3,planePointIndex)'];
             
     % Compute arclength of the trajectory projection in the horizontal plane
-    verticalLinesSeparation = 30;
+    verticalLinesSeparation = configuration.options.vertLinesSeparation;
     arclengthHoriz = zeros(totalTrajectory.numOfPoints-1,1);
     for i = 1:totalTrajectory.numOfPoints-1
         arclengthHoriz(i) = sqrt((totalTrajectory.states(6,i+1)-totalTrajectory.states(6,i))^2+...
@@ -60,7 +60,7 @@ function graphics3D_pointMassModel(WP,totalTrajectory)
         plot3(verticalLinesPosHoriz(i,1)*ones(1,2),verticalLinesPosHoriz(i,2)*ones(1,2),[zmin zmax],'Color',[0 0.5 1])
     end
     for i = 1:WP.numOfWP % Plot arrows marking gates heading
-        arrowLength = 40;
+        arrowLength = configuration.options.arrowLength;
         arrowLengthNorth = arrowLength*cos(WP.heading(i));
         arrowLengthEast = arrowLength*sin(WP.heading(i));
         posStartArrow = [WP.north(i) WP.east(i) WP.up(i)];

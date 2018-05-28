@@ -44,11 +44,11 @@ function ITA_pointMassModel(WP,configuration,dir,f)
     
     % Generate natural cubic spline through all WP
     generateTraj();
-    N = 200;
+    N = configuration.options.ITA_splinePoints;
     [smooth_north,smooth_east,smooth_up] = multiEvaluateSpline(estimatedTraj,N);
     
     % Compute arclength of the trajectory projection in the horizontal plane
-    verticalLinesSeparation = 30;
+    verticalLinesSeparation = configuration.options.vertLinesSeparation;
     arclengthHoriz = zeros(N-1,1);
     for i = 1:N-1
         arclengthHoriz(i) = sqrt((smooth_north(i+1)-smooth_north(i))^2+...
@@ -93,7 +93,7 @@ function ITA_pointMassModel(WP,configuration,dir,f)
     end
     % Plot arrows marking gates heading
     for i = 1:WP.numOfWP
-        arrowLength = 40;
+        arrowLength = configuration.options.arrowLength;
         arrowLengthNorth = arrowLength*cos(WP.heading(i));
         arrowLengthEast = arrowLength*sin(WP.heading(i));
         posStartArrow = [WP.north(i) WP.east(i) WP.up(i)];
@@ -189,6 +189,8 @@ function ITA_pointMassModel(WP,configuration,dir,f)
     uicontrol('Parent',ita_fig,...
               'Units','pixels',...
               'Position',[640 350 55 25],...
+              'BackgroundColor',[0.9 0.22 0.23],...
+              'ForegroundColor','w',...
               'String','Exit',...
               'Callback',@ITA_exit_Callback);
     
@@ -447,7 +449,7 @@ function ITA_pointMassModel(WP,configuration,dir,f)
         end
         guess = generateGuess();
         [~,~,~,totalTrajectory] = optimizeTrajectoryPointMassModel(WP,guess,configuration);       
-        graphics3D_pointMassModel(WP,totalTrajectory); % 3D Graphical representation
+        graphics3D_pointMassModel(WP,totalTrajectory,configuration); % 3D Graphical representation
         graphics2D_pointMassModel(WP,totalTrajectory,configuration); % 2D Graphical representation
     end
 
@@ -464,8 +466,8 @@ function ITA_pointMassModel(WP,configuration,dir,f)
 
     function guess = generateGuess()
         
-        numOfPointsSubsegmentGuess = 200;
-        numOfPointsSegmentGuess = 6;
+        numOfPointsSubsegmentGuess = configuration.options.ITA_subsegmentPoints;
+        numOfPointsSegmentGuess = configuration.options.ITA_segmentPoints;
         subsegmentGuess = cell(WP.ITA_numOfSegments,1);
         northGuessSubsegment = cell(WP.ITA_numOfSegments,1);
         eastGuessSubsegment = cell(WP.ITA_numOfSegments,1);

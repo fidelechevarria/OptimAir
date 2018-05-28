@@ -6,10 +6,10 @@ function [f,c,ceq,totalTrajectory] = optimizeTrajectoryPointMassModel(WP,guess,c
     for i = 1:WP.numOfWP-1
         
         if i == 1 % Properties for first segment
-            boundaries.phase1.initBoundsLow = [80;eul2quat([WP.heading(1) 0 0])';WP.north(1);WP.east(1);WP.up(1)];
-            boundaries.phase1.initBoundsUpp = [80;eul2quat([WP.heading(1) 0 0])';WP.north(1);WP.east(1);WP.up(1)];
-            boundaries.phase1.finalBoundsLow = [40;eul2quat([WP.heading(2) 0 0])';WP.north(2);WP.east(2);WP.up(2)];
-            boundaries.phase1.finalBoundsUpp = [200;eul2quat([WP.heading(2) 0 0])';WP.north(2);WP.east(2);WP.up(2)];
+            boundaries.phase1.initBoundsLow = [configuration.dynamics.initVel;eul2quat([WP.heading(1) 0 0])';WP.north(1);WP.east(1);WP.up(1)];
+            boundaries.phase1.initBoundsUpp = [configuration.dynamics.initVel;eul2quat([WP.heading(1) 0 0])';WP.north(1);WP.east(1);WP.up(1)];
+            boundaries.phase1.finalBoundsLow = [configuration.dynamics.minVel;eul2quat([WP.heading(2) 0 0])';WP.north(2);WP.east(2);WP.up(2)];
+            boundaries.phase1.finalBoundsUpp = [configuration.dynamics.maxVel;eul2quat([WP.heading(2) 0 0])';WP.north(2);WP.east(2);WP.up(2)];
         end
 
         segmentGuess.time = guess.time{i};
@@ -19,11 +19,11 @@ function [f,c,ceq,totalTrajectory] = optimizeTrajectoryPointMassModel(WP,guess,c
         
         % Properties for the rest of the segments
         if i ~= WP.numOfWP-1 % Not necessary in the last iteration
-            initVel = segment{i}.Phases(1).StateGrid.Values(1,end);
-            boundaries.phase1.initBoundsLow = [initVel;eul2quat([WP.heading(i+1) 0 0])';WP.north(i+1);WP.east(i+1);WP.up(i+1)];
-            boundaries.phase1.initBoundsUpp = [initVel;eul2quat([WP.heading(i+1) 0 0])';WP.north(i+1);WP.east(i+1);WP.up(i+1)];
-            boundaries.phase1.finalBoundsLow = [40;eul2quat([WP.heading(i+2) 0 0])';WP.north(i+2);WP.east(i+2);WP.up(i+2)];
-            boundaries.phase1.finalBoundsUpp = [200;eul2quat([WP.heading(i+2) 0 0])';WP.north(i+2);WP.east(i+2);WP.up(i+2)];
+            lastVel = segment{i}.Phases(1).StateGrid.Values(1,end);
+            boundaries.phase1.initBoundsLow = [lastVel;eul2quat([WP.heading(i+1) 0 0])';WP.north(i+1);WP.east(i+1);WP.up(i+1)];
+            boundaries.phase1.initBoundsUpp = [lastVel;eul2quat([WP.heading(i+1) 0 0])';WP.north(i+1);WP.east(i+1);WP.up(i+1)];
+            boundaries.phase1.finalBoundsLow = [configuration.dynamics.minVel;eul2quat([WP.heading(i+2) 0 0])';WP.north(i+2);WP.east(i+2);WP.up(i+2)];
+            boundaries.phase1.finalBoundsUpp = [configuration.dynamics.maxVel;eul2quat([WP.heading(i+2) 0 0])';WP.north(i+2);WP.east(i+2);WP.up(i+2)];
         end
         
     end
