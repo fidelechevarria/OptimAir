@@ -53,7 +53,7 @@ mdl.addConstant('Cdp',configuration.dynamics.Cdp);
 % Aerodynamic forces
 mdl.addSubsystem(@dyn_forces,...
     {'Clalpha','rho','S','Cd0','Cl0','Cdp','K','alpha','V','p'},... % Inputs
-    {'Cl','L','D'}); % Outputs
+    {'L','D'}); % Outputs
 
 % Angular velocities
 mdl.addSubsystem(@dyn_angVels,...
@@ -148,26 +148,5 @@ problem.addNewParameterCost(FinalTime);
 
 %% Solve problem
 problem.Solve();
-
-%% Create timeseries from solution
-% [statesTS, controlTS, outputTS, statesdotTS, postprocessedTS] = problem.getTimeSeries();
-
-% FG_x = timeseries(statesTS.Data(:,10), statesTS.Time);
-% FG_y = timeseries(statesTS.Data(:,11), statesTS.Time);
-% FG_alt = timeseries(-statesTS.Data(:,12), statesTS.Time);
-% FG_roll = timeseries(statesTS.Data(:,4), statesTS.Time);
-% FG_pitch = timeseries(statesTS.Data(:,5), statesTS.Time);
-% FG_yaw = timeseries(statesTS.Data(:,6), statesTS.Time);
-% FG_time = statesTS.Time(end);
-% 
-% assignin('base','FG_x',FG_x);
-% assignin('base','FG_y',FG_y);
-% assignin('base','FG_alt',FG_alt);
-% assignin('base','FG_roll',FG_roll);
-% assignin('base','FG_pitch',FG_pitch);
-% assignin('base','FG_yaw',FG_yaw);
-% assignin('base','FG_time',FG_time);
-% 
-% sim('trajectorySimulation.slx')
 
 end

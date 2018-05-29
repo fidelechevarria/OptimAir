@@ -1,7 +1,7 @@
 function optimTraj
 
     % optimTraj: Red Bull Air Race Team 26 Flight Trajectory Optimization Software
-    % Developer: Fidel Echevarria Corrales
+    % Author: Fidel Echevarria Corrales
 
     % IMPORTANT NOTE: Solve graphical issues for R2015b MATLAB Compiler
     % To solve this bug go to: https://www.mathworks.com/support/bugreports/1293244
@@ -60,8 +60,16 @@ function optimTraj
     uicontrol('Parent',f,...
          'Units','pixels',...
          'Position',[420 15 70 25],...
+         'BackgroundColor',[0 1 0.5],...
          'String','Optimize FP',...
          'Callback',@optimize_Callback);
+     
+    uicontrol('Parent',f,...
+         'Units','pixels',...
+         'Position',[15 15 80 25],...
+         'BackgroundColor',[1 0.65 0],...
+         'String','Simulate Model',...
+         'Callback',@simulate_Callback);
     
     NWP_popup = uicontrol('Style', 'popup',...
            'Parent',tab1,...
@@ -149,9 +157,9 @@ function optimTraj
     
     % Initialize GUI
     DynamicModel_table.Data = {'750';'9.8056';'1.225';'9.84';'0.1205';...
-        '5.7';'0.0054';'0.18';'0.05';'10';'2';'40';'200';'-10000';...
-        '10000';'-10000';'10000';'15';'1000';'-30';'30';'5000';'420';'80'};
-    Options_table.Data = {true;true;'500';'80';'0';'200';'30';'40';'50';'4';'200';'200';'6'};
+        '5.7';'0.0054';'0.18';'0.01';'10';'2';'40';'200';'-10000';...
+        '10000';'-10000';'10000';'15';'1000';'-30';'30';'5000';'200';'80'};
+    Options_table.Data = {true;true;'1000';'80';'0';'200';'30';'40';'50';'4';'200';'200';'6'};
 
     % Make GUI visible.
     
@@ -173,8 +181,30 @@ function optimTraj
              hObject.Data{r,c} = 'D';
          end
     end
+
+    function simulate_Callback(~,~)
+        model = 'freeSimulation_pointMassModel';
+        open(model);
+        configuration = createConfiguration();
+        set_param([bdroot '/Parameters/initVel'],'Value',num2str(configuration.dynamics.initVel));
+        set_param([bdroot '/Parameters/m'],'Value',num2str(configuration.dynamics.m));
+        set_param([bdroot '/Parameters/g'],'Value',num2str(configuration.dynamics.g));
+        set_param([bdroot '/Parameters/rho'],'Value',num2str(configuration.dynamics.rho));
+        set_param([bdroot '/Parameters/S'],'Value',num2str(configuration.dynamics.S));
+        set_param([bdroot '/Parameters/Clalpha'],'Value',num2str(configuration.dynamics.Clalpha));
+        set_param([bdroot '/Parameters/K'],'Value',num2str(configuration.dynamics.K));
+        set_param([bdroot '/Parameters/Cd0'],'Value',num2str(configuration.dynamics.Cd0));
+        set_param([bdroot '/Parameters/Cl0'],'Value',num2str(configuration.dynamics.Cl0));
+        set_param([bdroot '/Parameters/Cdp'],'Value',num2str(configuration.dynamics.Cdp));
+        set_param([bdroot '/Parameters/maxThrust'],'Value',num2str(configuration.dynamics.maxThrust));
+        set_param([bdroot '/Parameters/max_p'],'Value',num2str(configuration.dynamics.max_p));
+        set_param([bdroot '/Parameters/maxAlpha'],'Value',num2str(configuration.dynamics.maxAlpha));
+        pause(5);
+        set_param(model,'SimulationCommand','start');
+    end
     
     function optimize_Callback(~,~)
+        cd(dir);
         wpData = WP_table.Data;
         checkForEmptyValues = cellfun('isempty',wpData);
         if any(any(checkForEmptyValues))

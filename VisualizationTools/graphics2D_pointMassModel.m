@@ -6,6 +6,7 @@ function graphics2D_pointMassModel(WP,totalTrajectory,configuration)
     plotEuler = configuration.options.plotStates;
     plotQuatNormError = configuration.options.plotStates;
     plotAccels = configuration.options.plotStates;
+    createTimeSeries = true;
 
     % Calculate corresponding time for each WP
     middlePositions = [];
@@ -170,6 +171,26 @@ function graphics2D_pointMassModel(WP,totalTrajectory,configuration)
             xlabel('Time [s]')
             ylabel(accelsToPlot{i})
         end
+    end
+    
+    % CREATE TIMESERIES
+    if createTimeSeries
+        FG_x = timeseries(totalTrajectory.states(6,:)', totalTrajectory.time)';
+        FG_y = timeseries(totalTrajectory.states(7,:)', totalTrajectory.time)';
+        FG_alt = timeseries(totalTrajectory.states(8,:)', totalTrajectory.time)';
+        FG_roll = timeseries(totalTrajectory.euler(3,:)', totalTrajectory.time)';
+        FG_pitch = timeseries(totalTrajectory.euler(2,:)', totalTrajectory.time)';
+        FG_yaw = timeseries(totalTrajectory.euler(1,:)', totalTrajectory.time)';
+        FG_time = totalTrajectory.totalTime;
+        assignin('base','FG_x',FG_x);
+        assignin('base','FG_y',FG_y);
+        assignin('base','FG_alt',FG_alt);
+        assignin('base','FG_roll',FG_roll);
+        assignin('base','FG_pitch',FG_pitch);
+        assignin('base','FG_yaw',FG_yaw);
+        assignin('base','FG_time',FG_time);
+        % 
+        % sim('trajectorySimulation.slx')
     end
     
 end

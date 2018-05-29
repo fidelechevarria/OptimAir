@@ -81,6 +81,6 @@ function graphics3D_pointMassModel(WP,totalTrajectory,configuration)
     ylabel('East')
     zlabel('Up')
     f1.Visible = 'on'; % Make figure visible.
-
+    
 end
 
