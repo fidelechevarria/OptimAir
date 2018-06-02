@@ -175,7 +175,7 @@ function optimTraj
         '5.7';'0.0054';'0.18';'0.01';'10';'2';'40';'200';'-10000';...
         '10000';'-10000';'10000';'15';'1000';'-30';'30';'5000';'200';'80';...
         '0';'0';'0'};
-    Options_table.Data = {true;true;'1000';'80';'0';'200';'30';'40';'50';'4';'200';'200';'6'};
+    Options_table.Data = {false;false;'1000';'80';'0';'200';'30';'40';'50';'4';'200';'200';'6'};
 
     % Make GUI visible.
     
@@ -219,7 +219,7 @@ function optimTraj
         set_param([bdroot '/Parameters/maxThrust'],'Value',num2str(configuration.dynamics.maxThrust));
         set_param([bdroot '/Parameters/max_p'],'Value',num2str(configuration.dynamics.max_p));
         set_param([bdroot '/Parameters/maxAlpha'],'Value',num2str(configuration.dynamics.maxAlpha));
-        pause(5);
+        % pause(5);
         set_param(model,'SimulationCommand','start');
     end
 
@@ -227,7 +227,7 @@ function optimTraj
         if sum(~ismember({'FG_x','FG_y','FG_alt','FG_roll','FG_pitch','FG_yaw','FG_time'},evalin('base','who'))) == 0
             model = 'trajectorySimulation_pointMassModel';
             open(model);
-            pause(5);
+            % pause(5);
             set_param(model,'SimulationCommand','start');
         else
             warningstring = 'Trajectory result not found in workspace. Run optimization to generate results.';
