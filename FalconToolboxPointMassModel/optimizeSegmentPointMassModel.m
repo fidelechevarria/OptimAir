@@ -112,7 +112,7 @@ cnstr.addSubsystem(@dyn_accelsBody,...
 % Calculate acceleration norm
 cnstr.addSubsystem(@dyn_accelNorm,...
     {'Ax','Ay','Az'},... % Inputs
-    {'A_norm'}); % Outputs)
+    {'A_norm'}); % Outputs
 
 % Set the variable names of the constraints
 cnstr.setConstraintValueNames('A_norm','Az');
@@ -142,8 +142,8 @@ phase1.setFinalBoundaries(boundaries.phase1.finalBoundsLow,...
 
 maxms = configuration.dynamics.maxG * configuration.dynamics.g;
 maxms_neg = configuration.dynamics.maxG_neg * configuration.dynamics.g;
-constraint_vals = [falcon.Constraint('max_accel_norm',-maxms,maxms);
-                   falcon.Constraint('max_accel_z',-maxms,maxms_neg)];
+constraint_vals = [falcon.Constraint('A_norm',-maxms,maxms);
+                   falcon.Constraint('A_z',-maxms,maxms_neg)];
 phase1.addNewPathConstraint(@pathConstraintBuild, constraint_vals);
 
 % Set model outputs
