@@ -224,10 +224,9 @@ function optimTraj
     end
 
     function animate_Callback(~,~)
-        if sum(~ismember({'FG_x','FG_y','FG_alt','FG_roll','FG_pitch','FG_yaw','FG_time'},evalin('base','who'))) == 0
+        if sum(~ismember({'FG_q0','FG_q1','FG_q2','FG_q3','FG_x','FG_y','FG_alt','FG_time'},evalin('base','who'))) == 0
             model = 'trajectorySimulation_pointMassModel';
             open(model);
-            % pause(5);
             set_param(model,'SimulationCommand','start');
         else
             warningstring = 'Trajectory result not found in workspace. Run optimization to generate results.';
