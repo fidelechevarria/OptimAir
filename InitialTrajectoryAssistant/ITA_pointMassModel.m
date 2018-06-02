@@ -443,7 +443,7 @@ function ITA_pointMassModel(WP,configuration,dir,f)
 
     function ITA_finish_Callback(~,~)
         cd(dir);
-        stateData = cell2mat(stateTable.Data);
+        stateData = stateTable.Data;
         if numel(stateData) ~= WP.numOfWP_ITA * 4
             warningstring = 'Empty fields remaining.';
             dlgname = 'Warning';
@@ -510,7 +510,10 @@ function ITA_pointMassModel(WP,configuration,dir,f)
         arcLengthGuessCumsum = [0;cumsum(arcLengthGuessVector)];
         arcLengthValuesForStates = [0;arcLengthGuessCumsum(stateIndeces)];
         
-        stateData = cell2mat(stateTable.Data);
+        stateData = stateTable.Data;
+        if iscell(stateData)
+            stateData = cell2mat(stateData);
+        end
         thrustGuessInWP = stateData(:,1)';
         velocityGuessInWP = stateData(:,2)';
         alphaGuessInWP = stateData(:,3)';
