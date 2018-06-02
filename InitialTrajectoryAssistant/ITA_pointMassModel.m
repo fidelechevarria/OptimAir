@@ -406,7 +406,7 @@ function ITA_pointMassModel(WP,configuration,dir,f)
 
     function ITA_load_Callback(~,~)
         cd(dir);
-        if (exist('InitialTrajectories','dir') && isempty(strfind(pwd,'InitialTrajectories')))
+        if (exist('InitialTrajectories','dir') && ~contains(pwd,'InitialTrajectories'))
             cd([pwd '\InitialTrajectories'])
         end
         [file,path] = uigetfile('*.mat','Select a MAT file');
