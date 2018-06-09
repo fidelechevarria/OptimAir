@@ -255,15 +255,18 @@ function optimTraj
     function optimize_Callback(~,~)
         cd(dir);
         wpData = WP_table.Data;
-        checkForEmptyValues = cellfun('isempty',wpData);
-        if any(any(checkForEmptyValues))
+        SL_data = SL_table.Data;
+        checkForEmptyValuesWP = cellfun('isempty',wpData);
+        checkForEmptyValuesSL = cellfun('isempty',SL_data);
+        if any(any(checkForEmptyValuesWP)) || any(any(checkForEmptyValuesSL))
             warningstring = 'Empty fields remaining.';
             dlgname = 'Warning';
             warndlg(warningstring,dlgname)
             return
         else
             llaData = wpData(1:end,1:6);
-            [north, east, up] = custom_lla2flat(llaData);
+            refData = wpData(1,1:6);
+            [north, east, up] = custom_lla2flat(llaData,refData);
             hdngData = deg2rad(str2double(wpData(1:end,7)));
             gateTypeData = wpData(1:end,8);
             expectedManoeuvreData = wpData(1:end,9);
@@ -274,7 +277,14 @@ function optimTraj
                     expectedManoeuvreData{i} = '2D';
                 end
             end
-            WP = createWP(north,east,up,hdngData,gateTypeData,expectedManoeuvreData);
+            if SL_checkbox.Value == true
+                [SL_north, SL_east, SL_up] = custom_lla2flat(SL_data,refData);
+            else
+                SL_north = false;
+                SL_east = false;
+                SL_up = false;
+            end
+            WP = createWP(north,east,up,hdngData,gateTypeData,expectedManoeuvreData,SL_north,SL_east,SL_up);
             configuration = createConfiguration();
             f.Visible = 'off';
             if pointMassButton.Value == 1
@@ -405,7 +415,7 @@ function optimTraj
         configuration.dynamics.windElevation = deg2rad(str2double(DynamicModel_table.Data{27}));
     end
 
-    function WP = createWP(north,east,up,hdngData,gateTypeData,expectedManoeuvreData)
+    function WP = createWP(north,east,up,hdngData,gateTypeData,expectedManoeuvreData,SL_north,SL_east,SL_up)
         WP.north = north;
         WP.east = east;
         WP.up = up;
@@ -414,6 +424,9 @@ function optimTraj
         WP.expectedManoeuvre = expectedManoeuvreData;
         WP.numOfWP = numel(north);
         WP.numOfSegments = WP.numOfWP - 1;
+        WP.SL_north = SL_north;
+        WP.SL_east = SL_east;
+        WP.SL_up = SL_up;
     end
 
 end

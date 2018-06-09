@@ -100,6 +100,14 @@ function ITA_pointMassModel(WP,configuration,dir,f)
         posFinishArrow = [WP.north(i)+arrowLengthNorth WP.east(i)+arrowLengthEast WP.up(i)];
         mArrow3(posStartArrow,posFinishArrow,'color','red','stemWidth',1,'facealpha',0.5);
     end
+    % Plot Safety Line Elements
+    if WP.SL_north ~= false
+        for i = 1:numel(WP.SL_north)
+            scatter3(WP.SL_north(i),WP.SL_east(i),0,'r','filled');
+            text(WP.SL_north(i),WP.SL_east(i),0,['SF' num2str(i)],'Color','r','VerticalAlignment','bottom','FontSize',14);
+        end
+        plot3([WP.SL_north(1) WP.SL_north(2)],[WP.SL_east(1) WP.SL_east(2)],[0 0],'Color','r','LineWidth',1);
+    end
     grid
 %     title(['Estimated time ' num2str(propagatedState.totalTime) 's'])
     axis equal
