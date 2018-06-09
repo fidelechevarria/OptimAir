@@ -319,8 +319,10 @@ function optimTraj
         else
             cd([pwd '\FlightPlans'])
         end
-        WPdata = WP_table.Data;
-        uisave('WPdata','myFlightPlan');
+        data.FP_data = WP_table.Data;
+        data.SL_data = SL_table.Data;
+        data.SL_checkBox = SL_checkbox.Value;
+        uisave('data','myFlightPlan');
         cd ..
     end
 
@@ -333,9 +335,17 @@ function optimTraj
         if (file ~= 0)
             filename = fullfile(path,file);
             dataStruct = load(filename,'-mat');
-            WP_table.Data = dataStruct.WPdata;
-            [NWP,~] = size(dataStruct.WPdata);
+            WP_table.Data = dataStruct.data.FP_data;
+            [NWP,~] = size(dataStruct.data.FP_data);
             NWP_popup.Value = NWP - 1; % Change NWP popup menu value
+            SL_table.Data = dataStruct.data.SL_data;
+            SL_checkbox.Value = dataStruct.data.SL_checkBox;
+            if dataStruct.data.SL_checkBox
+                SL_table.Enable = 'on';
+            else
+                SL_table.Data = {[] [] [] [] [] [];[] [] [] [] [] []};
+                SL_table.Enable = 'off';
+            end
         end
         if exist('FlightPlans','dir')
             cd ..
