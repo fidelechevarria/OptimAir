@@ -424,15 +424,18 @@ function ITA_pointMassModel(WP,configuration,dir,f)
             trajData = dataStruct.ITAdata{1};
             stateData = dataStruct.ITAdata{2};
             if size(stateData,2) ~= 4
-                warningstring = 'This data corresponds to different dynamic model.';
+                warningstring = 'This data corresponds to a different dynamic model.';
                 dlgname = 'Warning';
                 warndlg(warningstring,dlgname)
                 cd ..
                 return
-            elseif isequal(trajData.north,WP.north)
+            elseif isequal(trajData.ITA_north(~trajData.ITA_WP_type),WP.north')
                 set(ITA_WP{WP.ITA_activeWP},'MarkerFaceColor','b');
                 stateTable.Data = stateData;
-                WP = trajData;
+                for field = fieldnames(trajData)'
+                   fname = field{1};
+                   WP.(fname) = trajData.(fname);
+                end
                 updateLinesAndPlots();
                 updateAllWP();
                 setSliderValues()

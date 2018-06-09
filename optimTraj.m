@@ -257,7 +257,11 @@ function optimTraj
         wpData = WP_table.Data;
         SL_data = SL_table.Data;
         checkForEmptyValuesWP = cellfun('isempty',wpData);
-        checkForEmptyValuesSL = cellfun('isempty',SL_data);
+        if SL_checkbox.Value == true
+            checkForEmptyValuesSL = cellfun('isempty',SL_data);
+        else
+            checkForEmptyValuesSL = 0;
+        end
         if any(any(checkForEmptyValuesWP)) || any(any(checkForEmptyValuesSL))
             warningstring = 'Empty fields remaining.';
             dlgname = 'Warning';
@@ -278,13 +282,12 @@ function optimTraj
                 end
             end
             if SL_checkbox.Value == true
-                [SL_north, SL_east, SL_up] = custom_lla2flat(SL_data,refData);
+                [SL_north, SL_east, ~] = custom_lla2flat(SL_data,refData);
             else
                 SL_north = false;
                 SL_east = false;
-                SL_up = false;
             end
-            WP = createWP(north,east,up,hdngData,gateTypeData,expectedManoeuvreData,SL_north,SL_east,SL_up);
+            WP = createWP(north,east,up,hdngData,gateTypeData,expectedManoeuvreData,SL_north,SL_east);
             configuration = createConfiguration();
             f.Visible = 'off';
             if pointMassButton.Value == 1
@@ -415,7 +418,7 @@ function optimTraj
         configuration.dynamics.windElevation = deg2rad(str2double(DynamicModel_table.Data{27}));
     end
 
-    function WP = createWP(north,east,up,hdngData,gateTypeData,expectedManoeuvreData,SL_north,SL_east,SL_up)
+    function WP = createWP(north,east,up,hdngData,gateTypeData,expectedManoeuvreData,SL_north,SL_east)
         WP.north = north;
         WP.east = east;
         WP.up = up;
@@ -426,7 +429,6 @@ function optimTraj
         WP.numOfSegments = WP.numOfWP - 1;
         WP.SL_north = SL_north;
         WP.SL_east = SL_east;
-        WP.SL_up = SL_up;
     end
 
 end
