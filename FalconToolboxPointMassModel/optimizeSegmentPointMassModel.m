@@ -98,6 +98,8 @@ cnstr = falcon.PathConstraintBuilder('pathConstraintBuild',modeloutputs,states,c
 
 % Add constants
 cnstr.addConstant('g',configuration.dynamics.g); % m/s^2
+cnstr.addConstant('SL_m',configuration.SL.m)
+cnstr.addConstant('SL_n',configuration.SL.n)
 
 % Transform gravity vector to body axes
 cnstr.addSubsystem(@dyn_gravBody,...
@@ -114,8 +116,13 @@ cnstr.addSubsystem(@dyn_accelNorm,...
     {'Ax','Ay','Az'},... % Inputs
     {'A_norm'}); % Outputs
 
+% Calculate Safety Line constraint
+cnstr.addSubsystem(@dyn_safetyLine,...
+    {'x','y','SL_m','SL_n'},... % Inputs
+    {'SL'}); % Outputs
+
 % Set the variable names of the constraints
-cnstr.setConstraintValueNames('A_norm','Az');
+cnstr.setConstraintValueNames('A_norm','Az','SL');
 
 % Build the constraints evaluating the subsystem chain
 cnstr.Build();
@@ -142,8 +149,23 @@ phase1.setFinalBoundaries(boundaries.phase1.finalBoundsLow,...
 
 maxms = configuration.dynamics.maxG * configuration.dynamics.g;
 maxms_neg = configuration.dynamics.maxG_neg * configuration.dynamics.g;
+if configuration.SL.active == true
+    if -configuration.SL.n/configuration.SL.m > 0
+        % Safety Line is West
+        SL_low = 0;
+        SL_high = inf;
+    else
+        % Safety Line is East
+        SL_low = -inf;
+        SL_high = 0;
+    end
+else
+    SL_low = -inf;
+    SL_high = inf;
+end
 constraint_vals = [falcon.Constraint('A_norm',-maxms,maxms);
-                   falcon.Constraint('A_z',-maxms,maxms_neg)];
+                   falcon.Constraint('A_z',-maxms,maxms_neg);
+                   falcon.Constraint('SL',SL_low,SL_high)];
 phase1.addNewPathConstraint(@pathConstraintBuild, constraint_vals);
 
 % Set model outputs

@@ -235,7 +235,6 @@ function optimTraj
         set_param([bdroot '/Parameters/maxThrust'],'Value',num2str(configuration.dynamics.maxThrust));
         set_param([bdroot '/Parameters/max_p'],'Value',num2str(configuration.dynamics.max_p));
         set_param([bdroot '/Parameters/maxAlpha'],'Value',num2str(configuration.dynamics.maxAlpha));
-        % pause(5);
         set_param(model,'SimulationCommand','start');
     end
 

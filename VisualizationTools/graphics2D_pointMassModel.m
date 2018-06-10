@@ -6,6 +6,7 @@ function graphics2D_pointMassModel(WP,totalTrajectory,configuration)
     plotEuler = configuration.options.plotStates;
     plotQuatNormError = configuration.options.plotStates;
     plotAccels = configuration.options.plotStates;
+    plotSLdist = configuration.options.plotStates;
     createTimeSeries = true;
 
     % Calculate corresponding time for each WP
@@ -173,6 +174,32 @@ function graphics2D_pointMassModel(WP,totalTrajectory,configuration)
         end
     end
     
+    % PLOT EAST DISTANCE TO SAFETY LINE
+    if (plotSLdist == true) && (WP.SL_north(1) ~= false)
+        distToPlot = {'Distance to Safety Line (East) [m]'};
+        for i = 1:1
+            figure
+            hold on
+            plot(totalTrajectory.time,totalTrajectory.SL_dist(i,:))
+            for j = 1:numel(WP_time)
+                xval = WP_time(j);
+                ymin = min(totalTrajectory.SL_dist(i,WP_index(j)),0);
+                ymax = max(totalTrajectory.SL_dist(i,WP_index(j)),0);
+                xPoints = [xval,xval];
+                yPoints = [ymin,ymax];
+                plot(xPoints,yPoints,'r--')
+                text(xval,ymax,num2str(j),'Color','r','VerticalAlignment','bottom')
+            end
+            hold off
+            grid
+            margin = totalTrajectory.totalTime/20; % Lateral margins for x-axis in seconds
+            xlim([-margin totalTrajectory.totalTime+margin]);
+            title(distToPlot{i})
+            xlabel('Time [s]')
+            ylabel(distToPlot{i})
+        end
+    end
+    
     % CREATE TIMESERIES
     if createTimeSeries
         FG_q0 = timeseries(totalTrajectory.states(2,:)', totalTrajectory.time)';
@@ -191,8 +218,6 @@ function graphics2D_pointMassModel(WP,totalTrajectory,configuration)
         assignin('base','FG_y',FG_y);
         assignin('base','FG_alt',FG_alt);
         assignin('base','FG_time',FG_time);
-        % 
-        % sim('trajectorySimulation.slx')
     end
     
 end

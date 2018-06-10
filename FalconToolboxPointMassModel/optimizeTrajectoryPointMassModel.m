@@ -1,7 +1,22 @@
 
 function [f,c,ceq,totalTrajectory] = optimizeTrajectoryPointMassModel(WP,guess,configuration)
 
+    function [m,n] = calcSafetyLineParams(north,east)
+        m = (north(2)-north(1))/(east(2)-east(1));
+        n = north(1)-m*east(1);
+    end
+
     segment = cell(WP.numOfWP-1,1);
+    
+    % Calculate Safety Line Parameters (Slope and offset)
+    if WP.SL_north(1) ~= false
+        configuration.SL.active = true;
+        [configuration.SL.m,configuration.SL.n] = calcSafetyLineParams(WP.SL_north,WP.SL_east);
+    else
+        configuration.SL.active = false;
+        configuration.SL.m = 1;
+        configuration.SL.n = 1;
+    end
 
     for i = 1:WP.numOfWP-1
         
@@ -33,12 +48,16 @@ function [f,c,ceq,totalTrajectory] = optimizeTrajectoryPointMassModel(WP,guess,c
     totalTrajectory.states = [];
     totalTrajectory.controls = [];
     totalTrajectory.accels = [];
+    totalTrajectory.SL_dist = [];
     for i = 1:WP.numOfWP-1
         totalTrajectory.time = [totalTrajectory.time segment{i}.Phases(1).RealTime+totalTrajectory.totalTime];
         totalTrajectory.totalTime = totalTrajectory.totalTime + segment{i}.Phases(1).FinalTime.Value;
         totalTrajectory.states = [totalTrajectory.states segment{i}.Phases(1).StateGrid.Values];
         totalTrajectory.controls = [totalTrajectory.controls segment{i}.Phases(1).ControlGrids.Values];
-        totalTrajectory.accels = [totalTrajectory.accels segment{i}.Phases(1).PathConstraintFunctions(1).OutputGrid.Values];
+        totalTrajectory.accels = [totalTrajectory.accels segment{i}.Phases(1).PathConstraintFunctions(1).OutputGrid.Values(1:2,:)];
+        if WP.SL_north(1) ~= false
+            totalTrajectory.SL_dist = [totalTrajectory.SL_dist segment{i}.Phases(1).PathConstraintFunctions(1).OutputGrid.Values(3,:)];
+        end
     end
     totalTrajectory.segmentSize = numel(segment{1}.Phases(1).RealTime);
     totalTrajectory.numOfSegments = WP.numOfWP - 1;
