@@ -20,9 +20,12 @@ function [f,c,ceq,totalTrajectory] = optimizeTrajectoryPointMassModel(WP,guess,c
 
     for i = 1:WP.numOfWP-1
         
+        % Calculate initial TAS
+        configuration.dynamics.initTAS = velocityEarthAndWind2tas(configuration.dynamics.initVel, 0, WP.heading(1), configuration.dynamics.windVelocityEarth);
+        
         if i == 1 % Properties for first segment
-            boundaries.phase1.initBoundsLow = [configuration.dynamics.initVel;eul2quat([WP.heading(1) 0 0])';WP.north(1);WP.east(1);WP.up(1)];
-            boundaries.phase1.initBoundsUpp = [configuration.dynamics.initVel;eul2quat([WP.heading(1) 0 0])';WP.north(1);WP.east(1);WP.up(1)];
+            boundaries.phase1.initBoundsLow = [configuration.dynamics.initTAS;eul2quat([WP.heading(1) 0 0])';WP.north(1);WP.east(1);WP.up(1)];
+            boundaries.phase1.initBoundsUpp = [configuration.dynamics.initTAS;eul2quat([WP.heading(1) 0 0])';WP.north(1);WP.east(1);WP.up(1)];
             boundaries.phase1.finalBoundsLow = [configuration.dynamics.minVel;eul2quat([WP.heading(2) 0 0])';WP.north(2);WP.east(2);WP.up(2)];
             boundaries.phase1.finalBoundsUpp = [configuration.dynamics.maxVel;eul2quat([WP.heading(2) 0 0])';WP.north(2);WP.east(2);WP.up(2)];
         end

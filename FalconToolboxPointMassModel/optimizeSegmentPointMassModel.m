@@ -39,11 +39,6 @@ tau = linspace(0,1,configuration.options.discretizationPoints);
 %% Create Model
 mdl = falcon.SimulationModelBuilder('pointMassModel', states, controls);
 
-% Calculate wind components
-windVelocityEarth = [configuration.dynamics.windVel * cos(configuration.dynamics.windElevation) * cos(configuration.dynamics.windHeading);
-                     configuration.dynamics.windVel * cos(configuration.dynamics.windElevation) * sin(configuration.dynamics.windHeading);
-                     configuration.dynamics.windVel * sin(configuration.dynamics.windElevation)];
-
 % Add constants
 mdl.addConstant('m',configuration.dynamics.m); % kg
 mdl.addConstant('g',configuration.dynamics.g); % m/s^2
@@ -54,7 +49,7 @@ mdl.addConstant('Clalpha',configuration.dynamics.Clalpha);
 mdl.addConstant('Cd0',configuration.dynamics.Cd0);
 mdl.addConstant('K',configuration.dynamics.K);
 mdl.addConstant('Cdp',configuration.dynamics.Cdp);
-mdl.addConstant('windVelocityEarth',windVelocityEarth); % m/s
+mdl.addConstant('windVelocityEarth',configuration.dynamics.windVelocityEarth); % m/s
 
 % Aerodynamic forces
 mdl.addSubsystem(@dyn_forces,...

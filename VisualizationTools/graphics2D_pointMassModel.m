@@ -22,7 +22,36 @@ function graphics2D_pointMassModel(WP,totalTrajectory,configuration)
         statesToPlot = {'Velocity [m/s]' 'q0' 'q1' 'q2' 'q3'...
             'North Position [m]' 'East Position [m]' 'Altitude [m]'};
         for i = 1:totalTrajectory.numOfStates
-            if (i > 1) && (i < 6)
+            if i == 1 % TAS and Flat-earth velocity
+                % Obtain Flat-Earth velocity
+                velocityEarth = zeros(numel(totalTrajectory.states(i,:)),1);
+                for j = 1:numel(totalTrajectory.states(i,:))
+                    velocityEarth(j) = tasAndWind2velocityEarthNorm(totalTrajectory.states(i,j),...
+                        totalTrajectory.euler(2,j), totalTrajectory.euler(1,j),...
+                        configuration.dynamics.windVelocityEarth);
+                end
+                figure
+                hold on
+                plot(totalTrajectory.time,totalTrajectory.states(i,:))
+                plot(totalTrajectory.time,velocityEarth)
+                for j = 1:numel(WP_time)
+                    xval = WP_time(j);
+                    ymin = min(min(totalTrajectory.states(i,WP_index(j)),0),velocityEarth(WP_index(j)));
+                    ymax = max(max(totalTrajectory.states(i,WP_index(j)),0),velocityEarth(WP_index(j)));
+                    xPoints = [xval,xval];
+                    yPoints = [ymin,ymax];
+                    plot(xPoints,yPoints,'r--')
+                    text(xval,ymax,num2str(j),'Color','r','VerticalAlignment','bottom')
+                end
+                hold off
+                grid
+                margin = totalTrajectory.totalTime/20; % Lateral margins for x-axis in seconds
+                xlim([-margin totalTrajectory.totalTime+margin]);
+                title(statesToPlot{i})
+                legend('True Air Speed','Velocity Earth')
+                xlabel('Time [s]')
+                ylabel(statesToPlot{i})
+            elseif (i > 1) && (i < 6)
                 % Do not plot quaternions
             else
                 figure
