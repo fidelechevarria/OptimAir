@@ -204,7 +204,7 @@ function graphics2D_pointMassModel(WP,totalTrajectory,configuration)
     end
     
     % PLOT EAST DISTANCE TO SAFETY LINE
-    if (plotSLdist == true) && (WP.SL_north(1) ~= false)
+    if (plotSLdist == true) && (configuration.SL.SL_north(1) ~= false)
         distToPlot = {'Distance to Safety Line (East) [m]'};
         for i = 1:1
             figure

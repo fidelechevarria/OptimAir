@@ -9,9 +9,9 @@ function [f,c,ceq,totalTrajectory] = optimizeTrajectoryPointMassModel(WP,guess,c
     segment = cell(WP.numOfWP-1,1);
     
     % Calculate Safety Line Parameters (Slope and offset)
-    if WP.SL_north(1) ~= false
+    if configuration.SL.SL_north(1) ~= false
         configuration.SL.active = true;
-        [configuration.SL.m,configuration.SL.n] = calcSafetyLineParams(WP.SL_north,WP.SL_east);
+        [configuration.SL.m,configuration.SL.n] = calcSafetyLineParams(configuration.SL.SL_north,configuration.SL.SL_east);
     else
         configuration.SL.active = false;
         configuration.SL.m = 1;
@@ -58,7 +58,7 @@ function [f,c,ceq,totalTrajectory] = optimizeTrajectoryPointMassModel(WP,guess,c
         totalTrajectory.states = [totalTrajectory.states segment{i}.Phases(1).StateGrid.Values];
         totalTrajectory.controls = [totalTrajectory.controls segment{i}.Phases(1).ControlGrids.Values];
         totalTrajectory.accels = [totalTrajectory.accels segment{i}.Phases(1).PathConstraintFunctions(1).OutputGrid.Values(1:2,:)];
-        if WP.SL_north(1) ~= false
+        if configuration.SL.SL_north(1) ~= false
             totalTrajectory.SL_dist = [totalTrajectory.SL_dist segment{i}.Phases(1).PathConstraintFunctions(1).OutputGrid.Values(3,:)];
         end
     end

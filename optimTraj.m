@@ -286,8 +286,8 @@ function optimTraj
                 SL_north = false;
                 SL_east = false;
             end
-            WP = createWP(north,east,up,hdngData,gateTypeData,expectedManoeuvreData,SL_north,SL_east);
-            configuration = createConfiguration();
+            WP = createWP(north,east,up,hdngData,gateTypeData,expectedManoeuvreData);
+            configuration = createConfiguration(SL_north, SL_east);
             f.Visible = 'off';
             if pointMassButton.Value == 1
                 ITA_pointMassModel(WP,configuration,dir,f); % Launch Initial Trajectory Assistant
@@ -374,7 +374,7 @@ function optimTraj
         WP_table.Data = emptyDataCellGroup;
     end
 
-    function configuration = createConfiguration()
+    function configuration = createConfiguration(SL_north, SL_east)
         configuration.options.plotStates = Options_table.Data{1};
         configuration.options.plotControls = Options_table.Data{2};
         configuration.options.majIterLim = str2double(Options_table.Data{3});
@@ -388,6 +388,8 @@ function optimTraj
         configuration.options.ITA_splinePoints = str2double(Options_table.Data{11});
         configuration.options.ITA_subsegmentPoints = str2double(Options_table.Data{12});
         configuration.options.ITA_segmentPoints = str2double(Options_table.Data{13});
+        configuration.SL.SL_north = SL_north;
+        configuration.SL.SL_east = SL_east;
         configuration.dynamics.m = str2double(DynamicModel_table.Data{1});
         configuration.dynamics.g = str2double(DynamicModel_table.Data{2});
         configuration.dynamics.rho = str2double(DynamicModel_table.Data{3});
@@ -419,7 +421,7 @@ function optimTraj
         configuration.dynamics.windVelocityEarth = calculateWindComponents(configuration);
     end
 
-    function WP = createWP(north,east,up,hdngData,gateTypeData,expectedManoeuvreData,SL_north,SL_east)
+    function WP = createWP(north,east,up,hdngData,gateTypeData,expectedManoeuvreData)
         WP.north = north;
         WP.east = east;
         WP.up = up;
@@ -428,8 +430,6 @@ function optimTraj
         WP.expectedManoeuvre = expectedManoeuvreData;
         WP.numOfWP = numel(north);
         WP.numOfSegments = WP.numOfWP - 1;
-        WP.SL_north = SL_north;
-        WP.SL_east = SL_east;
     end
 
 end
