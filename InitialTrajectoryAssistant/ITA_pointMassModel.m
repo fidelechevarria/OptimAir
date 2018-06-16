@@ -71,7 +71,8 @@ function ITA_pointMassModel(WP,configuration,dir,f)
     ita_fig.NumberTitle = 'off'; % Deactivate the label "Figure n" in the title bar
     ita_fig.Name = 'Initial Trajectory Assistant'; % Assign the name to appear in the GUI title.
     movegui(ita_fig,'northeast') % Move the GUI.
-    plot3D_ax = axes('Units','pixels','Position',[71 126 490 350]);
+    plot3D_ax = axes('Parent',ita_fig,'Units','pixels','Position',[71 126 490 350]);
+    axes(plot3D_ax); %set the current axes to plot3D_ax
     hold on
     trajPlot = plot3(smooth_north,smooth_east,smooth_up,'Color','b','LineWidth',1);
     j = 1;
