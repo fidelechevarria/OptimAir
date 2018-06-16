@@ -31,6 +31,7 @@ function optimTraj
     addpath('InitialTrajectories');
     addpath('InitialTrajectoryAssistant');
     addpath('MiscellaneousTools');
+    addpath('OutputFiles');
     addpath('SimulinkModels');
     addpath('TestFunctions');
     addpath('VisualizationTools');

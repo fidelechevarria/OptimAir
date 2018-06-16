@@ -21,6 +21,8 @@ function graphics2D_pointMassModel(WP,totalTrajectory,configuration)
     if plotStates
         statesToPlot = {'Velocity [m/s]' 'q0' 'q1' 'q2' 'q3'...
             'North Position [m]' 'East Position [m]' 'Altitude [m]'};
+        statesToPlotFigName = {'Velocity' 'q0' 'q1' 'q2' 'q3'...
+            'North_Position' 'East_Position' 'Altitude'};
         for i = 1:totalTrajectory.numOfStates
             if i == 1 % TAS and Flat-earth velocity
                 % Obtain Flat-Earth velocity
@@ -74,6 +76,11 @@ function graphics2D_pointMassModel(WP,totalTrajectory,configuration)
                 xlabel('Time [s]')
                 ylabel(statesToPlot{i})
             end
+            % Save figures
+            cd OutputFiles;
+            saveas(gcf,[statesToPlotFigName{i} '.fig']);
+            saveas(gcf,[statesToPlotFigName{i} '.png']);
+            cd ..;
         end
     end
         
@@ -81,6 +88,8 @@ function graphics2D_pointMassModel(WP,totalTrajectory,configuration)
     if plotControls
         controlsToPlot = {'Angle of Attack [º]' 'Thrust [N]'...
             'Angular Velocity in x-axis [º/s]'};
+        controlsToPlotFigName = {'Angle_of_Attack' 'Thrust'...
+            'Angular_Velocity_in_x-axis'};
         for i = 1:totalTrajectory.numOfControls
             if i == 1 || i == 3 % Convert from radians to degrees
                 figure
@@ -123,12 +132,18 @@ function graphics2D_pointMassModel(WP,totalTrajectory,configuration)
                 xlabel('Time [s]')
                 ylabel(controlsToPlot{i})
             end
+            % Save figures
+            cd OutputFiles;
+            saveas(gcf,[controlsToPlotFigName{i} '.fig']);
+            saveas(gcf,[controlsToPlotFigName{i} '.png']);
+            cd ..;
         end
     end
     
     % PLOT EULER ANGLES (Convert from radians to degrees)
     if plotEuler
         eulerToPlot = {'Yaw [º]' 'Pitch [º]' 'Roll [º]'};
+        eulerToPlotFigName = {'Yaw' 'Pitch' 'Roll'};
         for i = 1:3
             figure
             hold on
@@ -149,6 +164,11 @@ function graphics2D_pointMassModel(WP,totalTrajectory,configuration)
             title(eulerToPlot{i})
             xlabel('Time [s]')
             ylabel(eulerToPlot{i})
+            % Save figures
+            cd OutputFiles;
+            saveas(gcf,[eulerToPlotFigName{i} '.fig']);
+            saveas(gcf,[eulerToPlotFigName{i} '.png']);
+            cd ..;
         end
     end
     
@@ -175,11 +195,17 @@ function graphics2D_pointMassModel(WP,totalTrajectory,configuration)
         title(eulerToPlot)
         xlabel('Time [s]')
         ylabel(eulerToPlot)
+        % Save figures
+        cd OutputFiles;
+        saveas(gcf,'Quaternion_Norm.fig');
+        saveas(gcf,'Quaternion_Norm.png');
+        cd ..;
     end
     
     % PLOT ACCELERATIONS
     if plotAccels
         accelsToPlot = {'Acceleration module [m/s^2]' 'Acceleration z-axis [m/s^2]'};
+        accelsToPlotFigName = {'Acceleration_module' 'Acceleration_z-axis'};
         for i = 1:2
             figure
             hold on
@@ -200,6 +226,11 @@ function graphics2D_pointMassModel(WP,totalTrajectory,configuration)
             title(accelsToPlot{i})
             xlabel('Time [s]')
             ylabel(accelsToPlot{i})
+            % Save figures
+            cd OutputFiles;
+            saveas(gcf,[accelsToPlotFigName{i} '.fig']);
+            saveas(gcf,[accelsToPlotFigName{i} '.png']);
+            cd ..;
         end
     end
     
@@ -226,6 +257,11 @@ function graphics2D_pointMassModel(WP,totalTrajectory,configuration)
             title(distToPlot{i})
             xlabel('Time [s]')
             ylabel(distToPlot{i})
+            % Save figures
+            cd OutputFiles;
+            saveas(gcf,'SL_distance_East.fig');
+            saveas(gcf,'SL_distance_East.png');
+            cd ..;
         end
     end
     
@@ -247,6 +283,11 @@ function graphics2D_pointMassModel(WP,totalTrajectory,configuration)
         assignin('base','FG_y',FG_y);
         assignin('base','FG_alt',FG_alt);
         assignin('base','FG_time',FG_time);
+        % Save variables
+        cd OutputFiles;
+        save('Trajectory_timeseries_for_FG.mat','FG_q0','FG_q1','FG_q2','FG_q3',...
+            'FG_x','FG_y','FG_alt','FG_time');
+        cd ..;
     end
     
 end

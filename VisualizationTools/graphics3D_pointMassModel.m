@@ -77,7 +77,8 @@ function graphics3D_pointMassModel(WP,totalTrajectory,configuration)
     end
     hold off
     grid
-    title(['Total time ' num2str(totalTrajectory.totalTime) 's'])
+    title(['Total time ' num2str(totalTrajectory.totalTime) 's with Wind '...
+        num2str(configuration.dynamics.windVel) ' m/s heading ' num2str(configuration.dynamics.windHeading) 'º'])
     % [~,~] = legend('Original points'); % "[~,~]=" prevents the bug in R2015b (https://www.mathworks.com/support/bugreports/1283854)
     axis equal
     axis vis3d
@@ -89,6 +90,11 @@ function graphics3D_pointMassModel(WP,totalTrajectory,configuration)
     ylabel('East')
     zlabel('Up')
     f1.Visible = 'on'; % Make figure visible.
+    % Save figure
+    cd OutputFiles;
+    saveas(f1,'3D_Trajectory.fig');
+    saveas(f1,'3D_Trajectory.png');
+    cd ..;
     
 end
 
