@@ -70,15 +70,27 @@ function graphics3D_pointMassModel(WP,totalTrajectory,configuration)
     % Plot Safety Line Elements
     if configuration.SL.SL_north(1) ~= false
         for i = 1:numel(configuration.SL.SL_north)
-            scatter3(configuration.SL.SL_north(i),configuration.SL.SL_east(i),0,'r','filled');
-            text(configuration.SL.SL_north(i),configuration.SL.SL_east(i),0,['SF' num2str(i)],'Color','r','VerticalAlignment','bottom','FontSize',14);
+            if i < 3
+                scatter3(configuration.SL.SL_north(i),configuration.SL.SL_east(i),0,'r','filled');
+                text(configuration.SL.SL_north(i),configuration.SL.SL_east(i),0,['A' num2str(i)],'Color','r','VerticalAlignment','bottom','FontSize',14);
+            elseif i >= 3
+                scatter3(configuration.SL.SL_north(i),configuration.SL.SL_east(i),0,'r','filled');
+                text(configuration.SL.SL_north(i),configuration.SL.SL_east(i),0,['B' num2str(i-2)],'Color','r','VerticalAlignment','bottom','FontSize',14);
+            end
         end
         plot3([configuration.SL.SL_north(1) configuration.SL.SL_north(2)],[configuration.SL.SL_east(1) configuration.SL.SL_east(2)],[0 0],'Color','r','LineWidth',1);
+        if numel(configuration.SL.SL_north) == 4
+            plot3([configuration.SL.SL_north(3) configuration.SL.SL_north(4)],[configuration.SL.SL_east(3) configuration.SL.SL_east(4)],[0 0],'Color','r','LineWidth',1);
+        end
     end
+    % Insert information in annotation
+    dim = [0.75 0.68 0.3 0.3];
+    str = {['Total time ' num2str(totalTrajectory.totalTime) ' s'],...
+        ['Wind speed ' num2str(configuration.dynamics.windVel) ' m/s'],...
+        ['Wind heading ' num2str(configuration.dynamics.windHeading) 'º']};
+    annotation('textbox',dim,'String',str,'FitBoxToText','on');
     hold off
     grid
-    title(['Total time ' num2str(totalTrajectory.totalTime) 's with Wind '...
-        num2str(configuration.dynamics.windVel) ' m/s heading ' num2str(configuration.dynamics.windHeading) 'º'])
     % [~,~] = legend('Original points'); % "[~,~]=" prevents the bug in R2015b (https://www.mathworks.com/support/bugreports/1283854)
     axis equal
     axis vis3d

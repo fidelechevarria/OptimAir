@@ -93,8 +93,10 @@ cnstr = falcon.PathConstraintBuilder('pathConstraintBuild',modeloutputs,states,c
 
 % Add constants
 cnstr.addConstant('g',configuration.dynamics.g); % m/s^2
-cnstr.addConstant('SL_m',configuration.SL.m)
-cnstr.addConstant('SL_n',configuration.SL.n)
+cnstr.addConstant('SL_A_m',configuration.SL.A_m)
+cnstr.addConstant('SL_A_n',configuration.SL.A_n)
+cnstr.addConstant('SL_B_m',configuration.SL.B_m)
+cnstr.addConstant('SL_B_n',configuration.SL.B_n)
 
 % Transform gravity vector to body axes
 cnstr.addSubsystem(@dyn_gravBody,...
@@ -113,11 +115,11 @@ cnstr.addSubsystem(@dyn_accelNorm,...
 
 % Calculate Safety Line constraint
 cnstr.addSubsystem(@dyn_safetyLine,...
-    {'x','y','SL_m','SL_n'},... % Inputs
-    {'SL'}); % Outputs
+    {'x','y','SL_A_m','SL_A_n','SL_B_m','SL_B_n'},... % Inputs
+    {'SL_A','SL_B'}); % Outputs
 
 % Set the variable names of the constraints
-cnstr.setConstraintValueNames('A_norm','Az','SL');
+cnstr.setConstraintValueNames('A_norm','Az','SL_A','SL_B');
 
 % Build the constraints evaluating the subsystem chain
 cnstr.Build();
@@ -144,23 +146,40 @@ phase1.setFinalBoundaries(boundaries.phase1.finalBoundsLow,...
 
 maxms = configuration.dynamics.maxG * configuration.dynamics.g;
 maxms_neg = configuration.dynamics.maxG_neg * configuration.dynamics.g;
-if configuration.SL.active == true
-    if -configuration.SL.n/configuration.SL.m > 0
+if configuration.SL.active > 0
+    if -configuration.SL.A_n/configuration.SL.A_m > 0
         % Safety Line is West
-        SL_low = 0;
-        SL_high = inf;
+        SL_low_A = 0;
+        SL_high_A = inf;
     else
         % Safety Line is East
-        SL_low = -inf;
-        SL_high = 0;
+        SL_low_A = -inf;
+        SL_high_A = 0;
+    end
+    if configuration.SL.active > 1
+        if -configuration.SL.B_n/configuration.SL.B_m > 0
+            % Safety Line is West
+            SL_low_B = 0;
+            SL_high_B = inf;
+        else
+            % Safety Line is East
+            SL_low_B = -inf;
+            SL_high_B = 0;
+        end
+    else
+        SL_low_B = -inf;
+        SL_high_B = inf;
     end
 else
-    SL_low = -inf;
-    SL_high = inf;
+    SL_low_A = -inf;
+    SL_high_A = inf;
+    SL_low_B = -inf;
+    SL_high_B = inf;
 end
 constraint_vals = [falcon.Constraint('A_norm',-maxms,maxms);
                    falcon.Constraint('A_z',-maxms,maxms_neg);
-                   falcon.Constraint('SL',SL_low,SL_high)];
+                   falcon.Constraint('SL_A',SL_low_A,SL_high_A);
+                   falcon.Constraint('SL_B',SL_low_B,SL_high_B)];
 phase1.addNewPathConstraint(@pathConstraintBuild, constraint_vals);
 
 % Set model outputs

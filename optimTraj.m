@@ -90,14 +90,14 @@ function optimTraj
            'Parent',tab1,...
            'String', {'2','3','4','5','6','7','8','9','10','11','12',...
            '13','14','15','16','17','18'},...
-           'Position', [80 345 40 50],...
+           'Position', [50 345 40 50],...
            'Callback',@NWP_Callback,...
            'Value',5,...
            'Tag','NWP_popup');
     uicontrol('Style','Text',...
            'Parent',tab1,...
-           'String',{'Number of' 'Waypoints'},...
-           'Position',[10 370 60 30]);
+           'String','WP''s',...
+           'Position',[15 360 30 30]);
     WP_table = uitable('Parent',tab1,...
         'Data',{[] [] [] [] [] [] [] [] false;[] [] [] [] [] [] [] [] false;...
         [] [] [] [] [] [] [] [] false;[] [] [] [] [] [] [] [] false;...
@@ -113,18 +113,23 @@ function optimTraj
         'Data',{[] [] [] [] [] [];[] [] [] [] [] []},...
         'ColumnName',{'Lat (º)','Lat ('')','Lat ('''')',...
         'Lon (º)','Lon ('')','Lon ('''')'},...
-        'RowName',{'Safety Line Point A';'Safety Line Point B'},...
+        'RowName',{'A1';'A2'},...
         'ColumnEditable',true,...
         'Position',[13 13 460 95],...
         'ColumnWidth',{40 40 40 40 40 45},...
         'Enable','off',...
         'Tag','SL_table');
-    SL_checkbox = uicontrol('style','checkbox',...
-         'Parent',tab1,...
-         'String','Safety Line',...
-         'Position',[200 377 70 15],...
-         'Callback',@SL_Callback,...
-         'Value',0);
+    uicontrol('Style','Text',...
+           'Parent',tab1,...
+           'String','Safety Lines',...
+           'Position',[180 370 40 30]);
+    SL_popup = uicontrol('Style', 'popup',...
+           'Parent',tab1,...
+           'String', {'0','1','2'},...
+           'Position', [220 345 40 50],...
+           'Callback',@SL_Callback,...
+           'Value',1,...
+           'Tag','SL_popup');
     uicontrol('Parent',tab1,...
          'Units','pixels',...
          'Position',[285 373 55 25],...
@@ -192,7 +197,7 @@ function optimTraj
         '5.7';'0.0054';'0.18';'0.01';'10';'2';'40';'200';'-10000';...
         '10000';'-10000';'10000';'15';'1000';'-30';'30';'5000';'200';'80';...
         '0';'0';'0'};
-    Options_table.Data = {false;false;'1000';'80';'0';'200';'30';'40';'50';'4';'200';'200';'6'};
+    Options_table.Data = {true;true;'1000';'80';'0';'200';'30';'40';'50';'4';'200';'200';'6'};
 
     % Make GUI visible.
     
@@ -257,7 +262,7 @@ function optimTraj
         wpData = WP_table.Data;
         SL_data = SL_table.Data;
         checkForEmptyValuesWP = cellfun('isempty',wpData);
-        if SL_checkbox.Value == true
+        if SL_popup.Value ~= 1
             checkForEmptyValuesSL = cellfun('isempty',SL_data);
         else
             checkForEmptyValuesSL = 0;
@@ -281,7 +286,7 @@ function optimTraj
                     expectedManoeuvreData{i} = '2D';
                 end
             end
-            if SL_checkbox.Value == true
+            if SL_popup.Value ~= 1
                 [SL_north, SL_east, ~] = custom_lla2flat(SL_data,refData);
             else
                 SL_north = false;
@@ -300,11 +305,21 @@ function optimTraj
     
     function SL_Callback(Object,~)
         SL = get(Object,'Value');
-        if SL
-            SL_table.Enable = 'on';
-        else
-            SL_table.Data = {[] [] [] [] [] [];[] [] [] [] [] []};
-            SL_table.Enable = 'off';
+        switch SL
+            case 1
+                SL_table.RowName = {'A1';'A2'};
+                SL_table.Data = {[] [] [] [] [] [];[] [] [] [] [] []};
+                SL_table.Enable = 'off';
+            case 2
+                SL_table.RowName = {'A1';'A2'};
+                SL_table.Data = {[] [] [] [] [] [];[] [] [] [] [] []};
+                SL_table.Enable = 'on';
+            case 3
+                SL_table.RowName = {'A1';'A2';...
+                    'B1';'B2'};
+                SL_table.Data = {[] [] [] [] [] [];[] [] [] [] [] [];...
+                    [] [] [] [] [] [];[] [] [] [] [] []};
+                SL_table.Enable = 'on';
         end
     end
 
@@ -334,7 +349,7 @@ function optimTraj
         end
         data.FP_data = WP_table.Data;
         data.SL_data = SL_table.Data;
-        data.SL_checkBox = SL_checkbox.Value;
+        data.SL_popup = SL_popup.Value;
         uisave('data','myFlightPlan');
         cd ..
     end
@@ -352,12 +367,18 @@ function optimTraj
             [NWP,~] = size(dataStruct.data.FP_data);
             NWP_popup.Value = NWP - 1; % Change NWP popup menu value
             SL_table.Data = dataStruct.data.SL_data;
-            SL_checkbox.Value = dataStruct.data.SL_checkBox;
-            if dataStruct.data.SL_checkBox
-                SL_table.Enable = 'on';
-            else
-                SL_table.Data = {[] [] [] [] [] [];[] [] [] [] [] []};
-                SL_table.Enable = 'off';
+            SL_popup.Value = dataStruct.data.SL_popup;
+            switch dataStruct.data.SL_popup
+                case 1
+                    SL_table.RowName = {'A1';'A2'};
+                    SL_table.Enable = 'off';
+                case 2
+                    SL_table.RowName = {'A1';'A2'};
+                    SL_table.Enable = 'on';
+                case 3
+                    SL_table.RowName = {'A1';'A2';...
+                        'B1';'B2'};
+                    SL_table.Enable = 'on';
             end
         end
         if exist('FlightPlans','dir')
@@ -420,6 +441,24 @@ function optimTraj
         configuration.dynamics.windElevation = deg2rad(str2double(DynamicModel_table.Data{27}));
         % Calculate wind components
         configuration.dynamics.windVelocityEarth = calculateWindComponents(configuration);
+        % Calculate Safety Line Parameters (Slope and offset)
+        switch numel(configuration.SL.SL_north)
+            case 2
+                configuration.SL.active = 1;
+                [configuration.SL.A_m,configuration.SL.A_n] = calcSafetyLineParams(configuration.SL.SL_north(1:2),configuration.SL.SL_east(1:2));
+                configuration.SL.B_m = 1;
+                configuration.SL.B_n = 1;
+            case 4
+                configuration.SL.active = 2;
+                [configuration.SL.A_m,configuration.SL.A_n] = calcSafetyLineParams(configuration.SL.SL_north(1:2),configuration.SL.SL_east(1:2));
+                [configuration.SL.B_m,configuration.SL.B_n] = calcSafetyLineParams(configuration.SL.SL_north(3:4),configuration.SL.SL_east(3:4));
+            otherwise
+                configuration.SL.active = 0;
+                configuration.SL.A_m = 1;
+                configuration.SL.A_n = 1;
+                configuration.SL.B_m = 1;
+                configuration.SL.B_n = 1;
+        end
     end
 
     function WP = createWP(north,east,up,hdngData,gateTypeData,expectedManoeuvreData)
@@ -431,6 +470,11 @@ function optimTraj
         WP.expectedManoeuvre = expectedManoeuvreData;
         WP.numOfWP = numel(north);
         WP.numOfSegments = WP.numOfWP - 1;
+    end
+
+    function [m,n] = calcSafetyLineParams(north,east)
+        m = (north(2)-north(1))/(east(2)-east(1));
+        n = north(1)-m*east(1);
     end
 
 end

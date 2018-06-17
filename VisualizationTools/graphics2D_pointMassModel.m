@@ -234,17 +234,22 @@ function graphics2D_pointMassModel(WP,totalTrajectory,configuration)
         end
     end
     
-    % PLOT EAST DISTANCE TO SAFETY LINE
-    if (plotSLdist == true) && (configuration.SL.SL_north(1) ~= false)
-        distToPlot = {'Distance to Safety Line (East) [m]'};
-        for i = 1:1
+    % PLOT EAST DISTANCE TO SAFETY LINES
+    if (plotSLdist == true) && (configuration.SL.active ~= 0)
+        distToPlot = {'Distance to Safety Line A (East) [m]','Distance to Safety Line B (East) [m]'};
+        distToPlotFigName = {'SL_A_distance_East','SL_B_distance_East'};
+        for i = 1:configuration.SL.active
             figure
             hold on
-            plot(totalTrajectory.time,totalTrajectory.SL_dist(i,:))
+            if i == 1
+                plot(totalTrajectory.time,totalTrajectory.SL_dist{1})
+            elseif i == 2
+                plot(totalTrajectory.time,totalTrajectory.SL_dist{2})
+            end
             for j = 1:numel(WP_time)
                 xval = WP_time(j);
-                ymin = min(totalTrajectory.SL_dist(i,WP_index(j)),0);
-                ymax = max(totalTrajectory.SL_dist(i,WP_index(j)),0);
+                ymin = min(totalTrajectory.SL_dist{i}(WP_index(j)),0);
+                ymax = max(totalTrajectory.SL_dist{i}(WP_index(j)),0);
                 xPoints = [xval,xval];
                 yPoints = [ymin,ymax];
                 plot(xPoints,yPoints,'r--')
@@ -259,8 +264,8 @@ function graphics2D_pointMassModel(WP,totalTrajectory,configuration)
             ylabel(distToPlot{i})
             % Save figures
             cd OutputFiles;
-            saveas(gcf,'SL_distance_East.fig');
-            saveas(gcf,'SL_distance_East.png');
+            saveas(gcf,[distToPlotFigName{i} '.fig']);
+            saveas(gcf,[distToPlotFigName{i} '.png']);
             cd ..;
         end
     end
