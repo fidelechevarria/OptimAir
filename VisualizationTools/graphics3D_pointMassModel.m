@@ -87,7 +87,7 @@ function graphics3D_pointMassModel(WP,totalTrajectory,configuration)
     dim = [0.75 0.68 0.3 0.3];
     str = {['Total time ' num2str(totalTrajectory.totalTime) ' s'],...
         ['Wind speed ' num2str(configuration.dynamics.windVel) ' m/s'],...
-        ['Wind heading ' num2str(configuration.dynamics.windHeading) 'º']};
+        ['Wind heading ' num2str(rad2deg(configuration.dynamics.windHeading)) 'º']};
     annotation('textbox',dim,'String',str,'FitBoxToText','on');
     hold off
     grid
