@@ -23,6 +23,11 @@ function optimTraj
     
     dir = pwd; % Save initial directory root
     
+    % Make directory OutputFiles if not existant
+    if ~exist('OutputFiles','dir')
+        mkdir('OutputFiles');
+    end
+    
     % Add folders to path
     addpath('FalconToolboxCompleteModel');
     addpath('FalconToolboxPointMassModel');
