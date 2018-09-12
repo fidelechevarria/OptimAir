@@ -57,7 +57,13 @@ _________________________________________
 
 This would mean everything is correctly configured.
 
-20. Change current directory to "optimTraj" repository folder.
+20. Download and install FlightGear 2018.2.2 from "https://home.flightgear.org/download/main-program/".
 
-21. Run script "optimTraj.m" in MATLAB.
+21. Change current directory to "optimTraj" repository folder.
+
+22. Using Windows Explorer, unzip the file "optimTraj/FlightGear/ZivkoEdge.zip" contained in "optimTraj" repository folder.
+
+23. Move extracted "ZivkoEdge" folder to "C:\Program Files\FlightGear 2018.2.2\data\Aircraft" (assuming FlightGear is installed on C:).
+
+24. Done. To start using the tool run script "optimTraj.m" (contained in "optimTraj" repository folder) in MATLAB.
 
