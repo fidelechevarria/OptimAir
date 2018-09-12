@@ -1,0 +1,63 @@
+
+SETUP AND INSTALLATION INSTRUCTIONS FOR OPTIMTRAJ OPTIMIZATION TOOL 
+
+LAST UPDATED: 11/09/2018
+OPERATIVE SYSTEM: Windows 10 version 1803.
+______________________________________
+
+1. Install MATLAB R2018a.
+
+2. Install Visual Studio Community 2017 (C++ Desktop Development). This provides a compatible C++ compiler for MATLAB R2018a.
+
+3. Create account in "http://www.fsd.mw.tum.de/software/customer-area/register/".
+
+4. In the same website access "Member Area" -> "My files", and download "FALCON.m v1.19".
+
+5. Unzip the file and move output "falcon" folder to desktop.
+
+6. Open MATLAB R2018a with administrator privileges (right click in matlab icon -> "run as admin").
+
+7. Change MATLAB current directory to "falcon" folder at desktop.
+
+8. Run script "StartupCheck.m".
+
+9. A prompt will appear asking if we want to install IPOPT software. Select "yes" and wait for the installation to finish.
+
+10. At this point the script may print: "Should the path be permanently added to the MATLAB path [y/n]?" We should answer with "n".
+
+11. Close MATLAB.
+
+12. Move folder "falcon" into "C:\Program Files\MATLAB\R2018a\toolbox".
+
+13. Open MATLAB.
+
+14. Run the following command in MATLAB: "rehash toolboxcache".
+
+15. Change current directory to "C:\Program Files\MATLAB\R2018a\toolbox\falcon". 
+
+16. Run script "StartupCheck.m" in MATLAB.
+
+17. At this point the script may print: "Should the path be permanently added to the MATLAB path [y/n]?" We should answer with "y".
+
+18. Run script "StartupCheck.m" again in MATLAB.
+
+19. The output should be the following:
+________________________________________
+-> Checking MATLAB Version........OK
+-> Checking Available Toolboxes
+   - MATLAB Coder.................OK
+   - Symbolic Math Toolbox........OK
+   - Compiler (CPP)...............Microsoft Visual C++ 2017
+-> Checking Optimizers
+   - ipopt........................OK
+-> Checking Path of Base Directory
+   - base path added..............OK
+See the FALCON.m examples in the folder examples.
+_________________________________________
+
+This would mean everything is correctly configured.
+
+20. Change current directory to "optimTraj" repository folder.
+
+21. Run script "optimTraj.m" in MATLAB.
+
