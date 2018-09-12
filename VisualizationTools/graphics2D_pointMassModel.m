@@ -76,11 +76,13 @@ function graphics2D_pointMassModel(WP,totalTrajectory,configuration)
                 xlabel('Time [s]')
                 ylabel(statesToPlot{i})
             end
-            % Save figures
-            cd OutputFiles;
-            saveas(gcf,[statesToPlotFigName{i} '.fig']);
-            saveas(gcf,[statesToPlotFigName{i} '.png']);
-            cd ..;
+            if (i == 1) || (i >= 6)
+                % Save figures
+                cd OutputFiles;
+                saveas(gcf,[statesToPlotFigName{i} '.fig']);
+                saveas(gcf,[statesToPlotFigName{i} '.png']);
+                cd ..;
+            end
         end
     end
         
