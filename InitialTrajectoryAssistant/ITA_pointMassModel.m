@@ -489,14 +489,13 @@ function ITA_pointMassModel(WP,configuration,dir,f)
 
     function ITA_auto_Callback(~,~)
         % In the future this variables will be defined from GUI
-        initVels = [70 85 100];
-        windDirs = deg2rad([0 45 90 135 180 225 270 315]);
-        windVels = [5 10 15 20];
+        initVels = [90 93];
+        windDirs = deg2rad([135 325]);
+        windVels = [5 10 15];
         for ll = 1:numel(initVels)
             initVelString{ll} = ['Initial speed ' num2str(initVels(ll)) ' meters per second'];
         end
-        windDirString = {'Wind North','Wind North-East','Wind East','Wind South-East',...
-            'Wind South','Wind South-West','Wind West','Wind North-West'};
+        windDirString = {'Wind South-East','Wind North-West'};
         for mm = 1:numel(windVels)
             windVelString{mm} = [num2str(windVels(mm)) ' meters per second'];
         end
