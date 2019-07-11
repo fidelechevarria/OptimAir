@@ -30,7 +30,7 @@ modeloutputs = [falcon.Output('vx_dot');
 FinalTime = falcon.Parameter('FinalTime',guess.time(end),1,50,0.1);
 
 %% Create complete problem
-problem = falcon.Problem('optimTraj');
+problem = falcon.Problem('OptimAir');
 
 %% Set optimization parameters
 problem.setMajorIterLimit(configuration.majIterLim);

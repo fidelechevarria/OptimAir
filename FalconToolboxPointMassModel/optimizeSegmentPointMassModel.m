@@ -26,7 +26,7 @@ FinalTime = falcon.Parameter('FinalTime',guess.time(end),...
     configuration.options.minSegmentTime,configuration.options.maxSegmentTime,0.1);
 
 %% Create complete problem
-problem = falcon.Problem('optimTraj');
+problem = falcon.Problem('OptimAir');
 
 %% Set optimization parameters
 problem.setMajorIterLimit(configuration.options.majIterLim);
