@@ -43,7 +43,7 @@ function ITA_pointMassModel(WP,configuration,dir,f)
     WP.numOfVirtualWP_ITA = numel(WP.ITA_virtualWPindices);
     
     % Generate natural cubic spline through all WP
-    generateTraj();
+    estimatedTraj = cscvn([WP.ITA_north;WP.ITA_east;WP.ITA_up]);
     N = configuration.options.ITA_splinePoints;
     [smooth_north,smooth_east,smooth_up] = multiEvaluateSpline(estimatedTraj,N);
     
@@ -255,10 +255,6 @@ function ITA_pointMassModel(WP,configuration,dir,f)
     % Close request function for ITA Window
         delete(ita_fig);
         f.Visible = 'on';
-    end
-    
-    function generateTraj()
-        estimatedTraj = cscvn([WP.ITA_north;WP.ITA_east;WP.ITA_up]);
     end
 
     function [north,east,up] = multiEvaluateSpline(spline,numberOfPoints)
@@ -553,7 +549,7 @@ function ITA_pointMassModel(WP,configuration,dir,f)
         timeGuessSubsegment = cell(WP.ITA_numOfSegments,1);
         stateIndeces = [];
         
-        generateTraj();
+        estimatedTraj = cscvn([WP.ITA_north;WP.ITA_east;WP.ITA_up]);
         
         for s = 1:WP.ITA_numOfSegments
             subsegmentGuess{s} = fnbrk(estimatedTraj,s);
